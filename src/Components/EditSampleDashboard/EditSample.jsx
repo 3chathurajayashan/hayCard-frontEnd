@@ -97,7 +97,6 @@ export default function LabAdminDashboard() {
         headers: { Authorization: `Bearer ${token}` },
       });
       const updatedSample = res.data;
-      alert("QR code generated successfully!");
       window.open(updatedSample.qrCodeDataUrl, "_blank");
     } catch (err) {
       console.error("QR generation error:", err);
@@ -113,13 +112,27 @@ export default function LabAdminDashboard() {
     }
   };
 
+  const handleReceivedChange = async (sample, checked) => {
+    try {
+      await axios.put(
+        `http://localhost:5000/samples/samples/${sample._id}/received`,
+        { received: checked },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      fetchSamples();
+    } catch (err) {
+      console.error("Error updating received status:", err);
+      alert("Failed to update received status");
+    }
+  };
+
   return (
     <div style={styles.container}>
       {/* Header */}
       <div style={styles.header}>
         <div style={styles.headerContent}>
-          <div style={styles.headerText}>
-            <h2 style={styles.title}>Lab Admin Dashboard</h2>
+          <div>
+            <h1 style={styles.title}>Lab Admin Dashboard</h1>
             <p style={styles.subtitle}>Welcome, {user?.name || "Lab Admin"}</p>
           </div>
           <button style={styles.logoutButton} onClick={handleLogout}>
@@ -128,130 +141,181 @@ export default function LabAdminDashboard() {
         </div>
       </div>
 
-      {/* Samples Table */}
-      <div style={styles.card}>
-        <div style={styles.cardHeader}>
-          <h3 style={styles.cardTitle}>All Samples</h3>
-        </div>
-        {loading ? (
-          <div style={styles.loading}>Loading samples...</div>
-        ) : samples.length === 0 ? (
-          <div style={styles.emptyState}>No samples found.</div>
-        ) : (
-          <div style={styles.tableContainer}>
-            <table style={styles.table}>
-              <thead>
-                <tr>
-                  <th style={styles.tableHeader}>Sample ID</th>
-                  <th style={styles.tableHeader}>Request Ref</th>
-                  <th style={styles.tableHeader}>Sample Ref</th>
-                  <th style={styles.tableHeader}>From</th>
-                  <th style={styles.tableHeader}>To</th>
-                  <th style={styles.tableHeader}>Route</th>
-                  <th style={styles.tableHeader}>Test Method</th>
-                  <th style={styles.tableHeader}>Results (As/Sb/Al)</th>
-                  <th style={styles.tableHeader}>Analysed By</th>
-                  <th style={styles.tableHeader}>Created Date</th>
-                  <th style={styles.tableHeader}>Status</th>
-                  <th style={styles.tableHeader}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {samples.map((sample) => (
-                  <tr key={sample._id} style={styles.tableRow}>
-                    <td style={styles.tableCell}>{sample.sampleId}</td>
-                    <td style={styles.tableCell}>{sample.requestRefNo}</td>
-                    <td style={styles.tableCell}>{sample.sampleRefNo}</td>
-                    <td style={styles.tableCell}>{Array.isArray(sample.from) ? sample.from.join(", ") : sample.from}</td>
-                    <td style={styles.tableCell}>{sample.to}</td>
-                    <td style={styles.tableCell}>{sample.sampleRoute}</td>
-                    <td style={styles.tableCell}>{sample.testMethod}</td>
-                    <td style={styles.tableCell}>
-                      {sample.results
-                        ? `As: ${sample.results.As_ppb || "-"}, Sb: ${sample.results.Sb_ppb || "-"}, Al: ${sample.results.Al_ppb || "-"}`
-                        : "Not Entered"}
-                    </td>
-                    <td style={styles.tableCell}>{sample.analysedBy || "-"}</td>
-                    <td style={styles.tableCell}>{new Date(sample.createdAt).toLocaleDateString()}</td>
-                    <td style={styles.tableCell}>
-                      <span style={sample.isFinalized ? styles.statusFinalized : styles.statusPending}>
-                        {sample.isFinalized ? "Finalized" : "Pending"}
-                      </span>
-                    </td>
-                    <td style={styles.tableCell}>
-                      <div style={styles.actionContainer}>
-                        <button 
-                          style={styles.actionBtn} 
-                          onClick={() => handleAddResults(sample)}
-                          disabled={sample.isFinalized}
-                        >
-                          Add Results
-                        </button>
-                        <button 
-                          style={styles.finalizeBtn} 
-                          onClick={() => finalizeSample(sample._id)}
-                          disabled={sample.isFinalized || !sample.results}
-                        >
-                          Finalize
-                        </button>
-                        <button 
-                          style={styles.qrBtn} 
-                          onClick={() => generateQR(sample._id)}
-                          disabled={!sample.isFinalized}
-                        >
-                          Generate QR
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {/* Main Content */}
+      <div style={styles.content}>
+        <div style={styles.card}>
+          <div style={styles.cardHeader}>
+            <h2 style={styles.cardTitle}>Samples</h2>
+            <button 
+              style={styles.refreshButton}
+              onClick={fetchSamples}
+              disabled={loading}
+            >
+              {loading ? "Refreshing..." : "Refresh"}
+            </button>
           </div>
-        )}
+
+          {loading ? (
+            <div style={styles.loading}>Loading samples...</div>
+          ) : samples.length === 0 ? (
+            <div style={styles.emptyState}>No samples found.</div>
+          ) : (
+            <div style={styles.tableContainer}>
+              <table style={styles.table}>
+                <thead>
+                  <tr>
+                    <th style={styles.tableHeader}>Sample ID</th>
+                    <th style={styles.tableHeader}>Request Ref</th>
+                    <th style={styles.tableHeader}>Sample Ref</th>
+                    <th style={styles.tableHeader}>From</th>
+                    <th style={styles.tableHeader}>To</th>
+                    <th style={styles.tableHeader}>Route</th>
+                    <th style={styles.tableHeader}>Test Method</th>
+                    <th style={styles.tableHeader}>Results</th>
+                    <th style={styles.tableHeader}>Analysed By</th>
+                    <th style={styles.tableHeader}>Created</th>
+                    <th style={styles.tableHeader}>Received</th>
+                    <th style={styles.tableHeader}>Status</th>
+                    <th style={styles.tableHeader}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {samples.map((sample) => (
+                    <tr key={sample._id} style={styles.tableRow}>
+                      <td style={styles.tableCell}>{sample.sampleId}</td>
+                      <td style={styles.tableCell}>{sample.requestRefNo}</td>
+                      <td style={styles.tableCell}>{sample.sampleRefNo}</td>
+                      <td style={styles.tableCell}>
+                        {Array.isArray(sample.from) ? sample.from.join(", ") : sample.from}
+                      </td>
+                      <td style={styles.tableCell}>{sample.to}</td>
+                      <td style={styles.tableCell}>{sample.sampleRoute}</td>
+                      <td style={styles.tableCell}>{sample.testMethod}</td>
+                      <td style={styles.tableCell}>
+                        {sample.results
+                          ? `As: ${sample.results.As_ppb || "-"}, Sb: ${sample.results.Sb_ppb || "-"}, Al: ${sample.results.Al_ppb || "-"}`
+                          : "Not Entered"}
+                      </td>
+                      <td style={styles.tableCell}>{sample.analysedBy || "-"}</td>
+                      <td style={styles.tableCell}>
+                        {new Date(sample.createdAt).toLocaleDateString()}
+                      </td>
+                      <td style={styles.tableCell}>
+                        <input
+                          type="checkbox"
+                          checked={sample.received || false}
+                          onChange={(e) => handleReceivedChange(sample, e.target.checked)}
+                          disabled={sample.isFinalized}
+                          style={styles.checkbox}
+                        />
+                        {sample.received && (
+                          <div style={styles.receivedInfo}>
+                            {sample.receivedDate} {sample.receivedTime}
+                          </div>
+                        )}
+                      </td>
+                      <td style={styles.tableCell}>
+                        <span style={sample.isFinalized ? styles.statusFinalized : styles.statusPending}>
+                          {sample.isFinalized ? "Finalized" : "Pending"}
+                        </span>
+                      </td>
+                      <td style={styles.tableCell}>
+                        <div style={styles.actionContainer}>
+                          <button 
+                            style={{
+                              ...styles.button,
+                              ...styles.primaryButton,
+                              ...(sample.isFinalized && styles.disabledButton)
+                            }} 
+                            onClick={() => handleAddResults(sample)}
+                            disabled={sample.isFinalized}
+                          >
+                            Add Results
+                          </button>
+                          <button 
+                            style={{
+                              ...styles.button,
+                              ...styles.successButton,
+                              ...((sample.isFinalized || !sample.results) && styles.disabledButton)
+                            }} 
+                            onClick={() => finalizeSample(sample._id)}
+                            disabled={sample.isFinalized || !sample.results}
+                          >
+                            Finalize
+                          </button>
+                          <button 
+                            style={{
+                              ...styles.button,
+                              ...styles.infoButton,
+                              ...(!sample.isFinalized && styles.disabledButton)
+                            }} 
+                            onClick={() => generateQR(sample._id)}
+                            disabled={!sample.isFinalized}
+                          >
+                            QR Code
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Results Popup Form */}
+      {/* Results Form Modal */}
       {showForm && (
-        <div style={styles.popup}>
-          <div style={styles.popupInner}>
-            <div style={styles.popupHeader}>
-              <h3 style={styles.popupTitle}>Add / Edit Results</h3>
-              <button style={styles.closeBtn} onClick={() => setShowForm(false)}>×</button>
+        <div style={styles.modalOverlay}>
+          <div style={styles.modal}>
+            <div style={styles.modalHeader}>
+              <h3 style={styles.modalTitle}>
+                {selectedSample?.results ? "Edit Results" : "Add Results"}
+              </h3>
+              <button 
+                style={styles.closeButton} 
+                onClick={() => setShowForm(false)}
+              >
+                ×
+              </button>
             </div>
             <form onSubmit={submitResults} style={styles.form}>
               <div style={styles.formGrid}>
-                <div style={styles.inputGroup}>
+                <div style={styles.formGroup}>
                   <label style={styles.label}>As (ppb)</label>
                   <input
                     type="number"
+                    step="0.01"
                     value={form.As_ppb}
                     onChange={(e) => setForm({ ...form, As_ppb: e.target.value })}
                     style={styles.input}
                     placeholder="Enter As value"
                   />
                 </div>
-                <div style={styles.inputGroup}>
+                <div style={styles.formGroup}>
                   <label style={styles.label}>Sb (ppb)</label>
                   <input
                     type="number"
+                    step="0.01"
                     value={form.Sb_ppb}
                     onChange={(e) => setForm({ ...form, Sb_ppb: e.target.value })}
                     style={styles.input}
                     placeholder="Enter Sb value"
                   />
                 </div>
-                <div style={styles.inputGroup}>
+                <div style={styles.formGroup}>
                   <label style={styles.label}>Al (ppb)</label>
                   <input
                     type="number"
+                    step="0.01"
                     value={form.Al_ppb}
                     onChange={(e) => setForm({ ...form, Al_ppb: e.target.value })}
                     style={styles.input}
                     placeholder="Enter Al value"
                   />
                 </div>
-                <div style={styles.inputGroup}>
+                <div style={styles.formGroup}>
                   <label style={styles.label}>Analysed By</label>
                   <input
                     type="text"
@@ -261,7 +325,7 @@ export default function LabAdminDashboard() {
                     placeholder="Enter analyst name"
                   />
                 </div>
-                <div style={styles.inputGroup}>
+                <div style={styles.formGroup}>
                   <label style={styles.label}>Completed Date</label>
                   <input
                     type="date"
@@ -270,7 +334,7 @@ export default function LabAdminDashboard() {
                     style={styles.input}
                   />
                 </div>
-                <div style={styles.inputGroup}>
+                <div style={styles.formGroup}>
                   <label style={styles.label}>Completed Time</label>
                   <input
                     type="time"
@@ -281,8 +345,16 @@ export default function LabAdminDashboard() {
                 </div>
               </div>
               <div style={styles.formActions}>
-                <button type="submit" style={styles.saveBtn}>Save Results</button>
-                <button type="button" onClick={() => setShowForm(false)} style={styles.cancelBtn}>Cancel</button>
+                <button 
+                  type="button" 
+                  style={styles.cancelButton}
+                  onClick={() => setShowForm(false)}
+                >
+                  Cancel
+                </button>
+                <button type="submit" style={styles.submitButton}>
+                  Save Results
+                </button>
               </div>
             </form>
           </div>
@@ -293,264 +365,258 @@ export default function LabAdminDashboard() {
 }
 
 const styles = {
-  container: { 
-    padding: 30, 
-    background: "#f8fafc", 
+  container: {
     minHeight: "100vh",
-    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+    backgroundColor: "#f5f5f5",
+    fontFamily: "Arial, sans-serif",
   },
   header: {
-    marginBottom: 30
+    backgroundColor: "#2c3e50",
+    color: "white",
+    padding: "1rem 0",
+    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
   },
   headerContent: {
+    maxWidth: "1200px",
+    margin: "0 auto",
+    padding: "0 1rem",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    flexWrap: "wrap",
-    gap: 20
   },
-  headerText: {
-    flex: 1
+  title: {
+    margin: 0,
+    fontSize: "1.5rem",
+    fontWeight: "600",
   },
-  title: { 
-    fontSize: 32, 
-    marginBottom: 8, 
-    color: "#1e293b",
-    fontWeight: "600"
-  },
-  subtitle: { 
-    color: "#64748b",
-    fontSize: 16,
-    margin: 0
+  subtitle: {
+    margin: "0.25rem 0 0 0",
+    color: "#bdc3c7",
+    fontSize: "0.9rem",
   },
   logoutButton: {
-    background: "#dc2626",
-    color: "#ffffff",
+    padding: "0.5rem 1rem",
+    backgroundColor: "#e74c3c",
+    color: "white",
     border: "none",
-    padding: "10px 20px",
-    borderRadius: 6,
-    fontSize: 14,
-    fontWeight: "600",
+    borderRadius: "4px",
     cursor: "pointer",
-    transition: "background 0.2s ease",
-    minWidth: 100,
-    height: "fit-content"
+    fontSize: "0.9rem",
+  },
+  content: {
+    maxWidth: "1200px",
+    margin: "2rem auto",
+    padding: "0 1rem",
   },
   card: {
-    background: "#ffffff",
-    borderRadius: 12,
-    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-    marginBottom: 30,
-    overflow: "hidden"
+    backgroundColor: "white",
+    borderRadius: "8px",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+    overflow: "hidden",
   },
   cardHeader: {
-    background: "#8dc63f",
-    padding: "20px 24px"
+    padding: "1.5rem",
+    borderBottom: "1px solid #ecf0f1",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   cardTitle: {
-    color: "#ffffff",
     margin: 0,
-    fontSize: 20,
-    fontWeight: "600"
+    fontSize: "1.25rem",
+    color: "#2c3e50",
+  },
+  refreshButton: {
+    padding: "0.5rem 1rem",
+    backgroundColor: "#3498db",
+    color: "white",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+    fontSize: "0.9rem",
+  },
+  loading: {
+    padding: "3rem",
+    textAlign: "center",
+    color: "#7f8c8d",
+  },
+  emptyState: {
+    padding: "3rem",
+    textAlign: "center",
+    color: "#95a5a6",
   },
   tableContainer: {
-    overflowX: "auto"
+    overflowX: "auto",
   },
   table: {
     width: "100%",
     borderCollapse: "collapse",
-    fontSize: 14
+    minWidth: "1000px",
   },
   tableHeader: {
-    background: "#f1f5f9",
-    padding: "12px 16px",
+    padding: "1rem",
     textAlign: "left",
     fontWeight: "600",
-    color: "#374151",
-    borderBottom: "1px solid #e5e7eb",
-    whiteSpace: "nowrap"
+    color: "#2c3e50",
+    fontSize: "0.8rem",
+    borderBottom: "2px solid #ecf0f1",
+    backgroundColor: "#f8f9fa",
+    textTransform: "uppercase",
   },
   tableRow: {
-    borderBottom: "1px solid #e5e7eb",
-    transition: "background 0.2s ease"
+    borderBottom: "1px solid #ecf0f1",
+  },
+  tableRowHover: {
+    backgroundColor: "#f8f9fa",
   },
   tableCell: {
-    padding: "12px 16px",
-    color: "#374151",
-    borderBottom: "1px solid #f1f5f9",
-    whiteSpace: "nowrap"
+    padding: "1rem",
+    fontSize: "0.85rem",
+    color: "#2c3e50",
+    verticalAlign: "middle",
+  },
+  checkbox: {
+    margin: 0,
+  },
+  receivedInfo: {
+    fontSize: "0.75rem",
+    color: "#7f8c8d",
+    marginTop: "0.25rem",
   },
   statusFinalized: {
-    color: "#059669",
-    fontWeight: "500",
-    fontSize: 13,
-    padding: "4px 8px",
-    borderRadius: 4,
-    background: "#f0fdf4"
+    color: "#27ae60",
+    fontWeight: "600",
+    fontSize: "0.8rem",
   },
   statusPending: {
-    color: "#d97706",
-    fontWeight: "500",
-    fontSize: 13,
-    padding: "4px 8px",
-    borderRadius: 4,
-    background: "#fffbeb"
+    color: "#e67e22",
+    fontWeight: "600",
+    fontSize: "0.8rem",
   },
   actionContainer: {
     display: "flex",
     flexDirection: "column",
-    gap: 8,
-    minWidth: 120
+    gap: "0.5rem",
+    minWidth: "120px",
   },
-  actionBtn: {
-    padding: "6px 12px",
-    background: "#059669",
-    color: "#ffffff",
+  button: {
+    padding: "0.5rem 0.75rem",
     border: "none",
-    borderRadius: 4,
-    fontSize: 12,
-    fontWeight: "500",
+    borderRadius: "4px",
     cursor: "pointer",
-    transition: "background 0.2s ease"
-  },
-  finalizeBtn: {
-    padding: "6px 12px",
-    background: "#1e40af",
-    color: "#ffffff",
-    border: "none",
-    borderRadius: 4,
-    fontSize: 12,
+    fontSize: "0.8rem",
     fontWeight: "500",
-    cursor: "pointer",
-    transition: "background 0.2s ease"
   },
-  qrBtn: {
-    padding: "6px 12px",
-    background: "#7c3aed",
-    color: "#ffffff",
-    border: "none",
-    borderRadius: 4,
-    fontSize: 12,
-    fontWeight: "500",
-    cursor: "pointer",
-    transition: "background 0.2s ease"
+  primaryButton: {
+    backgroundColor: "#3498db",
+    color: "white",
   },
-  loading: {
-    padding: 40,
-    textAlign: "center",
-    color: "#64748b",
-    fontSize: 16
+  successButton: {
+    backgroundColor: "#27ae60",
+    color: "white",
   },
-  emptyState: {
-    padding: 40,
-    textAlign: "center",
-    color: "#64748b",
-    fontSize: 16
+  infoButton: {
+    backgroundColor: "#95a5a6",
+    color: "white",
   },
-  popup: {
+  disabledButton: {
+    backgroundColor: "#bdc3c7",
+    color: "#7f8c8d",
+    cursor: "not-allowed",
+  },
+  modalOverlay: {
     position: "fixed",
     top: 0,
     left: 0,
-    width: "100%",
-    height: "100%",
-    background: "rgba(0, 0, 0, 0.6)",
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    zIndex: 1000
+    zIndex: 1000,
+    padding: "1rem",
   },
-  popupInner: {
-    background: "#ffffff",
-    borderRadius: 12,
-    boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-    width: "90%",
-    maxWidth: 600,
+  modal: {
+    backgroundColor: "white",
+    borderRadius: "8px",
+    boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+    width: "100%",
+    maxWidth: "600px",
     maxHeight: "90vh",
-    overflow: "auto"
+    overflow: "auto",
   },
-  popupHeader: {
-    background: "#8dc63f",
-    padding: "20px 24px",
+  modalHeader: {
+    padding: "1.5rem",
+    borderBottom: "1px solid #ecf0f1",
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "center"
+    alignItems: "center",
   },
-  popupTitle: {
-    color: "#ffffff",
+  modalTitle: {
     margin: 0,
-    fontSize: 18,
-    fontWeight: "600"
+    fontSize: "1.25rem",
+    color: "#2c3e50",
   },
-  closeBtn: {
+  closeButton: {
     background: "none",
     border: "none",
-    color: "#ffffff",
-    fontSize: 24,
+    fontSize: "1.5rem",
     cursor: "pointer",
+    color: "#7f8c8d",
     padding: 0,
-    width: 30,
-    height: 30,
-    borderRadius: "50%",
+    width: "30px",
+    height: "30px",
     display: "flex",
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   form: {
-    padding: 24
+    padding: "1.5rem",
   },
   formGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-    gap: 20,
-    marginBottom: 24
+    gridTemplateColumns: "1fr 1fr",
+    gap: "1rem",
+    marginBottom: "1.5rem",
   },
-  inputGroup: {
+  formGroup: {
     display: "flex",
-    flexDirection: "column"
+    flexDirection: "column",
   },
   label: {
-    marginBottom: 6,
-    color: "#374151",
-    fontSize: 14,
-    fontWeight: "500"
+    marginBottom: "0.5rem",
+    fontWeight: "600",
+    color: "#2c3e50",
+    fontSize: "0.9rem",
   },
   input: {
-    padding: "10px 12px",
-    border: "1px solid #d1d5db",
-    borderRadius: 6,
-    fontSize: 14,
-    backgroundColor: "#ffffff",
-    transition: "all 0.2s ease",
-    width: "100%",
-    boxSizing: "border-box"
+    padding: "0.75rem",
+    border: "1px solid #bdc3c7",
+    borderRadius: "4px",
+    fontSize: "0.9rem",
   },
   formActions: {
     display: "flex",
-    gap: 12,
-    justifyContent: "flex-end"
+    gap: "1rem",
+    justifyContent: "flex-end",
   },
-  saveBtn: {
-    background: "#1e40af",
-    color: "#ffffff",
-    border: "none",
-    padding: "12px 24px",
-    borderRadius: 6,
-    fontSize: 14,
-    fontWeight: "600",
+  cancelButton: {
+    padding: "0.75rem 1.5rem",
+    backgroundColor: "transparent",
+    border: "1px solid #bdc3c7",
+    borderRadius: "4px",
     cursor: "pointer",
-    transition: "background 0.2s ease",
-    minWidth: 120
+    fontWeight: "500",
+    color: "#7f8c8d",
   },
-  cancelBtn: {
-    background: "#6b7280",
-    color: "#ffffff",
+  submitButton: {
+    padding: "0.75rem 1.5rem",
+    backgroundColor: "#3498db",
+    color: "white",
     border: "none",
-    padding: "12px 24px",
-    borderRadius: 6,
-    fontSize: 14,
-    fontWeight: "600",
+    borderRadius: "4px",
     cursor: "pointer",
-    transition: "background 0.2s ease",
-    minWidth: 100
-  }
+    fontWeight: "500",
+  },
 };

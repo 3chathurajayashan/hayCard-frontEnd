@@ -411,8 +411,8 @@ export default function FactoryDashboard() {
                     <td style={styles.tableCell}>{s.sampleInDate}</td>
                     <td style={styles.tableCell}>{s.sampleInTime}</td>
                     <td style={styles.tableCell}>{s.gatePassNo}</td>
-                    <td style={styles.tableCell}>{s.sampleReceivedDate}</td>
-                    <td style={styles.tableCell}>{s.sampleReceivedTime}</td>
+                    <td style={styles.tableCell}>{s.receivedDate}</td>
+                    <td style={styles.tableCell}>{s.receivedTime}</td>
                     <td style={styles.tableCell}>{s.sampleRoute}</td>
                     <td style={styles.tableCell}>{s.testMethod}</td>
                     <td style={styles.tableCell}>

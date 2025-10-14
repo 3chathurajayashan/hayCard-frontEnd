@@ -57,7 +57,7 @@ function Signin() {
       setTimeout(() => {
         if (userRole === "factory") navigate("/addDashboard");
         else if (userRole === "tester") navigate("/tester");
-        else if (userRole === "admin") navigate("/admin");
+        else if (userRole === "labadmin") navigate("/editDashboard");
         else navigate("/dashboard");
       }, 1000);
     } catch (err) {

@@ -102,11 +102,26 @@ export default function FactoryDashboard() {
     }
   };
 
+  const handleLogout = () => {
+    if (window.confirm("Are you sure you want to logout?")) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.href = "/";
+    }
+  };
+
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <h2 style={styles.title}>Hay Carb Factory Dashboard</h2>
-        <p style={styles.subtitle}>Welcome, {user?.name || "Factory User"}</p>
+        <div style={styles.headerContent}>
+          <div style={styles.headerText}>
+            <h2 style={styles.title}>Hay Carb Factory Dashboard</h2>
+            <p style={styles.subtitle}>Welcome, {user?.name || "Factory User"}</p>
+          </div>
+          <button style={styles.logoutButton} onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
       </div>
 
       {/* Create New Sample */}
@@ -443,8 +458,17 @@ const styles = {
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
   },
   header: {
-    textAlign: "center",
     marginBottom: 30
+  },
+  headerContent: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: 20
+  },
+  headerText: {
+    flex: 1
   },
   title: { 
     fontSize: 32, 
@@ -456,6 +480,19 @@ const styles = {
     color: "#64748b",
     fontSize: 16,
     margin: 0
+  },
+  logoutButton: {
+    background: "#dc2626",
+    color: "#ffffff",
+    border: "none",
+    padding: "10px 20px",
+    borderRadius: 6,
+    fontSize: 14,
+    fontWeight: "600",
+    cursor: "pointer",
+    transition: "background 0.2s ease",
+    minWidth: 100,
+    height: "fit-content"
   },
   card: {
     background: "#ffffff",

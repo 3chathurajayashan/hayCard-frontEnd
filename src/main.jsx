@@ -7,7 +7,7 @@ import Signin from './Components/Logins/Signin.jsx';
 import Dashboard from './Components/DashBoard/Dashboard.jsx';
 import AddDashboard from './Components/AddSampleDashboard/AddDashboard.jsx'
 import EditSample from './Components/EditSampleDashboard/EditSample.jsx'
-
+import PreSign from './Components/BeforSign/PreSign.jsx'
 
 const router = createBrowserRouter([
 
@@ -30,6 +30,10 @@ const router = createBrowserRouter([
    {
     path:"/editDashboard",
     element: <EditSample />,
+  },
+   {
+    path:"/preSign",
+    element: <PreSign />,
   },
 ]);
 

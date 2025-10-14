@@ -27,7 +27,7 @@ function Home() {
             <Link to="/about" style={styles.navLink}>About</Link>
             <Link to="/services" style={styles.navLink}>Services</Link>
             <Link to="/contact" style={styles.navLink}>Contact</Link>
-            <Link to="/sign" style={styles.signInLink}>Sign In</Link>
+            <Link to="/preSign" style={styles.signInLink}>Sign In</Link>
           </nav>
         </div>
       </header>

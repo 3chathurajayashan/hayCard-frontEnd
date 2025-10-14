@@ -115,204 +115,236 @@ export default function FactoryDashboard() {
           <h3 style={styles.cardTitle}>Create New Sample</h3>
         </div>
         <form onSubmit={handleCreateSample} style={styles.form}>
-          <div style={styles.formGrid}>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Request Reference No</label>
-              <input
-                type="text"
-                name="requestRefNo"
-                value={form.requestRefNo}
-                onChange={handleChange}
-                placeholder="Enter Request Ref No"
-                required
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Sample Ref No</label>
-              <input
-                type="text"
-                name="sampleRefNo"
-                value={form.sampleRefNo}
-                onChange={handleChange}
-                placeholder="Enter Sample Ref No"
-                required
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>To</label>
-              <input 
-                type="text" 
-                name="to" 
-                value="Haycarb Colombo Lab" 
-                disabled 
-                style={styles.input} 
-              />
-            </div>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>From</label>
-              <select name="from" value={form.from} onChange={handleChange} required style={styles.input}>
-                <option value="">Select From</option>
-                <option value="HCM">HCM</option>
-                <option value="HCB">HCB</option>
-                <option value="HCM HCB">HCM & HCB</option>
-              </select>
-            </div>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Remarks</label>
-              <input
-                type="text"
-                name="remarks"
-                value={form.remarks}
-                onChange={handleChange}
-                placeholder="Any remarks"
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Sample IN Date</label>
-              <input
-                type="date"
-                name="sampleInDate"
-                value={form.sampleInDate}
-                onChange={handleChange}
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Sample IN Time</label>
-              <input
-                type="time"
-                name="sampleInTime"
-                value={form.sampleInTime}
-                onChange={handleChange}
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Gate Pass No</label>
-              <input
-                type="text"
-                name="gatePassNo"
-                value={form.gatePassNo}
-                onChange={handleChange}
-                placeholder="Enter Gate Pass No"
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Sample Received Date (HO Lab)</label>
-              <input
-                type="date"
-                name="sampleReceivedDate"
-                value={form.sampleReceivedDate}
-                onChange={handleChange}
-                readOnly={user.role === "factory"}
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Sample Received Time (HO Lab)</label>
-              <input
-                type="time"
-                name="sampleReceivedTime"
-                value={form.sampleReceivedTime}
-                onChange={handleChange}
-                readOnly={user.role === "factory"}
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Sample Route</label>
-              <select
-                name="sampleRoute"
-                value={form.sampleRoute}
-                onChange={handleChange}
-                required
-                style={styles.input}
-              >
-                <option value="">Select Route</option>
-                <option value="Direct from Madampe">Direct from Madampe</option>
-                <option value="Direct from Badalgama">Direct from Badalgama</option>
-                <option value="Through Wewalduwa">Through Wewalduwa</option>
-              </select>
-            </div>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Test Method</label>
-              <input
-                type="text"
-                name="testMethod"
-                value={form.testMethod}
-                onChange={handleChange}
-                placeholder="Enter Test Method"
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Results (PPb)</label>
-              <div style={styles.resultsContainer}>
+          <div style={styles.columnsContainer}>
+            {/* Column 1 - Basic Information */}
+            <div style={styles.column}>
+              <h4 style={styles.columnTitle}>Basic Information</h4>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Request Reference No *</label>
                 <input
-                  type="number"
-                  name="As_ppb"
-                  placeholder="As"
-                  value={form.results.As_ppb}
+                  type="text"
+                  name="requestRefNo"
+                  value={form.requestRefNo}
                   onChange={handleChange}
-                  style={styles.resultInput}
+                  placeholder="Enter Request Ref No"
+                  required
+                  style={styles.input}
                 />
+              </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Sample Ref No *</label>
                 <input
-                  type="number"
-                  name="Sb_ppb"
-                  placeholder="Sb"
-                  value={form.results.Sb_ppb}
+                  type="text"
+                  name="sampleRefNo"
+                  value={form.sampleRefNo}
                   onChange={handleChange}
-                  style={styles.resultInput}
+                  placeholder="Enter Sample Ref No"
+                  required
+                  style={styles.input}
                 />
+              </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>To</label>
+                <input 
+                  type="text" 
+                  name="to" 
+                  value="Haycarb Colombo Lab" 
+                  disabled 
+                  style={styles.input} 
+                />
+              </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>From *</label>
+                <select name="from" value={form.from} onChange={handleChange} required style={styles.input}>
+                  <option value="">Select From</option>
+                  <option value="HCM">HCM</option>
+                  <option value="HCB">HCB</option>
+                  <option value="HCM HCB">HCM & HCB</option>
+                </select>
+              </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Remarks</label>
                 <input
-                  type="number"
-                  name="Al_ppb"
-                  placeholder="Al"
-                  value={form.results.Al_ppb}
+                  type="text"
+                  name="remarks"
+                  value={form.remarks}
                   onChange={handleChange}
-                  style={styles.resultInput}
+                  placeholder="Any remarks"
+                  style={styles.input}
                 />
               </div>
             </div>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Analysed By</label>
-              <input
-                type="text"
-                name="analysedBy"
-                value={form.analysedBy}
-                onChange={handleChange}
-                placeholder="Enter Analyst Name"
-                style={styles.input}
-              />
+
+            {/* Column 2 - Sample Timing */}
+            <div style={styles.column}>
+              <h4 style={styles.columnTitle}>Sample Timing</h4>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Sample IN Date</label>
+                <input
+                  type="date"
+                  name="sampleInDate"
+                  value={form.sampleInDate}
+                  onChange={handleChange}
+                  style={styles.input}
+                />
+              </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Sample IN Time</label>
+                <input
+                  type="time"
+                  name="sampleInTime"
+                  value={form.sampleInTime}
+                  onChange={handleChange}
+                  style={styles.input}
+                />
+              </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Gate Pass No</label>
+                <input
+                  type="text"
+                  name="gatePassNo"
+                  value={form.gatePassNo}
+                  onChange={handleChange}
+                  placeholder="Enter Gate Pass No"
+                  style={styles.input}
+                />
+              </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Sample Received Date (HO Lab)</label>
+                <input
+                  type="date"
+                  name="sampleReceivedDate"
+                  value={form.sampleReceivedDate}
+                  onChange={handleChange}
+                  readOnly={user.role === "factory"}
+                  style={styles.input}
+                />
+              </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Sample Received Time (HO Lab)</label>
+                <input
+                  type="time"
+                  name="sampleReceivedTime"
+                  value={form.sampleReceivedTime}
+                  onChange={handleChange}
+                  readOnly={user.role === "factory"}
+                  style={styles.input}
+                />
+              </div>
             </div>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Completion Date</label>
-              <input
-                type="date"
-                name="completedDate"
-                value={form.completedDate}
-                onChange={handleChange}
-                style={styles.input}
-              />
+
+            {/* Column 3 - Analysis Details */}
+            <div style={styles.column}>
+              <h4 style={styles.columnTitle}>Analysis Details</h4>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Sample Route *</label>
+                <select
+                  name="sampleRoute"
+                  value={form.sampleRoute}
+                  onChange={handleChange}
+                  required
+                  style={styles.input}
+                >
+                  <option value="">Select Route</option>
+                  <option value="Direct from Madampe">Direct from Madampe</option>
+                  <option value="Direct from Badalgama">Direct from Badalgama</option>
+                  <option value="Through Wewalduwa">Through Wewalduwa</option>
+                </select>
+              </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Test Method</label>
+                <input
+                  type="text"
+                  name="testMethod"
+                  value={form.testMethod}
+                  onChange={handleChange}
+                  placeholder="Enter Test Method"
+                  style={styles.input}
+                />
+              </div>
+              
+              <div style={styles.resultsSection}>
+                <h5 style={styles.sectionSubtitle}>Results (PPb)</h5>
+                <div style={styles.resultsGrid}>
+                  <div style={styles.inputGroup}>
+                    <label style={styles.label}>As (Arsenic)</label>
+                    <input
+                      type="number"
+                      name="As_ppb"
+                      placeholder="As value"
+                      value={form.results.As_ppb}
+                      onChange={handleChange}
+                      style={styles.input}
+                    />
+                  </div>
+                  <div style={styles.inputGroup}>
+                    <label style={styles.label}>Sb (Antimony)</label>
+                    <input
+                      type="number"
+                      name="Sb_ppb"
+                      placeholder="Sb value"
+                      value={form.results.Sb_ppb}
+                      onChange={handleChange}
+                      style={styles.input}
+                    />
+                  </div>
+                  <div style={styles.inputGroup}>
+                    <label style={styles.label}>Al (Aluminum)</label>
+                    <input
+                      type="number"
+                      name="Al_ppb"
+                      placeholder="Al value"
+                      value={form.results.Al_ppb}
+                      onChange={handleChange}
+                      style={styles.input}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Analysed By</label>
+                <input
+                  type="text"
+                  name="analysedBy"
+                  value={form.analysedBy}
+                  onChange={handleChange}
+                  placeholder="Enter Analyst Name"
+                  style={styles.input}
+                />
+              </div>
             </div>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Completion Time</label>
-              <input
-                type="time"
-                name="completedTime"
-                value={form.completedTime}
-                onChange={handleChange}
-                style={styles.input}
-              />
+
+            {/* Column 4 - Completion */}
+            <div style={styles.column}>
+              <h4 style={styles.columnTitle}>Completion</h4>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Completion Date</label>
+                <input
+                  type="date"
+                  name="completedDate"
+                  value={form.completedDate}
+                  onChange={handleChange}
+                  style={styles.input}
+                />
+              </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Completion Time</label>
+                <input
+                  type="time"
+                  name="completedTime"
+                  value={form.completedTime}
+                  onChange={handleChange}
+                  style={styles.input}
+                />
+              </div>
+              <div style={styles.submitSection}>
+                <button type="submit" style={styles.button} disabled={creating}>
+                  {creating ? "Creating..." : "Create Sample"}
+                </button>
+              </div>
             </div>
           </div>
-          <button type="submit" style={styles.button} disabled={creating}>
-            {creating ? "Creating..." : "Create Sample"}
-          </button>
         </form>
       </div>
 
@@ -445,11 +477,30 @@ const styles = {
   form: {
     padding: 24
   },
-  formGrid: {
+  columnsContainer: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-    gap: 20,
-    marginBottom: 24
+    gap: 30,
+    alignItems: "flex-start"
+  },
+  column: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 16
+  },
+  columnTitle: {
+    margin: "0 0 10px 0",
+    color: "#1e293b",
+    fontSize: 18,
+    fontWeight: "600",
+    paddingBottom: 8,
+    borderBottom: "2px solid #8dc63f"
+  },
+  sectionSubtitle: {
+    margin: "0 0 12px 0",
+    color: "#374151",
+    fontSize: 14,
+    fontWeight: "600"
   },
   inputGroup: {
     display: "flex",
@@ -467,19 +518,21 @@ const styles = {
     borderRadius: 6,
     fontSize: 14,
     backgroundColor: "#ffffff",
-    transition: "all 0.2s ease"
+    transition: "all 0.2s ease",
+    width: "100%",
+    boxSizing: "border-box"
   },
-  resultsContainer: {
+  resultsSection: {
+    margin: "10px 0"
+  },
+  resultsGrid: {
     display: "flex",
-    gap: 8
+    flexDirection: "column",
+    gap: 12
   },
-  resultInput: {
-    flex: 1,
-    padding: "10px 12px",
-    border: "1px solid #d1d5db",
-    borderRadius: 6,
-    fontSize: 14,
-    backgroundColor: "#ffffff"
+  submitSection: {
+    marginTop: "auto",
+    paddingTop: 20
   },
   button: {
     background: "#1e40af",
@@ -491,7 +544,7 @@ const styles = {
     fontWeight: "600",
     cursor: "pointer",
     transition: "background 0.2s ease",
-    minWidth: 140
+    width: "100%"
   },
   tableContainer: {
     overflowX: "auto"

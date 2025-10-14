@@ -371,7 +371,7 @@ const styles = {
     fontFamily: "Arial, sans-serif",
   },
   header: {
-    backgroundColor: "#2c3e50",
+    backgroundColor: " #8dc63f",
     color: "white",
     padding: "1rem 0",
     boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
@@ -391,7 +391,7 @@ const styles = {
   },
   subtitle: {
     margin: "0.25rem 0 0 0",
-    color: "#bdc3c7",
+    color: "#ffffffff",
     fontSize: "0.9rem",
   },
   logoutButton: {

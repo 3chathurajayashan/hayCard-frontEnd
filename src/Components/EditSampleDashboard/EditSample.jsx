@@ -4,7 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import jsPDF from "jspdf";
 import QRCode from "qrcode";
-
+const FRONTEND_URL = "https://hay-card-front-end.vercel.app/";
 export default function LabAdminDashboard() {
   const [samples, setSamples] = useState([]);
   const [selectedSample, setSelectedSample] = useState(null);
@@ -106,9 +106,14 @@ export default function LabAdminDashboard() {
 const BACKEND_URL = "https://hay-card-back-end.vercel.app";
  // use your ngrok URL
 
+const FRONTEND_URL = "https://hay-card-front-end.vercel.app";
+
 const generateQR = async (sample) => {
   try {
-    const url = `${BACKEND_URL}/sample-details?id=${sample._id}`; // link to sample details page
+    // Append sample ID only (public access for QR)
+   // QR points to public route
+const url = `${FRONTEND_URL}/sample-details?id=${sample._id}`; 
+
     const qrDataUrl = await QRCode.toDataURL(url);
 
     const win = window.open();

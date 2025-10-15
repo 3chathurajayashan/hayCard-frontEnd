@@ -640,7 +640,7 @@ for every industry
               Comprehensive Case Studies
             </h2>
             <p style={styles.sectionDescription}>
-              From advanced hydroponics to smart climate control, we provide end-to-end solutions for modern farming
+              From advanced hydroponics to smart climate control, we provide end-to-end solutions for modern Industries
             </p>
           </div>
           
@@ -744,10 +744,10 @@ for every industry
       <section style={styles.ctaSection}>
         <div style={styles.ctaContent}>
           <h2 style={styles.ctaTitle} className="fade-in-up">
-            Ready to Transform Your Farm?
+            Ready to Transform Your Project with HAYCARB?
           </h2>
           <p style={styles.ctaSubtitle} className="fade-in-up">
-            Join thousands of farmers who have revolutionized their operations with HeyCarb
+            Join thousands of investors who have revolutionized their operations with HAYCARB
           </p>
           <div style={styles.ctaButtons} className="fade-in-up">
             <button style={styles.ctaPrimaryBtn} className="btn-primary">
@@ -766,11 +766,11 @@ for every industry
           <div style={styles.footerContent}>
             <div style={styles.footerCol}>
               <div style={styles.footerLogo}>
-                <span style={styles.logoText}>HeyCarb</span>
-                <div style={styles.logoSubtext}>Agriculture Innovation</div>
+                <span style={styles.logoText}>HayCarb</span>
+                <div style={styles.logoSubtext}>Carbon Innovation</div>
               </div>
               <p style={styles.footerDesc}>
-                Leading the agricultural revolution with innovative hydroponic systems and sustainable farming solutions for a better tomorrow.
+                Leading the Carbon revolution with innovative hydroponic systems and sustainable  solutions for a better tomorrow.
               </p>
               <div style={styles.socialLinks}>
                 <a href="#" style={styles.socialLink} className="social-link">
@@ -822,20 +822,20 @@ for every industry
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
                   <circle cx="12" cy="10" r="3"/>
                 </svg>
-                <span>123 Farm Street, Agriculture City, AC 12345</span>
+                <span>Colombo 07/</span>
               </div>
               <div style={styles.contactItem}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8dc63f" strokeWidth="2">
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
                 </svg>
-                <span>+1 (555) 123-4567</span>
+                <span>+94 (555) 123-4567</span>
               </div>
               <div style={styles.contactItem}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8dc63f" strokeWidth="2">
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                   <polyline points="22,6 12,13 2,6"/>
                 </svg>
-                <span>info@heycarb.com</span>
+                <span>info@haycarb.com</span>
               </div>
             </div>
           </div>
@@ -843,7 +843,7 @@ for every industry
         
         <div style={styles.footerBottom}>
           <p style={styles.footerCopyright}>
-            © 2025 HeyCarb. All rights reserved.
+            © 2025 HayCarb. All rights reserved.
           </p>
           <div style={styles.footerBottomLinks}>
             <a href="#" style={styles.footerBottomLink} className="footer-link">Privacy Policy</a>

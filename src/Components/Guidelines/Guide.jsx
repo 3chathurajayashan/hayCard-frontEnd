@@ -1,6 +1,6 @@
  import React, { useState } from 'react';
 import { Search, AlertTriangle, Shield, Droplet, Wind, Eye, Users, Home } from 'lucide-react';
-
+import car from '../../assets/car.jpg'
 const ElementGuidelines = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedElement, setSelectedElement] = useState(null);
@@ -297,13 +297,13 @@ const ElementGuidelines = () => {
                   {selectedElement.videos.map((video, index) => (
                     <a
                       key={index}
-                      href={`https://www.youtube.com/watch?v=${video.id}`}
+                      href="https://youtu.be/N_Z-WxXM2ks?si=jq0ZBMV20J7FsbDU"
                       target="_blank"
                       rel="noopener noreferrer"
                       style={styles.videoCard}
                     >
                       <img 
-                        src={`https://img.youtube.com/vi/${video.id}/mqdefault.jpg`}
+                        src={car}
                         alt={video.title}
                         style={styles.videoThumbnail}
                       />

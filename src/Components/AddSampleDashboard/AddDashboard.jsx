@@ -34,7 +34,7 @@ export default function FactoryDashboard() {
   const fetchSamples = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:5000/samples", {
+      const res = await axios.get("https://hay-card-back-end.vercel.app/samples", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSamples(res.data);
@@ -61,6 +61,7 @@ export default function FactoryDashboard() {
       await axios.post("http://localhost:5000/samples", form, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      
       setForm({
         requestRefNo: "",
         sampleRefNo: "",

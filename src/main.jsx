@@ -8,7 +8,8 @@ import Dashboard from './Components/DashBoard/Dashboard.jsx';
 import AddDashboard from './Components/AddSampleDashboard/AddDashboard.jsx'
 import EditSample from './Components/EditSampleDashboard/EditSample.jsx'
 import PreSign from './Components/BeforSign/PreSign.jsx'
-
+import Guide from './Components/Guidelines/Guide.jsx'
+import SampleDetails from './Components/SampleDetails/SampleDetails.jsx';
 const router = createBrowserRouter([
 
   {
@@ -35,6 +36,15 @@ const router = createBrowserRouter([
     path:"/preSign",
     element: <PreSign />,
   },
+  {
+    path:"/guide",
+    element: <Guide />,
+  },
+  {
+    path:"/sample-details",
+    element: <SampleDetails />,
+  },
+  
 ]);
 
 

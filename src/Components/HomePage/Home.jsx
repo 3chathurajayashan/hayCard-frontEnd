@@ -1,4 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Link } from "react-router-dom";
+
+import i1 from '../../assets/i1.jpg'
+import i2 from '../../assets/i2.jpg'
+import i3 from '../../assets/i3.jpg'
+import i4 from '../../assets/i4.jpg'
+import i6 from '../../assets/i6.jpg'
+import i8 from '../../assets/i8.jpg'
+
+
+
+import c1 from '../../assets/c1.webp'
+import c2 from '../../assets/c2.webp'
+import c3 from '../../assets/c3.webp'
+
+import Hero from '../HeroSection/Hero'
+import Graph from '../Graphs/Graphs'
+import Feedbacks from '../Feedbacks/Feedbacks'
 
 function Home() {
   const [activeSlide, setActiveSlide] = useState(0);
@@ -76,40 +94,50 @@ function Home() {
     {
       title: "Revolutionary Hydroponic Systems",
       subtitle: "Transform your farming with cutting-edge technology and sustainable solutions for the future of agriculture",
-      image: "https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?w=1200&h=800&fit=crop"
+      image: i4
     },
     {
       title: "Sustainable Growth Solutions",
       subtitle: "Maximize yields while minimizing environmental impact with our eco-friendly agricultural innovations",
-      image: "https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=1200&h=800&fit=crop"
+      image: i2
+    },
+    {
+      title: "Shaping lasting Relationships through trust",
+      subtitle: "Maximize yields while minimizing environmental impact with our eco-friendly agricultural innovations",
+      image: i6
+    },
+    {
+      title: "versatile activated carbon solutionsfor every industry",
+      subtitle: "Maximize yields while minimizing environmental impact with our eco-friendly agricultural innovations",
+      image: i8
     },
     {
       title: "Smart Farming Technology",
       subtitle: "Data-driven insights and precision agriculture for optimal plant health and productivity",
-      image: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=1200&h=800&fit=crop"
+      image: i3
     }
   ];
 
   const services = [
     {
-      title: "Hydroponic Systems",
-      description: "Advanced soilless growing technology for maximum yield and efficiency in controlled environments",
-      image: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=400&h=300&fit=crop"
+      title: "Resolving Operational Risks due to Carbon Fine Generation in Activated Carbon for Dechlorination at a Beverage Bottling Plant in Europe",
+      description: "A leading European beverage producer worked with Haycarb to resolve carbon fine generation in Dechlorination filters. Through system audits and optimized backwashing adjustments, Haycarb restored water clarity and ensured stable, efficient chlorine removal.",
+      image:  c1
     },
     {
-      title: "Climate Management",
-      description: "Precision environmental control systems for optimal growing conditions year-round",
-      image: "https://images.unsplash.com/photo-1560493676-04071c5f467b?w=400&h=300&fit=crop"
+      title: "Activated Carbon development for a Powered Air Purifying Respirator",
+      description: "Discover how a respirator manufacturer partnered with Haycarb for expert recommendations and customized carbon samples for OV/AG filters in a Powered Air Purifying Respirator (PAPR) system. To support NIOSH certification, Haycarb supplied optimized samples tested against multiple gases to ensure effective filtration and regulatory compliance.",
+      image:c2
     },
     {
-      title: "Smart Irrigation",
-      description: "Intelligent water management and nutrient delivery for sustainable farming practices",
-      image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=300&fit=crop"
+      title: "Addressing Low Activity of Regenerated Carbon and Fine Particle Distribution Issues at a Gold Mine in Victoria, Australia",
+      description: "Explore how Haycarb addressed critical challenges at a gold mine in Victoria, Australia, where ineffective carbon regeneration and excessive fine carbon were hindering the gold recovery efficiency. Through targeted solutions, we resolved these issues and significantly improved recovery efficiency.",
+      image:  c3
     },
     {
-      title: "Data Analytics",
-      description: "Real-time monitoring and predictive insights for informed agricultural decisions",
-      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop"
+      title: "How Hydroponics Saves Water and Protects the Planet",
+      description: "Blog & News How Hydroponics Saves Water and Protects the Planet raditya Uncategorized September 20, 2025 With…",
+      image:  i1
     }
   ];
 
@@ -391,17 +419,18 @@ function Home() {
       }}>
         <div style={styles.headerContent}>
           <div style={styles.logo} className="slide-in-left">
-            <span style={styles.logoText}>HeyCarb</span>
-            <div style={styles.logoSubtext}>Agriculture Innovation</div>
+            <span style={styles.logoText}>HayCarb</span>
+            <div style={styles.logoSubtext}>Activated carbon solution</div>
           </div>
           <nav style={styles.nav} className="slide-in-right">
             <a href="/" style={styles.navLink} className="nav-link-hover">Home</a>
             <a href="/about" style={styles.navLink} className="nav-link-hover">About</a>
             <a href="/services" style={styles.navLink} className="nav-link-hover">Services</a>
-            <a href="/products" style={styles.navLink} className="nav-link-hover">Products</a>
+            
+            <Link to="/guide"style={styles.navLink} className="nav-link-hover">Guidelines</Link>
             <a href="/contact" style={styles.navLink} className="nav-link-hover">Contact</a>
             <a href="/preSign" style={styles.signInBtn} className="btn-primary">
-              Get Started
+              Sign in
             </a>
           </nav>
         </div>
@@ -454,7 +483,7 @@ function Home() {
           <button 
             style={styles.sliderArrow}
             className="slider-arrow"
-            onClick={() => setActiveSlide((activeSlide - 1 + 3) % 3)}
+            onClick={() => setActiveSlide((activeSlide - 1 + 5) % 5)}
           >
             ←
           </button>
@@ -474,7 +503,7 @@ function Home() {
           <button 
             style={styles.sliderArrow}
             className="slider-arrow"
-            onClick={() => setActiveSlide((activeSlide + 1) % 3)}
+            onClick={() => setActiveSlide((activeSlide + 1) % 5)}
           >
             →
           </button>
@@ -546,7 +575,7 @@ function Home() {
           <div style={styles.aboutLeft} className="slide-in-left">
             <div style={styles.aboutImageWrapper}>
               <img 
-                src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=600&h=700&fit=crop"
+                src={i4}
                 alt="Modern farming"
                 style={styles.aboutImage}
                 className="image-overlay"
@@ -560,10 +589,11 @@ function Home() {
           <div style={styles.aboutRight} className="slide-in-right">
             <div style={styles.sectionLabel}>About HeyCarb</div>
             <h2 style={styles.aboutTitle}>
-              Leading the Future of Agricultural Innovation
+            versatile activated carbon solutions
+for every industry
             </h2>
             <p style={styles.aboutText}>
-              We specialize in revolutionary hydroponic systems and sustainable farming solutions that transform traditional agriculture. Our cutting-edge technology empowers farmers to achieve higher yields while minimizing environmental impact.
+             Our products are tailored to meet the specific requirements of diverse industries, delivering effective results across various applications.
             </p>
             <p style={styles.aboutText}>
               With over 15 years of experience, we've helped thousands of farms transition to modern, efficient, and eco-friendly growing methods. Our commitment to innovation and sustainability drives everything we do.
@@ -573,19 +603,19 @@ function Home() {
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8dc63f" strokeWidth="2.5">
                   <polyline points="20 6 9 17 4 12"/>
                 </svg>
-                <span>Certified organic systems</span>
+                <span>Water</span>
               </div>
               <div style={styles.aboutFeature}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8dc63f" strokeWidth="2.5">
                   <polyline points="20 6 9 17 4 12"/>
                 </svg>
-                <span>Energy-efficient technology</span>
+                <span>Air and Gas</span>
               </div>
               <div style={styles.aboutFeature}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8dc63f" strokeWidth="2.5">
                   <polyline points="20 6 9 17 4 12"/>
                 </svg>
-                <span>Comprehensive training programs</span>
+                <span>Pharmaceutical & Cosmetics</span>
               </div>
               <div style={styles.aboutFeature}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8dc63f" strokeWidth="2.5">
@@ -607,7 +637,7 @@ function Home() {
           <div style={styles.sectionHeader} className="fade-in-up">
             <div style={styles.sectionLabel}>Our Services</div>
             <h2 style={styles.sectionTitle}>
-              Comprehensive Agricultural Solutions
+              Comprehensive Case Studies
             </h2>
             <p style={styles.sectionDescription}>
               From advanced hydroponics to smart climate control, we provide end-to-end solutions for modern farming
@@ -704,56 +734,11 @@ function Home() {
           </div>
         </div>
       </section>
+      <Hero />
+      <Graph />
 
-      {/* Testimonials Section */}
-      <section style={styles.testimonialsSection}>
-        <div style={styles.testimonialsContent}>
-          <div style={styles.sectionHeader} className="fade-in-up">
-            <div style={styles.sectionLabel}>Testimonials</div>
-            <h2 style={styles.sectionTitle}>
-              What Our Clients Say
-            </h2>
-          </div>
-          
-          <div style={styles.testimonialSlider}>
-            {testimonials.map((testimonial, index) => (
-              <div
-                key={index}
-                style={{
-                  ...styles.testimonialCard,
-                  opacity: index === activeTestimonial ? 1 : 0.3,
-                  transform: `scale(${index === activeTestimonial ? 1 : 0.9})`,
-                  pointerEvents: index === activeTestimonial ? 'auto' : 'none'
-                }}
-                className="testimonial-slide"
-              >
-                <div style={styles.quoteIcon}>"</div>
-                <p style={styles.testimonialText}>{testimonial.text}</p>
-                <div style={styles.testimonialAuthor}>
-                  <div style={styles.authorAvatar}>{testimonial.avatar}</div>
-                  <div>
-                    <div style={styles.authorName}>{testimonial.name}</div>
-                    <div style={styles.authorRole}>{testimonial.role}</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          
-          <div style={styles.testimonialDots}>
-            {testimonials.map((_, index) => (
-              <button
-                key={index}
-                style={{
-                  ...styles.testimonialDot,
-                  backgroundColor: index === activeTestimonial ? '#8dc63f' : '#ddd'
-                }}
-                onClick={() => setActiveTestimonial(index)}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
+       
+          <Feedbacks />
 
       {/* CTA Section */}
       <section style={styles.ctaSection}>
@@ -810,6 +795,7 @@ function Home() {
                 </a>
               </div>
             </div>
+           
             
             <div style={styles.footerCol}>
               <h4 style={styles.footerTitle}>Quick Links</h4>

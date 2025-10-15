@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import jsPDF from "jspdf";
+import QRCode from "qrcode";
 
 export default function LabAdminDashboard() {
   const [samples, setSamples] = useState([]);
@@ -99,18 +101,89 @@ export default function LabAdminDashboard() {
     }
   };
 
-  const generateQR = async (id) => {
-    try {
-      const res = await axios.get(`http://localhost:5000/samples/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const updatedSample = res.data;
-      window.open(updatedSample.qrCodeDataUrl, "_blank");
-    } catch (err) {
-      console.error("QR generation error:", err);
-      toast.error("Failed to generate QR code");
-    }
-  };
+ 
+
+const BACKEND_URL = "https://hay-card-back-end.vercel.app";
+ // use your ngrok URL
+
+const generateQR = async (sample) => {
+  try {
+    const url = `${BACKEND_URL}/sample-details?id=${sample._id}`; // link to sample details page
+    const qrDataUrl = await QRCode.toDataURL(url);
+
+    const win = window.open();
+    win.document.write(`<h3>Scan this QR to view sample details:</h3>`);
+    win.document.write(`<img src="${qrDataUrl}" alt="QR Code" />`);
+    win.document.write(`<p>Or open this link: <a href="${url}">${url}</a></p>`);
+  } catch (err) {
+    console.error("QR generation error:", err);
+  }
+};
+;
+
+  const generatePDF = (sample) => {
+  const doc = new jsPDF();
+  let y = 20; // starting y position
+
+  doc.setFontSize(16);
+  doc.text(`Sample Report - ${sample.sampleId}`, 20, y);
+  y += 10;
+
+  doc.setFontSize(12);
+  doc.text(`Request Ref: ${sample.requestRefNo}`, 20, y);
+  y += 10;
+  doc.text(`Sample Ref: ${sample.sampleRefNo}`, 20, y);
+  y += 10;
+  doc.text(`From: ${Array.isArray(sample.from) ? sample.from.join(", ") : sample.from}`, 20, y);
+  y += 10;
+  doc.text(`To: ${sample.to}`, 20, y);
+  y += 10;
+  doc.text(`Route: ${sample.sampleRoute}`, 20, y);
+  y += 10;
+  doc.text(`Test Method: ${sample.testMethod}`, 20, y);
+  y += 10;
+  doc.text(`Analysed By: ${sample.analysedBy || "-"}`, 20, y);
+  y += 10;
+  doc.text(`Completed Date: ${sample.completedDate || "-"}`, 20, y);
+  y += 10;
+  doc.text(`Completed Time: ${sample.completedTime || "-"}`, 20, y);
+  y += 10;
+  doc.text(`Created At: ${new Date(sample.createdAt).toLocaleString()}`, 20, y);
+  y += 10;
+
+  // Received info
+  if (sample.received) {
+    doc.text(`Received: Yes`, 20, y);
+    y += 10;
+    doc.text(`Received Date: ${sample.receivedDate || "-"}`, 20, y);
+    y += 10;
+    doc.text(`Received Time: ${sample.receivedTime || "-"}`, 20, y);
+    y += 10;
+  } else {
+    doc.text(`Received: No`, 20, y);
+    y += 10;
+  }
+
+  // Results section
+  doc.text("Results:", 20, y);
+  y += 10;
+  if (sample.results && sample.results.length > 0) {
+    sample.results.forEach((r, i) => {
+      doc.text(
+        `Row ${i + 1} - As: ${r.As_ppb || "-"}, Sb: ${r.Sb_ppb || "-"}, Al: ${r.Al_ppb || "-"}`,
+        25,
+        y
+      );
+      y += 10;
+    });
+  } else {
+    doc.text("No results entered.", 25, y);
+    y += 10;
+  }
+
+  doc.save(`Sample_${sample.sampleId}.pdf`);
+};
+
 
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to logout?")) {
@@ -139,7 +212,7 @@ export default function LabAdminDashboard() {
   return (
     <div style={styles.container}>
       <ToastContainer position="top-right" autoClose={3000} />
-      
+
       {/* Header */}
       <div style={styles.header}>
         <div style={styles.headerContent}>
@@ -158,11 +231,7 @@ export default function LabAdminDashboard() {
         <div style={styles.card}>
           <div style={styles.cardHeader}>
             <h2 style={styles.cardTitle}>Samples</h2>
-            <button 
-              style={styles.refreshButton}
-              onClick={fetchSamples}
-              disabled={loading}
-            >
+            <button style={styles.refreshButton} onClick={fetchSamples} disabled={loading}>
               {loading ? "Refreshing..." : "Refresh"}
             </button>
           </div>
@@ -205,7 +274,7 @@ export default function LabAdminDashboard() {
                       <td style={styles.tableCell}>{sample.testMethod}</td>
                       <td style={styles.tableCell}>
                         {sample.results
-                          ? sample.results.map((r, i) => `Row ${i+1}: As:${r.As_ppb || "-"}, Sb:${r.Sb_ppb || "-"}, Al:${r.Al_ppb || "-"}`).join(" | ")
+                          ? sample.results.map((r, i) => `Row ${i + 1}: As:${r.As_ppb || "-"}, Sb:${r.Sb_ppb || "-"}, Al:${r.Al_ppb || "-"}`).join(" | ")
                           : "Not Entered"}
                       </td>
                       <td style={styles.tableCell}>{sample.analysedBy || "-"}</td>
@@ -231,38 +300,47 @@ export default function LabAdminDashboard() {
                       </td>
                       <td style={styles.tableCell}>
                         <div style={styles.actionContainer}>
-                          <button 
+                          <button
                             style={{
                               ...styles.button,
                               ...styles.primaryButton,
                               ...(sample.isFinalized && styles.disabledButton)
-                            }} 
+                            }}
                             onClick={() => handleAddResults(sample)}
                             disabled={sample.isFinalized}
                           >
                             Add Results
                           </button>
-                          <button 
+                          <button
                             style={{
                               ...styles.button,
                               ...styles.successButton,
                               ...((sample.isFinalized || !sample.results) && styles.disabledButton)
-                            }} 
+                            }}
                             onClick={() => finalizeSample(sample._id)}
                             disabled={sample.isFinalized || !sample.results}
                           >
                             Finalize
                           </button>
-                          <button 
+                          <button
                             style={{
                               ...styles.button,
                               ...styles.infoButton,
                               ...(!sample.isFinalized && styles.disabledButton)
-                            }} 
-                            onClick={() => generateQR(sample._id)}
+                            }}
+                            onClick={() => generateQR(sample)}
                             disabled={!sample.isFinalized}
                           >
                             QR Code
+                          </button>
+                          <button
+                            style={{
+                              ...styles.button,
+                              ...styles.primaryButton
+                            }}
+                            onClick={() => generatePDF(sample)}
+                          >
+                            PDF
                           </button>
                         </div>
                       </td>
@@ -283,8 +361,8 @@ export default function LabAdminDashboard() {
               <h3 style={styles.modalTitle}>
                 {selectedSample?.results ? "Edit Results" : "Add Results"}
               </h3>
-              <button 
-                style={styles.closeButton} 
+              <button
+                style={styles.closeButton}
                 onClick={() => setShowForm(false)}
               >
                 ×
@@ -361,8 +439,8 @@ export default function LabAdminDashboard() {
                 </div>
               </div>
               <div style={styles.formActions}>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   style={styles.cancelButton}
                   onClick={() => setShowForm(false)}
                 >
@@ -381,7 +459,7 @@ export default function LabAdminDashboard() {
 }
 
 // styles remain exactly same as your previous file
- 
+
 const styles = {
   container: {
     minHeight: "100vh",

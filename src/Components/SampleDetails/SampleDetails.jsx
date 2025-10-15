@@ -40,64 +40,133 @@ export default function SampleDetails() {
     fetchSample();
   }, [id]);
 
-  if (loading) return <p>Loading sample details...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
-  if (!sample) return <p>Sample not found.</p>;
+  if (loading) return (
+    <div className="loading-state">
+      <div className="loading-spinner"></div>
+      <p>Loading sample details...</p>
+    </div>
+  );
+  
+  if (error) return (
+    <div className="error-state">
+      <p>{error}</p>
+    </div>
+  );
+  
+  if (!sample) return (
+    <div className="not-found-state">
+      <p>Sample not found.</p>
+    </div>
+  );
 
   const formatDate = (dateStr) => (dateStr ? new Date(dateStr).toLocaleString() : "-");
 
   return (
-    <div style={{ padding: "2rem", fontFamily: "Arial, sans-serif" }}>
-      <h2>Sample Details - {sample.sampleRefNo || "-"}</h2>
-      <p><strong>Request Ref:</strong> {sample.requestRefNo || "-"}</p>
-      <p><strong>Sample Ref:</strong> {sample.sampleRefNo || "-"}</p>
-      <p><strong>From:</strong> {Array.isArray(sample.from) ? sample.from.join(", ") : sample.from || "-"}</p>
-      <p><strong>To:</strong> {sample.to || "-"}</p>
-      <p><strong>Route:</strong> {sample.sampleRoute || "-"}</p>
-      <p><strong>Test Method:</strong> {sample.testMethod || "-"}</p>
-      <p><strong>Analysed By:</strong> {sample.analysedBy || "-"}</p>
-      <p><strong>Completed Date:</strong> {sample.completedDate || "-"}</p>
-      <p><strong>Completed Time:</strong> {sample.completedTime || "-"}</p>
-      <p><strong>Created At:</strong> {formatDate(sample.createdAt)}</p>
-      <p><strong>Received:</strong> {sample.received ? "Yes" : "No"}</p>
-      {sample.received && (
-        <p>
-          <strong>Received Date & Time:</strong> {sample.receivedDate || "-"} {sample.receivedTime || "-"}
-        </p>
-      )}
+    <div className="sample-details-container">
+      <div className="sample-details-card">
+        <div className="sample-header">
+          <h2>Sample Details</h2>
+          <div className="sample-ref-badge">
+            {sample.sampleRefNo || "-"}
+          </div>
+        </div>
+        
+        <div className="details-grid">
+          <div className="detail-item">
+            <strong>Request Ref</strong>
+            <p>{sample.requestRefNo || "-"}</p>
+          </div>
+          
+          <div className="detail-item">
+            <strong>Sample Ref</strong>
+            <p>{sample.sampleRefNo || "-"}</p>
+          </div>
+          
+          <div className="detail-item">
+            <strong>From</strong>
+            <p>{Array.isArray(sample.from) ? sample.from.join(", ") : sample.from || "-"}</p>
+          </div>
+          
+          <div className="detail-item">
+            <strong>To</strong>
+            <p>{sample.to || "-"}</p>
+          </div>
+          
+          <div className="detail-item">
+            <strong>Route</strong>
+            <p>{sample.sampleRoute || "-"}</p>
+          </div>
+          
+          <div className="detail-item">
+            <strong>Test Method</strong>
+            <p>{sample.testMethod || "-"}</p>
+          </div>
+          
+          <div className="detail-item">
+            <strong>Analysed By</strong>
+            <p>{sample.analysedBy || "-"}</p>
+          </div>
+          
+          <div className="detail-item">
+            <strong>Completed Date</strong>
+            <p>{sample.completedDate || "-"}</p>
+          </div>
+          
+          <div className="detail-item">
+            <strong>Completed Time</strong>
+            <p>{sample.completedTime || "-"}</p>
+          </div>
+          
+          <div className="detail-item">
+            <strong>Created At</strong>
+            <p>{formatDate(sample.createdAt)}</p>
+          </div>
+          
+          <div className="detail-item">
+            <strong>Received</strong>
+            <p>{sample.received ? "Yes" : "No"}</p>
+          </div>
+          
+          {sample.received && (
+            <div className="detail-item">
+              <strong>Received Date & Time</strong>
+              <p>{sample.receivedDate || "-"} {sample.receivedTime || "-"}</p>
+            </div>
+          )}
+        </div>
 
-      <div style={{ marginTop: "1.5rem" }}>
-        <h3>Results:</h3>
-        {sample.results && sample.results.length > 0 ? (
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr>
-                <th style={styles.th}>#</th>
-                <th style={styles.th}>As (ppb)</th>
-                <th style={styles.th}>Sb (ppb)</th>
-                <th style={styles.th}>Al (ppb)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sample.results.map((r, i) => (
-                <tr key={i}>
-                  <td style={styles.td}>{i + 1}</td>
-                  <td style={styles.td}>{r.As_ppb ?? "-"}</td>
-                  <td style={styles.td}>{r.Sb_ppb ?? "-"}</td>
-                  <td style={styles.td}>{r.Al_ppb ?? "-"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p>No results entered.</p>
-        )}
+        <div className="results-section">
+          <h3>Results</h3>
+          {sample.results && sample.results.length > 0 ? (
+            <div className="results-table-container">
+              <table className="results-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>As (ppb)</th>
+                    <th>Sb (ppb)</th>
+                    <th>Al (ppb)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sample.results.map((r, i) => (
+                    <tr key={i}>
+                      <td>{i + 1}</td>
+                      <td>{r.As_ppb ?? "-"}</td>
+                      <td>{r.Sb_ppb ?? "-"}</td>
+                      <td>{r.Al_ppb ?? "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="no-results">
+              <p>No results entered.</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
 }
-
-const styles = {
-  th: { border: "1px solid #ccc", padding: "8px", backgroundColor: "#f0f0f0", textAlign: "center" },
-  td: { border: "1px solid #ccc", padding: "8px", textAlign: "center" },
-};

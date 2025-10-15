@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function LabAdminDashboard() {
   const [samples, setSamples] = useState([]);
@@ -7,9 +9,7 @@ export default function LabAdminDashboard() {
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
-    As_ppb: "",
-    Sb_ppb: "",
-    Al_ppb: "",
+    results: [{ As_ppb: "", Sb_ppb: "", Al_ppb: "" }],
     analysedBy: "",
     completedDate: "",
     completedTime: "",
@@ -31,6 +31,7 @@ export default function LabAdminDashboard() {
       setSamples(res.data);
     } catch (err) {
       console.error("Error fetching samples:", err);
+      toast.error("Failed to fetch samples");
     } finally {
       setLoading(false);
     }
@@ -39,14 +40,24 @@ export default function LabAdminDashboard() {
   const handleAddResults = (sample) => {
     setSelectedSample(sample);
     setForm({
-      As_ppb: sample.results?.As_ppb || "",
-      Sb_ppb: sample.results?.Sb_ppb || "",
-      Al_ppb: sample.results?.Al_ppb || "",
+      results: sample.results?.length
+        ? sample.results
+        : [{ As_ppb: "", Sb_ppb: "", Al_ppb: "" }],
       analysedBy: sample.analysedBy || "",
       completedDate: sample.completedDate || "",
       completedTime: sample.completedTime || "",
     });
     setShowForm(true);
+  };
+
+  const handleResultChange = (index, field, value) => {
+    const newResults = [...form.results];
+    newResults[index][field] = value;
+    setForm({ ...form, results: newResults });
+  };
+
+  const addMoreResultRow = () => {
+    setForm({ ...form, results: [...form.results, { As_ppb: "", Sb_ppb: "", Al_ppb: "" }] });
   };
 
   const submitResults = async (e) => {
@@ -55,39 +66,36 @@ export default function LabAdminDashboard() {
       await axios.put(
         `http://localhost:5000/samples/${selectedSample._id}`,
         {
-          results: {
-            As_ppb: form.As_ppb,
-            Sb_ppb: form.Sb_ppb,
-            Al_ppb: form.Al_ppb,
-          },
+          results: form.results,
           analysedBy: form.analysedBy,
           completedDate: form.completedDate,
           completedTime: form.completedTime,
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      alert("Results added successfully!");
+      toast.success("Results saved successfully!");
       setShowForm(false);
       fetchSamples();
     } catch (err) {
       console.error("Error adding results:", err);
-      alert("Failed to add results");
+      toast.error("Failed to save results");
     }
   };
 
   const finalizeSample = async (id) => {
-    if (!window.confirm("Are you sure you want to finalize this sample? This action cannot be undone.")) return;
-    try {
-      await axios.put(
-        `http://localhost:5000/samples/${id}`,
-        { isFinalized: true },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      alert("Sample finalized successfully!");
-      fetchSamples();
-    } catch (err) {
-      console.error("Error finalizing sample:", err);
-      alert("Failed to finalize sample");
+    if (window.confirm("Are you sure you want to finalize this sample? This action cannot be undone.")) {
+      try {
+        await axios.put(
+          `http://localhost:5000/samples/${id}`,
+          { isFinalized: true },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        toast.success("Sample finalized successfully!");
+        fetchSamples();
+      } catch (err) {
+        console.error("Error finalizing sample:", err);
+        toast.error("Failed to finalize sample");
+      }
     }
   };
 
@@ -100,7 +108,7 @@ export default function LabAdminDashboard() {
       window.open(updatedSample.qrCodeDataUrl, "_blank");
     } catch (err) {
       console.error("QR generation error:", err);
-      alert("Failed to generate QR code");
+      toast.error("Failed to generate QR code");
     }
   };
 
@@ -108,7 +116,8 @@ export default function LabAdminDashboard() {
     if (window.confirm("Are you sure you want to logout?")) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-      window.location.href = "/";
+      toast.success("Logout successful!");
+      setTimeout(() => (window.location.href = "/"), 1000);
     }
   };
 
@@ -119,15 +128,18 @@ export default function LabAdminDashboard() {
         { received: checked },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+      toast.success(`Sample marked as ${checked ? "received" : "not received"}`);
       fetchSamples();
     } catch (err) {
       console.error("Error updating received status:", err);
-      alert("Failed to update received status");
+      toast.error("Failed to update received status");
     }
   };
 
   return (
     <div style={styles.container}>
+      <ToastContainer position="top-right" autoClose={3000} />
+      
       {/* Header */}
       <div style={styles.header}>
         <div style={styles.headerContent}>
@@ -193,13 +205,11 @@ export default function LabAdminDashboard() {
                       <td style={styles.tableCell}>{sample.testMethod}</td>
                       <td style={styles.tableCell}>
                         {sample.results
-                          ? `As: ${sample.results.As_ppb || "-"}, Sb: ${sample.results.Sb_ppb || "-"}, Al: ${sample.results.Al_ppb || "-"}`
+                          ? sample.results.map((r, i) => `Row ${i+1}: As:${r.As_ppb || "-"}, Sb:${r.Sb_ppb || "-"}, Al:${r.Al_ppb || "-"}`).join(" | ")
                           : "Not Entered"}
                       </td>
                       <td style={styles.tableCell}>{sample.analysedBy || "-"}</td>
-                      <td style={styles.tableCell}>
-                        {new Date(sample.createdAt).toLocaleDateString()}
-                      </td>
+                      <td style={styles.tableCell}>{new Date(sample.createdAt).toLocaleDateString()}</td>
                       <td style={styles.tableCell}>
                         <input
                           type="checkbox"
@@ -282,38 +292,44 @@ export default function LabAdminDashboard() {
             </div>
             <form onSubmit={submitResults} style={styles.form}>
               <div style={styles.formGrid}>
-                <div style={styles.formGroup}>
-                  <label style={styles.label}>As (ppb)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={form.As_ppb}
-                    onChange={(e) => setForm({ ...form, As_ppb: e.target.value })}
-                    style={styles.input}
-                    placeholder="Enter As value"
-                  />
-                </div>
-                <div style={styles.formGroup}>
-                  <label style={styles.label}>Sb (ppb)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={form.Sb_ppb}
-                    onChange={(e) => setForm({ ...form, Sb_ppb: e.target.value })}
-                    style={styles.input}
-                    placeholder="Enter Sb value"
-                  />
-                </div>
-                <div style={styles.formGroup}>
-                  <label style={styles.label}>Al (ppb)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={form.Al_ppb}
-                    onChange={(e) => setForm({ ...form, Al_ppb: e.target.value })}
-                    style={styles.input}
-                    placeholder="Enter Al value"
-                  />
+                {form.results.map((r, idx) => (
+                  <React.Fragment key={idx}>
+                    <div style={styles.formGroup}>
+                      <label style={styles.label}>As (ppb) - Row {idx + 1}</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={r.As_ppb}
+                        onChange={(e) => handleResultChange(idx, "As_ppb", e.target.value)}
+                        style={styles.input}
+                      />
+                    </div>
+                    <div style={styles.formGroup}>
+                      <label style={styles.label}>Sb (ppb) - Row {idx + 1}</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={r.Sb_ppb}
+                        onChange={(e) => handleResultChange(idx, "Sb_ppb", e.target.value)}
+                        style={styles.input}
+                      />
+                    </div>
+                    <div style={styles.formGroup}>
+                      <label style={styles.label}>Al (ppb) - Row {idx + 1}</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={r.Al_ppb}
+                        onChange={(e) => handleResultChange(idx, "Al_ppb", e.target.value)}
+                        style={styles.input}
+                      />
+                    </div>
+                  </React.Fragment>
+                ))}
+                <div style={{ gridColumn: "1 / -1" }}>
+                  <button type="button" style={{ ...styles.submitButton, marginBottom: "1rem" }} onClick={addMoreResultRow}>
+                    + Add More Result
+                  </button>
                 </div>
                 <div style={styles.formGroup}>
                   <label style={styles.label}>Analysed By</label>
@@ -364,6 +380,8 @@ export default function LabAdminDashboard() {
   );
 }
 
+// styles remain exactly same as your previous file
+ 
 const styles = {
   container: {
     minHeight: "100vh",

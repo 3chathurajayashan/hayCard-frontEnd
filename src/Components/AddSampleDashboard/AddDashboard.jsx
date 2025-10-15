@@ -411,12 +411,24 @@ export default function FactoryDashboard() {
                     <td style={styles.tableCell}>{s.sampleInDate}</td>
                     <td style={styles.tableCell}>{s.sampleInTime}</td>
                     <td style={styles.tableCell}>{s.gatePassNo}</td>
-                    <td style={styles.tableCell}>{s.receivedDate}</td>
-                    <td style={styles.tableCell}>{s.receivedTime}</td>
+                    <td style={styles.tableCell}>{s.sampleReceivedDate || s.receivedDate}</td>
+                    <td style={styles.tableCell}>{s.sampleReceivedTime || s.receivedTime}</td>
                     <td style={styles.tableCell}>{s.sampleRoute}</td>
                     <td style={styles.tableCell}>{s.testMethod}</td>
                     <td style={styles.tableCell}>
-                      As: {s.results?.As_ppb || "-"}, Sb: {s.results?.Sb_ppb || "-"}, Al: {s.results?.Al_ppb || "-"}
+                      {s.results ? (
+                        Array.isArray(s.results) ? (
+                          s.results.map((r, i) => (
+                            <div key={i}>
+                              Row {i + 1}: As: {r.As_ppb || "-"}, Sb: {r.Sb_ppb || "-"}, Al: {r.Al_ppb || "-"}
+                            </div>
+                          ))
+                        ) : (
+                          <>As: {s.results.As_ppb || "-"}, Sb: {s.results.Sb_ppb || "-"}, Al: {s.results.Al_ppb || "-"}</>
+                        )
+                      ) : (
+                        "-"
+                      )}
                     </td>
                     <td style={styles.tableCell}>{s.analysedBy}</td>
                     <td style={styles.tableCell}>{s.completedDate}</td>
@@ -457,210 +469,37 @@ const styles = {
     minHeight: "100vh",
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
   },
-  header: {
-    marginBottom: 30
-  },
-  headerContent: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    flexWrap: "wrap",
-    gap: 20
-  },
-  headerText: {
-    flex: 1
-  },
-  title: { 
-    fontSize: 32, 
-    marginBottom: 8, 
-    color: "#1e293b",
-    fontWeight: "600"
-  },
-  subtitle: { 
-    color: "#64748b",
-    fontSize: 16,
-    margin: 0
-  },
-  logoutButton: {
-    background: "#dc2626",
-    color: "#ffffff",
-    border: "none",
-    padding: "10px 20px",
-    borderRadius: 6,
-    fontSize: 14,
-    fontWeight: "600",
-    cursor: "pointer",
-    transition: "background 0.2s ease",
-    minWidth: 100,
-    height: "fit-content"
-  },
-  card: {
-    background: "#ffffff",
-    borderRadius: 12,
-    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-    marginBottom: 30,
-    overflow: "hidden"
-  },
-  cardHeader: {
-    background: "#8dc63f",
-    padding: "20px 24px"
-  },
-  cardTitle: {
-    color: "#ffffff",
-    margin: 0,
-    fontSize: 20,
-    fontWeight: "600"
-  },
-  form: {
-    padding: 24
-  },
-  columnsContainer: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-    gap: 30,
-    alignItems: "flex-start"
-  },
-  column: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 16
-  },
-  columnTitle: {
-    margin: "0 0 10px 0",
-    color: "#1e293b",
-    fontSize: 18,
-    fontWeight: "600",
-    paddingBottom: 8,
-    borderBottom: "2px solid #8dc63f"
-  },
-  sectionSubtitle: {
-    margin: "0 0 12px 0",
-    color: "#374151",
-    fontSize: 14,
-    fontWeight: "600"
-  },
-  inputGroup: {
-    display: "flex",
-    flexDirection: "column"
-  },
-  label: {
-    marginBottom: 6,
-    color: "#374151",
-    fontSize: 14,
-    fontWeight: "500"
-  },
-  input: {
-    padding: "10px 12px",
-    border: "1px solid #d1d5db",
-    borderRadius: 6,
-    fontSize: 14,
-    backgroundColor: "#ffffff",
-    transition: "all 0.2s ease",
-    width: "100%",
-    boxSizing: "border-box"
-  },
-  resultsSection: {
-    margin: "10px 0"
-  },
-  resultsGrid: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 12
-  },
-  submitSection: {
-    marginTop: "auto",
-    paddingTop: 20
-  },
-  button: {
-    background: "#1e40af",
-    color: "#ffffff",
-    border: "none",
-    padding: "12px 24px",
-    borderRadius: 6,
-    fontSize: 14,
-    fontWeight: "600",
-    cursor: "pointer",
-    transition: "background 0.2s ease",
-    width: "100%"
-  },
-  tableContainer: {
-    overflowX: "auto"
-  },
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
-    fontSize: 14
-  },
-  tableHeader: {
-    background: "#f1f5f9",
-    padding: "12px 16px",
-    textAlign: "left",
-    fontWeight: "600",
-    color: "#374151",
-    borderBottom: "1px solid #e5e7eb",
-    whiteSpace: "nowrap"
-  },
-  tableRow: {
-    borderBottom: "1px solid #e5e7eb",
-    transition: "background 0.2s ease"
-  },
-  tableCell: {
-    padding: "12px 16px",
-    color: "#374151",
-    borderBottom: "1px solid #f1f5f9",
-    whiteSpace: "nowrap"
-  },
-  statusFinalized: {
-    color: "#059669",
-    fontWeight: "500",
-    fontSize: 13
-  },
-  statusPending: {
-    color: "#d97706",
-    fontWeight: "500",
-    fontSize: 13
-  },
-  qrImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 4
-  },
-  actionContainer: {
-    display: "flex",
-    gap: 8
-  },
-  actionBtn: {
-    padding: "6px 12px",
-    background: "#059669",
-    color: "#ffffff",
-    border: "none",
-    borderRadius: 4,
-    fontSize: 12,
-    fontWeight: "500",
-    cursor: "pointer",
-    transition: "background 0.2s ease"
-  },
-  deleteBtn: {
-    padding: "6px 12px",
-    background: "#dc2626",
-    color: "#ffffff",
-    border: "none",
-    borderRadius: 4,
-    fontSize: 12,
-    fontWeight: "500",
-    cursor: "pointer",
-    transition: "background 0.2s ease"
-  },
-  loading: {
-    padding: 40,
-    textAlign: "center",
-    color: "#64748b",
-    fontSize: 16
-  },
-  emptyState: {
-    padding: 40,
-    textAlign: "center",
-    color: "#64748b",
-    fontSize: 16
-  }
+  header: { marginBottom: 30 },
+  headerContent: { display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 20 },
+  headerText: { flex: 1 },
+  title: { fontSize: 32, marginBottom: 8, color: "#1e293b", fontWeight: "600" },
+  subtitle: { color: "#64748b", fontSize: 16, margin: 0 },
+  logoutButton: { background: "#dc2626", color: "#ffffff", border: "none", padding: "10px 20px", borderRadius: 6, fontSize: 14, fontWeight: "600", cursor: "pointer", transition: "background 0.2s ease", minWidth: 100, height: "fit-content" },
+  card: { background: "#ffffff", borderRadius: 12, boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)", marginBottom: 30, overflow: "hidden" },
+  cardHeader: { background: "#8dc63f", padding: "20px 24px" },
+  cardTitle: { color: "#ffffff", margin: 0, fontSize: 20, fontWeight: "600" },
+  form: { padding: 24 },
+  columnsContainer: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 30, alignItems: "flex-start" },
+  column: { display: "flex", flexDirection: "column", gap: 16 },
+  columnTitle: { fontSize: 16, fontWeight: "600", color: "#334155" },
+  inputGroup: { display: "flex", flexDirection: "column" },
+  label: { fontSize: 14, color: "#475569", marginBottom: 4 },
+  input: { padding: "8px 12px", borderRadius: 6, border: "1px solid #cbd5e1", fontSize: 14 },
+  button: { background: "#3b82f6", color: "#ffffff", padding: "10px 20px", borderRadius: 6, fontWeight: "600", cursor: "pointer", border: "none", fontSize: 14 },
+  resultsSection: { marginTop: 12 },
+  resultsGrid: { display: "flex", gap: 10, flexWrap: "wrap" },
+  submitSection: { marginTop: 16 },
+  tableContainer: { overflowX: "auto" },
+  table: { width: "100%", borderCollapse: "collapse", minWidth: 1200 },
+  tableHeader: { background: "#334155", color: "#ffffff", padding: "10px 12px", fontWeight: "600", fontSize: 13, whiteSpace: "nowrap" },
+  tableCell: { borderBottom: "1px solid #e2e8f0", padding: "8px 12px", fontSize: 13, verticalAlign: "top" },
+  tableRow: {},
+  loading: { padding: 20 },
+  emptyState: { padding: 20 },
+  statusFinalized: { background: "#16a34a", color: "#ffffff", padding: "4px 8px", borderRadius: 4, fontSize: 12 },
+  statusPending: { background: "#facc15", color: "#1e293b", padding: "4px 8px", borderRadius: 4, fontSize: 12 },
+  qrImage: { width: 50, height: 50, objectFit: "cover" },
+  actionContainer: { display: "flex", gap: 8 },
+  actionBtn: { background: "#3b82f6", color: "#fff", border: "none", padding: "6px 12px", borderRadius: 4, cursor: "pointer", fontSize: 12 },
+  deleteBtn: { background: "#dc2626", color: "#fff", border: "none", padding: "6px 12px", borderRadius: 4, cursor: "pointer", fontSize: 12 },
 };

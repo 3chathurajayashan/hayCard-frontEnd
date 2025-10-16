@@ -425,7 +425,7 @@ function Home() {
           </div>
           <nav style={styles.nav} className="slide-in-right">
             <a href="/" style={styles.navLink} className="nav-link-hover">Home</a>
-            <a href="/about" style={styles.navLink} className="nav-link-hover">About</a>
+            <a href="/test" style={styles.navLink} className="nav-link-hover">Features</a>
             <a href="/services" style={styles.navLink} className="nav-link-hover">Services</a>
             
             <Link to="/guide"style={styles.navLink} className="nav-link-hover">Guidelines</Link>
@@ -632,6 +632,7 @@ for every industry
           </div>
         </div>
       </section>
+       <Hero />
 
       {/* Services Section */}
       <section style={styles.servicesSection}>
@@ -736,7 +737,7 @@ for every industry
           </div>
         </div>
       </section>
-      <Hero />
+      
       <Graph />
 
        

@@ -1,99 +1,220 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { ChevronDown, ChevronUp, Beaker, ShieldCheck, FileCheck, Waves, FlaskConical } from 'lucide-react';
 
-const HeroSection = () => {
-  const [isVisible, setIsVisible] = useState(false);
-  const sectionRef = useRef(null);
-  const cardsRef = useRef([]);
+const LabTestsInfo = () => {
+  const [activeTest, setActiveTest] = useState(null);
+  const [visibleCards, setVisibleCards] = useState([]);
+  const cardRefs = useRef([]);
 
-  const solutions = [
+  useEffect(() => {
+    const observers = cardRefs.current.map((ref, index) => {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setVisibleCards((prev) => [...new Set([...prev, index])]);
+            }
+          });
+        },
+        { threshold: 0.1 }
+      );
+
+      if (ref) observer.observe(ref);
+      return observer;
+    });
+
+    return () => {
+      observers.forEach((observer) => observer.disconnect());
+    };
+  }, []);
+
+  const tests = [
     {
-      title: 'Water',
-      description: 'Ensuring clean, safe water through advanced purification and filtration solutions',
-      image: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=800&q=80'
+      id: 'nsf42',
+      name: 'NSF 42',
+      title: 'Aesthetic Effects Standard',
+      icon: <Waves size={28} />,
+      overview: 'NSF/ANSI Standard 42 addresses aesthetic impurities in drinking water that are non-health related. This standard ensures that water treatment systems effectively reduce chlorine, taste, odor, and particulate matter.',
+      usage: [
+        'Certification of drinking water treatment units for aesthetic contaminant reduction',
+        'Testing residential and commercial water filters',
+        'Verification of chlorine taste and odor reduction claims',
+        'Evaluation of particulate filtration efficiency',
+        'Quality assurance for point-of-use water treatment devices'
+      ],
+      procedure: [
+        'Initial product evaluation and material review to ensure compliance with safety requirements',
+        'Challenge water preparation with specific concentrations of test contaminants including chlorine at 2.0 mg/L',
+        'Performance testing over multiple cycles to measure reduction capacity',
+        'Influent and effluent water sampling at predetermined intervals',
+        'Laboratory analysis using approved analytical methods such as spectrophotometry for chlorine',
+        'Structural integrity testing including pressure, temperature, and cycling tests',
+        'Material safety extraction testing to ensure no contaminant leaching',
+        'Data compilation and statistical analysis to verify percentage reduction claims',
+        'Final report generation with pass or fail determination'
+      ],
+      keyParameters: [
+        'Chlorine Reduction: Minimum 50% reduction required',
+        'Taste and Odor: Must meet sensory standards',
+        'Particulate Class: Ratings from I to VI based on size removal',
+        'Rated Service Capacity: Volume of water treated before replacement',
+        'Flow Rate: Gallons per minute at specified pressure'
+      ],
+      duration: 'Typically 4-8 weeks depending on product complexity and testing requirements'
     },
     {
-      title: 'Air/Gas',
-      description: 'Advanced solutions for removing pollutants, odors and hazardous chemicals',
-      image: 'https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=800&q=80'
+      id: 'nsf61',
+      name: 'NSF 61',
+      title: 'Drinking Water System Components - Health Effects',
+      icon: <ShieldCheck size={28} />,
+      overview: 'NSF/ANSI Standard 61 establishes minimum health effects requirements for materials, components, and products that contact drinking water. It ensures that products do not contribute contaminant levels that would pose health risks.',
+      usage: [
+        'Certification of pipes, fittings, and plumbing materials',
+        'Testing water treatment chemicals and additives',
+        'Evaluation of protective coatings and linings',
+        'Assessment of mechanical devices like valves and meters',
+        'Verification of point-of-use and point-of-entry treatment systems'
+      ],
+      procedure: [
+        'Product formulation review and material safety data collection',
+        'Sample preparation including cleaning and conditioning per protocol',
+        'Extraction testing using standardized water at controlled pH and temperature',
+        'Extended contact time exposure, typically 18-hour cycles',
+        'Collection of extraction water samples at specified intervals including day 1, 3, 5, and up to 16 days',
+        'Chemical analysis via ICP-MS, ICP-OES, or GC-MS for trace contaminants',
+        'Testing for heavy metals including lead, arsenic, mercury, chromium, and cadmium',
+        'Organic compound analysis including volatile and semi-volatile compounds',
+        'Toxicological evaluation comparing results against maximum allowable levels',
+        'Composite analysis for multi-component systems',
+        'Final certification report with detailed analytical data'
+      ],
+      keyParameters: [
+        'Lead: Maximum 5 μg/L after extraction',
+        'Total Organic Carbon (TOC): Varies by product type',
+        'pH Impact: Must not significantly alter water pH',
+        'Extraction Temperature: 20°C or 60°C depending on application',
+        'Contact Time: Standardized exposure periods'
+      ],
+      duration: 'Generally 8-12 weeks including extraction cycles and analytical testing'
     },
     {
-      title: 'Food & Beverage',
-      description: 'Enhancing quality, taste, and safety in food and beverage processing',
-      image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80'
+      id: 'prop65',
+      name: 'PROP 65',
+      title: 'California Proposition 65',
+      icon: <FileCheck size={28} />,
+      overview: 'Proposition 65, officially known as the Safe Drinking Water and Toxic Enforcement Act of 1986, requires businesses to provide warnings about significant exposures to chemicals that cause cancer, birth defects, or other reproductive harm.',
+      usage: [
+        'Product safety labeling for California market compliance',
+        'Chemical exposure assessment for consumer products',
+        'Testing of materials for listed carcinogenic substances',
+        'Reproductive toxicity evaluation',
+        'Supply chain chemical disclosure verification'
+      ],
+      procedure: [
+        'Comprehensive material declaration and bill of materials review',
+        'Laboratory analysis for Prop 65 listed chemicals exceeding 1000 substances',
+        'Sample extraction using appropriate solvents based on product matrix',
+        'Analytical testing via GC-MS, LC-MS, or ICP-MS methodologies',
+        'Testing for common triggers including phthalates, lead, cadmium, and formaldehyde',
+        'Quantification against Safe Harbor Levels for each chemical',
+        'Exposure assessment calculations based on intended use patterns',
+        'Risk characterization for potential human contact scenarios',
+        'Documentation of analytical certificates and chain of custody',
+        'Warning label requirement determination',
+        'Compliance report with recommendations for product modifications if needed'
+      ],
+      keyParameters: [
+        'Safe Harbor Levels: Chemical-specific threshold concentrations',
+        'Maximum Allowable Dose Level (MADL): For reproductive toxins',
+        'No Significant Risk Level (NSRL): For carcinogens',
+        'Detection Limits: Must be below regulatory thresholds',
+        'Exposure Duration: Daily exposure assumptions'
+      ],
+      duration: '4-6 weeks for standard screening, longer for comprehensive testing'
     },
     {
-      title: 'Energy',
-      description: 'Powering the future with advanced carbon technology for energy storage',
-      image: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=800&q=80'
+      id: 'fcc',
+      name: 'FCC',
+      title: 'Food Chemicals Codex',
+      icon: <Beaker size={28} />,
+      overview: 'FCC provides internationally recognized standards for the identity, purity, and quality of food ingredients including food chemicals, processing aids, and food contact substances. It is published by the United States Pharmacopeia.',
+      usage: [
+        'Quality verification of food-grade chemicals and additives',
+        'Testing of food processing aids and enzymes',
+        'Certification of pharmaceutical excipients used in food',
+        'Evaluation of nutritional supplements and fortification ingredients',
+        'Water treatment chemicals used in food processing'
+      ],
+      procedure: [
+        'Sample reception and identity confirmation through preliminary tests',
+        'Physical property testing including appearance, color, odor assessment',
+        'Chemical identification using spectroscopic methods like IR, NMR, or UV-Vis',
+        'Purity analysis through chromatographic techniques including HPLC and GC',
+        'Heavy metals testing via atomic absorption or ICP methods',
+        'Residual solvents determination by gas chromatography',
+        'Microbiological testing for total plate count, yeast, and mold if applicable',
+        'Loss on drying to determine moisture content',
+        'Residue on ignition or sulfated ash determination',
+        'Specific gravity, pH, and refractive index measurements',
+        'Assay determination using titration or instrumental analysis',
+        'Certificate of Analysis generation against FCC monograph specifications'
+      ],
+      keyParameters: [
+        'Identity: Must match FCC monograph specifications',
+        'Purity: Minimum percentage of active ingredient',
+        'Heavy Metals: Typically less than 10-20 ppm',
+        'Arsenic: Usually less than 3 ppm',
+        'Lead: Typically less than 2 ppm'
+      ],
+      duration: '2-4 weeks depending on the complexity of the ingredient and required tests'
     },
     {
-      title: 'Gold',
-      description: 'Premium activated carbon designed for optimal adsorption in gold recovery',
-      image: 'https://images.unsplash.com/photo-1610375461246-83df859d849d?w=800&q=80'
-    },
-    {
-      title: 'Pharmaceutical & Cosmetics',
-      description: 'Advanced activated carbon ensuring superior adsorption and purity',
-      image: 'https://images.unsplash.com/photo-1583947215259-38e31be8751f?w=800&q=80'
-    },
-    {
-      title: 'Speciality',
-      description: 'Premium activated carbon tailored for high-performance speciality applications',
-      image: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=800&q=80'
+      id: 'ep',
+      name: 'EP',
+      title: 'Extraction Procedure Toxicity Test',
+      icon: <FlaskConical size={28} />,
+      overview: 'The Extraction Procedure (EP) Toxicity Test, now largely replaced by TCLP (Toxicity Characteristic Leaching Procedure), determines if waste exhibits the characteristic of toxicity. It simulates landfill leaching conditions.',
+      usage: [
+        'Hazardous waste characterization and classification',
+        'Determination of proper waste disposal methods',
+        'Environmental compliance for solid waste management',
+        'Soil contamination assessment',
+        'Leachability testing of industrial byproducts'
+      ],
+      procedure: [
+        'Waste sample collection using approved sampling protocols',
+        'Sample preparation including drying and size reduction to pass 9.5mm sieve',
+        'Solid-liquid ratio determination at 1:16 weight-to-volume',
+        'Extraction fluid selection based on waste alkalinity using 0.5N acetic acid',
+        'pH adjustment to 5.0 if necessary',
+        'Continuous agitation extraction for 24 hours at room temperature',
+        'Filtration through 0.45 micron filter under pressure',
+        'Extract preservation with nitric acid for metals analysis',
+        'Analysis via atomic absorption, ICP, or other approved methods',
+        'Testing for regulatory metals including arsenic, barium, cadmium, chromium, lead, mercury, selenium, and silver',
+        'Comparison of results against regulatory thresholds',
+        'Waste classification determination and disposal recommendations'
+      ],
+      keyParameters: [
+        'Arsenic: Regulatory level 5.0 mg/L',
+        'Barium: Regulatory level 100.0 mg/L',
+        'Cadmium: Regulatory level 1.0 mg/L',
+        'Chromium: Regulatory level 5.0 mg/L',
+        'Lead: Regulatory level 5.0 mg/L',
+        'Mercury: Regulatory level 0.2 mg/L',
+        'Selenium: Regulatory level 1.0 mg/L',
+        'Silver: Regulatory level 5.0 mg/L'
+      ],
+      duration: '3-5 days including extraction time and analytical procedures'
     }
   ];
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible(true);
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      cardsRef.current.forEach((card) => {
-        if (card) {
-          const rect = card.getBoundingClientRect();
-          const windowHeight = window.innerHeight;
-          const scrollProgress = (windowHeight - rect.top) / windowHeight;
-          
-          if (scrollProgress > 0 && scrollProgress < 1.2) {
-            const translateY = Math.max(0, (1 - scrollProgress) * 80);
-            const opacity = Math.min(1, Math.max(0, scrollProgress * 1.5));
-            const scale = Math.min(1, Math.max(0.9, 0.9 + scrollProgress * 0.1));
-            
-            card.style.transform = `translateY(${translateY}px) scale(${scale})`;
-            card.style.opacity = opacity;
-          }
-        }
-      });
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    handleScroll();
-
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const toggleTest = (testId) => {
+    setActiveTest(activeTest === testId ? null : testId);
+  };
 
   return (
-    <>
+    <div className="container">
       <style>{`
         * {
           margin: 0;
@@ -102,330 +223,363 @@ const HeroSection = () => {
         }
 
         body {
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-          background: #fff;
-          color: #000;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+          background: #f5f5f5;
+          color: #2c3e50;
+          line-height: 1.6;
         }
 
-        .hero-section {
-          min-height: 100vh;
+        .container {
+          max-width: 1200px;
+          margin: 0 auto;
           background: #ffffff;
-          padding: 100px 20px 120px;
-          position: relative;
-          overflow: hidden;
+          min-height: 100vh;
         }
 
-        .hero-section::before {
-          content: '';
-          position: absolute;
-          top: -50%;
-          right: -10%;
-          width: 600px;
-          height: 600px;
-          background: radial-gradient(circle, rgba(141, 198, 63, 0.08) 0%, transparent 70%);
-          border-radius: 50%;
-          pointer-events: none;
+        .header {
+          background: #ffffff;
+          padding: 50px 40px;
+          border-bottom: 4px solid #8dc63f;
         }
 
-        .hero-section::after {
-          content: '';
-          position: absolute;
-          bottom: -30%;
-          left: -10%;
-          width: 500px;
-          height: 500px;
-          background: radial-gradient(circle, rgba(141, 198, 63, 0.06) 0%, transparent 70%);
-          border-radius: 50%;
-          pointer-events: none;
-        }
-
-        .hero-container {
-          max-width: 1400px;
-          margin: 0 auto;
-          position: relative;
-          z-index: 1;
-        }
-
-        .hero-header {
-          text-align: center;
-          margin-bottom: 70px;
-          opacity: 0;
-          animation: fadeInUp 1s ease forwards;
-        }
-
-        @keyframes fadeInUp {
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .section-label {
-          display: inline-block;
-          font-size: 0.875rem;
+        .header h1 {
+          font-size: 2.5rem;
+          color: #2c3e50;
+          margin-bottom: 10px;
           font-weight: 600;
-          color: #8dc63f;
-          text-transform: uppercase;
-          letter-spacing: 2px;
-          margin-bottom: 20px;
-          padding: 8px 20px;
-          background: rgba(141, 198, 63, 0.1);
-          border-radius: 50px;
         }
 
-        .hero-title {
-          font-size: clamp(2.5rem, 5vw, 4.5rem);
-          font-weight: 800;
-          margin-bottom: 24px;
-          color: #000;
-          letter-spacing: -0.03em;
-          line-height: 1.1;
-        }
-
-        .hero-title-accent {
-          color: #8dc63f;
-          position: relative;
-          display: inline-block;
-        }
-
-        .hero-subtitle {
-          font-size: clamp(1.1rem, 2vw, 1.35rem);
-          color: #666;
-          max-width: 700px;
-          margin: 0 auto;
-          line-height: 1.7;
+        .header p {
+          font-size: 1.1rem;
+          color: #7f8c8d;
           font-weight: 400;
         }
 
-        .solutions-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-          gap: 35px;
-          margin-top: 80px;
-        }
-
-        .solution-card {
-          position: relative;
-          height: 440px;
-          border-radius: 24px;
-          overflow: hidden;
-          cursor: pointer;
-          transform: translateY(80px) scale(0.9);
-          opacity: 0;
-          transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-        }
-
-        .solution-card::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.75) 100%);
-          z-index: 1;
-          transition: all 0.5s ease;
-        }
-
-        .solution-card:hover {
-          transform: translateY(-12px) scale(1);
-          box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
-        }
-
-        .solution-card:hover::before {
-          background: linear-gradient(180deg, rgba(141, 198, 63, 0.15) 0%, rgba(0, 0, 0, 0.85) 100%);
-        }
-
-        .card-image {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .solution-card:hover .card-image {
-          transform: scale(1.15);
-        }
-
-        .card-content {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
+        .tests-wrapper {
           padding: 40px;
-          z-index: 2;
-          transform: translateY(0);
-          transition: transform 0.5s ease;
         }
 
-        .solution-card:hover .card-content {
-          transform: translateY(-8px);
+        .tests-grid {
+          display: grid;
+          gap: 20px;
         }
 
-        .card-number {
-          font-size: 0.75rem;
-          font-weight: 700;
-          color: #8dc63f;
-          text-transform: uppercase;
-          letter-spacing: 2px;
-          margin-bottom: 12px;
+        .test-card {
+          background: #ffffff;
+          border: 1px solid #e0e0e0;
+          border-radius: 8px;
+          overflow: hidden;
+          transition: all 0.4s ease;
           opacity: 0;
-          transform: translateY(10px);
-          transition: all 0.4s ease 0.1s;
+          transform: translateY(30px);
         }
 
-        .solution-card:hover .card-number {
+        .test-card.visible {
           opacity: 1;
           transform: translateY(0);
         }
 
-        .card-title {
-          font-size: 2rem;
-          font-weight: 700;
-          margin-bottom: 16px;
-          color: #fff;
-          position: relative;
-          display: inline-block;
-          line-height: 1.2;
+        .test-card:hover {
+          box-shadow: 0 8px 24px rgba(141, 198, 63, 0.15);
+          transform: translateY(-4px);
+          border-color: #8dc63f;
         }
 
-        .card-description {
-          font-size: 1rem;
-          line-height: 1.7;
-          color: rgba(255, 255, 255, 0.9);
-          opacity: 0;
-          transform: translateY(15px);
-          transition: all 0.5s ease 0.15s;
-          max-width: 90%;
+        .test-header {
+          padding: 24px 28px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          background: #fafafa;
+          border-bottom: 1px solid #e0e0e0;
+          transition: background 0.2s ease;
         }
 
-        .solution-card:hover .card-description {
-          opacity: 1;
-          transform: translateY(0);
+        .test-header:hover {
+          background: #f5f5f5;
         }
 
-        .card-arrow {
-          position: absolute;
-          bottom: 40px;
-          right: 40px;
+        .test-header-left {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+        }
+
+        .test-icon {
           width: 50px;
           height: 50px;
           background: #8dc63f;
-          border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          z-index: 3;
-          opacity: 0;
-          transform: scale(0.8);
-          transition: all 0.4s ease 0.2s;
+          color: #ffffff;
+          border-radius: 6px;
+          flex-shrink: 0;
+          transition: all 0.3s ease;
         }
 
-        .solution-card:hover .card-arrow {
-          opacity: 1;
-          transform: scale(1);
+        .test-card:hover .test-icon {
+          transform: scale(1.1) rotate(5deg);
+          box-shadow: 0 4px 12px rgba(141, 198, 63, 0.4);
         }
 
-        .card-arrow::after {
-          content: '→';
+        .test-title-section h2 {
           font-size: 1.5rem;
-          color: #fff;
-          font-weight: 700;
+          margin-bottom: 4px;
+          color: #2c3e50;
+          font-weight: 600;
+        }
+
+        .test-title-section p {
+          color: #7f8c8d;
+          font-size: 0.95rem;
+          font-weight: 400;
+        }
+
+        .toggle-icon {
+          transition: transform 0.3s ease;
+          color: #7f8c8d;
+          flex-shrink: 0;
+        }
+
+        .toggle-icon.active {
+          transform: rotate(180deg);
+        }
+
+        .test-content {
+          max-height: 0;
+          overflow: hidden;
+          transition: max-height 0.4s ease;
+        }
+
+        .test-content.active {
+          max-height: 6000px;
+        }
+
+        .test-content-inner {
+          padding: 32px 28px;
+        }
+
+        .section {
+          margin-bottom: 32px;
+        }
+
+        .section:last-child {
+          margin-bottom: 0;
+        }
+
+        .section-title {
+          font-size: 1.15rem;
+          color: #2c3e50;
+          margin-bottom: 16px;
+          font-weight: 600;
+          padding-bottom: 8px;
+          border-bottom: 2px solid #8dc63f;
+        }
+
+        .section-content {
+          color: #555555;
+          line-height: 1.7;
+          font-size: 0.95rem;
+        }
+
+        .list {
+          list-style: none;
+          padding: 0;
+        }
+
+        .list li {
+          padding: 14px 16px 14px 36px;
+          position: relative;
+          margin-bottom: 8px;
+          background: #fafafa;
+          border-left: 3px solid #8dc63f;
+          color: #555555;
+          font-size: 0.95rem;
+          line-height: 1.6;
+          transition: all 0.3s ease;
+        }
+
+        .list li:hover {
+          background: #f0f9e8;
+          transform: translateX(8px);
+          border-left-width: 5px;
+          box-shadow: 0 2px 8px rgba(141, 198, 63, 0.1);
+        }
+
+        .list li:before {
+          content: "•";
+          position: absolute;
+          left: 16px;
+          color: #8dc63f;
+          font-weight: bold;
+          font-size: 1.2rem;
+        }
+
+        .parameters-grid {
+          display: grid;
+          gap: 12px;
+          margin-top: 16px;
+        }
+
+        .parameter-item {
+          padding: 16px;
+          background: #fafafa;
+          color: #2c3e50;
+          border-left: 3px solid #8dc63f;
+          font-size: 0.95rem;
+          line-height: 1.6;
+          transition: all 0.3s ease;
+        }
+
+        .parameter-item:hover {
+          background: #f0f9e8;
+          transform: translateX(8px);
+          border-left-width: 5px;
+          box-shadow: 0 2px 8px rgba(141, 198, 63, 0.1);
+        }
+
+        .duration-badge {
+          display: inline-block;
+          padding: 12px 24px;
+          background: #8dc63f;
+          color: #ffffff;
+          font-weight: 500;
+          margin-top: 12px;
+          font-size: 0.95rem;
+          border-radius: 4px;
         }
 
         @media (max-width: 768px) {
-          .hero-section {
-            padding: 60px 20px 80px;
+          .header {
+            padding: 30px 20px;
           }
 
-          .hero-header {
-            margin-bottom: 50px;
+          .header h1 {
+            font-size: 1.8rem;
           }
 
-          .solutions-grid {
-            grid-template-columns: 1fr;
-            gap: 25px;
-            margin-top: 50px;
+          .header p {
+            font-size: 1rem;
           }
 
-          .solution-card {
-            height: 380px;
+          .tests-wrapper {
+            padding: 20px;
           }
 
-          .card-content {
-            padding: 30px;
+          .test-header {
+            padding: 20px;
           }
 
-          .card-title {
-            font-size: 1.65rem;
+          .test-header-left {
+            gap: 15px;
           }
 
-          .card-description {
-            font-size: 0.95rem;
-          }
-
-          .card-arrow {
-            bottom: 30px;
-            right: 30px;
+          .test-icon {
             width: 45px;
             height: 45px;
           }
-        }
 
-        @media (min-width: 769px) and (max-width: 1024px) {
-          .solutions-grid {
-            grid-template-columns: repeat(2, 1fr);
+          .test-title-section h2 {
+            font-size: 1.25rem;
           }
-        }
 
-        @media (min-width: 1025px) {
-          .solutions-grid {
-            grid-template-columns: repeat(3, 1fr);
+          .test-content-inner {
+            padding: 24px 20px;
+          }
+
+          .section-title {
+            font-size: 1.05rem;
+          }
+
+          .section-content,
+          .list li,
+          .parameter-item {
+            font-size: 0.9rem;
           }
         }
       `}</style>
 
-      <section className="hero-section" ref={sectionRef}>
-        <div className="hero-container">
-          <div className="hero-header">
-            <div className="section-label">Our Solutions</div>
-            <h1 className="hero-title">
-              Explore <span className="hero-title-accent">Activated Carbon</span> Solutions
-            </h1>
-            <p className="hero-subtitle">
-              Industry-leading activated carbon technologies for diverse applications across multiple sectors worldwide
-            </p>
-          </div>
+      <div className="header">
+        <h1>Laboratory Test Methods</h1>
+        <p>Industry-standard testing procedures and compliance requirements</p>
+      </div>
 
-          <div className="solutions-grid">
-            {solutions.map((solution, index) => (
-              <div
-                key={index}
-                className="solution-card"
-                ref={(el) => (cardsRef.current[index] = el)}
-              >
-                <img
-                  src={solution.image}
-                  alt={solution.title}
-                  className="card-image"
-                />
-                <div className="card-content">
-                  <div className="card-number">Solution {(index + 1).toString().padStart(2, '0')}</div>
-                  <h3 className="card-title">{solution.title}</h3>
-                  <p className="card-description">{solution.description}</p>
+      <div className="tests-wrapper">
+        <div className="tests-grid">
+          {tests.map((test, index) => (
+            <div 
+              key={test.id} 
+              className={`test-card ${visibleCards.includes(index) ? 'visible' : ''}`}
+              ref={(el) => (cardRefs.current[index] = el)}
+              style={{ transitionDelay: `${index * 0.1}s` }}
+            >
+              <div className="test-header" onClick={() => toggleTest(test.id)}>
+                <div className="test-header-left">
+                  <div className="test-icon">
+                    {test.icon}
+                  </div>
+                  <div className="test-title-section">
+                    <h2>{test.name}</h2>
+                    <p>{test.title}</p>
+                  </div>
                 </div>
-                <div className="card-arrow"></div>
+                <div className={`toggle-icon ${activeTest === test.id ? 'active' : ''}`}>
+                  {activeTest === test.id ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+                </div>
               </div>
-            ))}
-          </div>
+
+              <div className={`test-content ${activeTest === test.id ? 'active' : ''}`}>
+                <div className="test-content-inner">
+                  <div className="section">
+                    <h3 className="section-title">Overview</h3>
+                    <p className="section-content">{test.overview}</p>
+                  </div>
+
+                  <div className="section">
+                    <h3 className="section-title">Usage and Applications</h3>
+                    <ul className="list">
+                      {test.usage.map((item, index) => (
+                        <li key={index}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="section">
+                    <h3 className="section-title">Testing Procedure</h3>
+                    <ul className="list">
+                      {test.procedure.map((step, index) => (
+                        <li key={index}>{step}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="section">
+                    <h3 className="section-title">Key Parameters and Standards</h3>
+                    <div className="parameters-grid">
+                      {test.keyParameters.map((param, index) => (
+                        <div key={index} className="parameter-item">
+                          {param}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="section">
+                    <h3 className="section-title">Testing Duration</h3>
+                    <p className="section-content">
+                      <span className="duration-badge">{test.duration}</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-      </section>
-    </>
+      </div>
+    </div>
   );
 };
 
-export default HeroSection;
+export default LabTestsInfo;

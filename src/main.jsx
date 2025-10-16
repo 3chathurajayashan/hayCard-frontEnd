@@ -10,6 +10,7 @@ import EditSample from './Components/EditSampleDashboard/EditSample.jsx'
 import PreSign from './Components/BeforSign/PreSign.jsx'
 import Guide from './Components/Guidelines/Guide.jsx'
 import SampleDetails from './Components/SampleDetails/SampleDetails.jsx';
+import Feature from './Components/TestsSection/Test.jsx'
 const router = createBrowserRouter([
 
   {
@@ -44,6 +45,11 @@ const router = createBrowserRouter([
     path:"/sample-details",
     element: <SampleDetails />,
   },
+   {
+    path:"/test",
+    element: <Feature />,
+  },
+  
   
 ]);
 

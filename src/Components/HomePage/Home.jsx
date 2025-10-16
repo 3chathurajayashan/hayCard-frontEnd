@@ -92,18 +92,18 @@ function Home() {
 
   const heroSlides = [
     {
-      title: "Revolutionary Hydroponic Systems",
-      subtitle: "Transform your farming with cutting-edge technology and sustainable solutions for the future of agriculture",
+      title: "Innovating the Way the World Breathes and Powers Up",
+      subtitle: "TOur company stands at the intersection of air, gas, and energy innovation. We engineer next-generation solutions that enhance energy efficiency.",
       image: i4
     },
     {
-      title: "Sustainable Growth Solutions",
-      subtitle: "Maximize yields while minimizing environmental impact with our eco-friendly agricultural innovations",
+      title: "Fast. Safe. Sustainable Charging for Every EV",
+      subtitle: "Experience next-generation EV charging with EV Filling Station. Our stations are designed with cutting-edge technology to ensure maximum safety.",
       image: i2
     },
     {
       title: "Shaping lasting Relationships through trust",
-      subtitle: "Maximize yields while minimizing environmental impact with our eco-friendly agricultural innovations",
+      subtitle: "We believe great service starts with trust. That’s why Trusted Service focuses on consistent quality, quick response times, and long-term customer satisfaction.",
       image: i6
     },
     {

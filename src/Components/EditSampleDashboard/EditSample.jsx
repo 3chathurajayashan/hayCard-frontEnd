@@ -27,7 +27,7 @@ export default function LabAdminDashboard() {
   const fetchSamples = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:5000/samples", {
+      const res = await axios.get("https://hay-card-back-end.vercel.app/samples", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSamples(res.data);
@@ -66,7 +66,7 @@ export default function LabAdminDashboard() {
     e.preventDefault();
     try {
       await axios.put(
-        `http://localhost:5000/samples/${selectedSample._id}`,
+        `https://hay-card-back-end.vercel.app/samples/${selectedSample._id}`,
         {
           results: form.results,
           analysedBy: form.analysedBy,
@@ -88,7 +88,7 @@ export default function LabAdminDashboard() {
     if (window.confirm("Are you sure you want to finalize this sample? This action cannot be undone.")) {
       try {
         await axios.put(
-          `http://localhost:5000/samples/${id}`,
+          `https://hay-card-back-end.vercel.app/samples/${id}`,
           { isFinalized: true },
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -242,7 +242,7 @@ const generateQR = async (sample) => {
   const handleReceivedChange = async (sample, checked) => {
     try {
       await axios.put(
-        `http://localhost:5000/samples/samples/${sample._id}/received`,
+        `https://hay-card-back-end.vercel.app/samples/samples/${sample._id}/received`,
         { received: checked },
         { headers: { Authorization: `Bearer ${token}` } }
       );

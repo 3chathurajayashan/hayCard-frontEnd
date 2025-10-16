@@ -58,7 +58,7 @@ export default function FactoryDashboard() {
     e.preventDefault();
     try {
       setCreating(true);
-      await axios.post("http://localhost:5000/samples", form, {
+      await axios.post("https://hay-card-back-end.vercel.app/samples", form, {
         headers: { Authorization: `Bearer ${token}` },
       });
       
@@ -93,7 +93,7 @@ export default function FactoryDashboard() {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this sample?")) return;
     try {
-      await axios.delete(`http://localhost:5000/samples/${id}`, {
+      await axios.delete(`https://hay-card-back-end.vercel.app/samples/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       await fetchSamples();

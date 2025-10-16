@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-import h1 from '../../assets/h2.webp';
+import h1 from '../../assets/l1.jpg';
 
 export default function ModernHeroSection() {
   const [scrollY, setScrollY] = useState(0);

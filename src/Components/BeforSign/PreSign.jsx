@@ -316,21 +316,21 @@ function BranchSelection() {
   const branches = [
     {
       id: 'madampe',
-      name: 'Madampe Branch',
+      name: 'Madampe Lab',
       description: 'Modern banking services with personalized customer care in the heart of Madampe.',
       src: madampeImage,
       icon: '🏢'
     },
     {
       id: 'colombo',
-      name: 'Colombo Branch',
+      name: 'Colombo Lab',
       description: 'Our flagship branch offering comprehensive financial solutions in the capital city.',
       src: colomboImage,
       icon: '🏛️'
     },
     {
       id: 'badalgama',
-      name: 'Badalgama Branch',
+      name: 'Badalgama Lab',
       description: 'Community-focused banking with friendly service in the Badalgama area.',
       src: badalgamaImage,
       icon: '🏦'

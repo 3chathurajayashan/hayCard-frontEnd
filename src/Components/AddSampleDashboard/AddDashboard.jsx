@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import QRCode from "qrcode"; // Add this import
+  import { jsPDF } from "jspdf";
+const FRONTEND_URL = "https://hay-card-front-end.vercel.app";
 
 export default function FactoryDashboard() {
   const [samples, setSamples] = useState([]);
@@ -42,6 +45,219 @@ export default function FactoryDashboard() {
       console.error("Error fetching samples:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+ 
+
+// ... your other imports
+
+const generatePDF = (sample) => {
+  const doc = new jsPDF();
+  
+  // Add company header
+  doc.setFillColor(141, 198, 63); // Haycarb green
+  doc.rect(0, 0, 210, 30, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(20);
+  doc.setFont('helvetica', 'bold');
+  doc.text('HAYCARB PLC', 105, 15, { align: 'center' });
+  doc.setFontSize(14);
+  doc.text('SAMPLE ANALYSIS REPORT', 105, 25, { align: 'center' });
+  
+  // Reset text color for content
+  doc.setTextColor(0, 0, 0);
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  
+  let yPosition = 40;
+  
+  // Sample Information Section
+  doc.setFont('helvetica', 'bold');
+  doc.text('SAMPLE INFORMATION', 14, yPosition);
+  doc.setFont('helvetica', 'normal');
+  yPosition += 8;
+  
+  const sampleInfo = [
+    `Request Reference No: ${sample.requestRefNo || 'N/A'}`,
+    `Sample Reference No: ${sample.sampleRefNo || 'N/A'}`,
+    `From: ${sample.from || 'N/A'}`,
+    `To: ${sample.to || 'N/A'}`,
+    `Remarks: ${sample.remarks || 'N/A'}`,
+    `Sample IN Date: ${sample.sampleInDate || 'N/A'}`,
+    `Sample IN Time: ${sample.sampleInTime || 'N/A'}`,
+    `Gate Pass No: ${sample.gatePassNo || 'N/A'}`
+  ];
+  
+  sampleInfo.forEach(info => {
+    if (yPosition > 270) {
+      doc.addPage();
+      yPosition = 20;
+    }
+    doc.text(info, 16, yPosition);
+    yPosition += 6;
+  });
+  
+  yPosition += 4;
+  
+  // Laboratory Information Section
+  doc.setFont('helvetica', 'bold');
+  doc.text('LABORATORY INFORMATION', 14, yPosition);
+  doc.setFont('helvetica', 'normal');
+  yPosition += 8;
+  
+  const labInfo = [
+    `Sample Received Date: ${sample.sampleReceivedDate || sample.receivedDate || 'N/A'}`,
+    `Sample Received Time: ${sample.sampleReceivedTime || sample.receivedTime || 'N/A'}`,
+    `Sample Route: ${sample.sampleRoute || 'N/A'}`,
+    `Test Method: ${sample.testMethod || 'N/A'}`,
+    `Analysed By: ${sample.analysedBy || 'N/A'}`
+  ];
+  
+  labInfo.forEach(info => {
+    if (yPosition > 270) {
+      doc.addPage();
+      yPosition = 20;
+    }
+    doc.text(info, 16, yPosition);
+    yPosition += 6;
+  });
+  
+  yPosition += 4;
+  
+  // Results Section
+  doc.setFont('helvetica', 'bold');
+  doc.text('ANALYSIS RESULTS (PPB)', 14, yPosition);
+  doc.setFont('helvetica', 'normal');
+  yPosition += 8;
+  
+  // Create results table
+  const results = sample.results;
+  if (results) {
+    if (Array.isArray(results)) {
+      // Multiple results
+      doc.text('Multiple Results:', 16, yPosition);
+      yPosition += 6;
+      
+      results.forEach((result, index) => {
+        if (yPosition > 270) {
+          doc.addPage();
+          yPosition = 20;
+        }
+        doc.text(`Row ${index + 1}: As: ${result.As_ppb || '-'}, Sb: ${result.Sb_ppb || '-'}, Al: ${result.Al_ppb || '-'}`, 20, yPosition);
+        yPosition += 6;
+      });
+    } else {
+      // Single result
+      const resultText = [
+        `Arsenic (As): ${results.As_ppb || '-'} ppb`,
+        `Antimony (Sb): ${results.Sb_ppb || '-'} ppb`,
+        `Aluminum (Al): ${results.Al_ppb || '-'} ppb`
+      ];
+      
+      resultText.forEach(text => {
+        if (yPosition > 270) {
+          doc.addPage();
+          yPosition = 20;
+        }
+        doc.text(text, 16, yPosition);
+        yPosition += 6;
+      });
+    }
+  } else {
+    doc.text('No results available', 16, yPosition);
+    yPosition += 6;
+  }
+  
+  yPosition += 8;
+  
+  // Completion Information
+  doc.setFont('helvetica', 'bold');
+  doc.text('COMPLETION DETAILS', 14, yPosition);
+  doc.setFont('helvetica', 'normal');
+  yPosition += 8;
+  
+  const completionInfo = [
+    `Completion Date: ${sample.completedDate || 'N/A'}`,
+    `Completion Time: ${sample.completedTime || 'N/A'}`,
+    `Status: ${sample.isFinalized ? 'FINALIZED' : 'PENDING'}`
+  ];
+  
+  completionInfo.forEach(info => {
+    if (yPosition > 270) {
+      doc.addPage();
+      yPosition = 20;
+    }
+    doc.text(info, 16, yPosition);
+    yPosition += 6;
+  });
+  
+  // Footer
+  const currentDate = new Date().toLocaleDateString();
+  doc.setFontSize(8);
+  doc.setTextColor(128, 128, 128);
+  doc.text(`Generated on: ${currentDate}`, 14, 285);
+  doc.text(`Sample ID: ${sample.sampleId || sample._id}`, 105, 285, { align: 'center' });
+  doc.text('Haycarb PLC - Laboratory Division', 196, 285, { align: 'right' });
+  
+  // Save the PDF
+  const fileName = `Sample_Report_${sample.sampleRefNo || sample.requestRefNo || sample._id}.pdf`;
+  doc.save(fileName);
+};
+
+  const generateQR = async (sample) => {
+    try {
+      // Append sample ID only (public access for QR)
+      // QR points to public route
+      const url = `${FRONTEND_URL}/sample-details?id=${sample._id}`; 
+  
+      const qrDataUrl = await QRCode.toDataURL(url);
+
+      const win = window.open();
+      win.document.write(`
+        <div style="
+          font-family: 'Poppins', sans-serif;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+          background: linear-gradient(135deg, #e0f7fa, #ffffff);
+          margin: 0;
+          padding: 20px;
+          color: #333;
+          text-align: center;
+        ">
+          <h3 style="
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #00796b;
+          ">Scan this QR to view sample details:</h3>
+          <img src="${qrDataUrl}" alt="QR Code" style="
+            width: 250px;
+            height: 250px;
+            border: 8px solid #00796b;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 25px;
+          " />
+          <p style="
+            font-size: 16px;
+            max-width: 80%;
+            word-break: break-word;
+          ">
+            Or open this link: <br>
+            <a href="${url}" target="_blank" style="
+              color: #00695c;
+              text-decoration: none;
+              font-weight: bold;
+            ">${url}</a>
+          </p>
+        </div>
+      `);
+      win.document.close();
+    } catch (err) {
+      console.error("QR generation error:", err);
     }
   };
 
@@ -396,7 +612,7 @@ export default function FactoryDashboard() {
                   <th style={styles.tableHeader}>Completion Date</th>
                   <th style={styles.tableHeader}>Completion Time</th>
                   <th style={styles.tableHeader}>Status</th>
-                  <th style={styles.tableHeader}>QR</th>
+                  <th style={styles.tableHeader}>QR Code</th>
                   <th style={styles.tableHeader}>Actions</th>
                 </tr>
               </thead>
@@ -440,13 +656,23 @@ export default function FactoryDashboard() {
                       </span>
                     </td>
                     <td style={styles.tableCell}>
-                      {s.qrCodeDataUrl && <img src={s.qrCodeDataUrl} alt="QR" style={styles.qrImage} />}
+                      <button 
+                        style={styles.qrButton} 
+                        onClick={() => generateQR(s)}
+                      >
+                        View QR
+                      </button>
                     </td>
                     <td style={styles.tableCell}>
                       <div style={styles.actionContainer}>
-                        <button style={styles.actionBtn} onClick={() => alert("Edit functionality pending")}>
-                          Edit
-                        </button>
+                        {s.isFinalized && (
+                          <button 
+                            style={styles.pdfButton} 
+                            onClick={() => generatePDF(s)}
+                          >
+                            Download PDF
+                          </button>
+                        )}
                         <button style={styles.deleteBtn} onClick={() => handleDelete(s._id)}>
                           Delete
                         </button>
@@ -499,8 +725,27 @@ const styles = {
   emptyState: { padding: 20 },
   statusFinalized: { background: "#16a34a", color: "#ffffff", padding: "4px 8px", borderRadius: 4, fontSize: 12 },
   statusPending: { background: "#facc15", color: "#1e293b", padding: "4px 8px", borderRadius: 4, fontSize: 12 },
-  qrImage: { width: 50, height: 50, objectFit: "cover" },
-  actionContainer: { display: "flex", gap: 8 },
-  actionBtn: { background: "#3b82f6", color: "#fff", border: "none", padding: "6px 12px", borderRadius: 4, cursor: "pointer", fontSize: 12 },
-  deleteBtn: { background: "#dc2626", color: "#fff", border: "none", padding: "6px 12px", borderRadius: 4, cursor: "pointer", fontSize: 12 },
+  qrButton: { 
+    background: "#8dc63f", 
+    color: "#ffffff", 
+    border: "none", 
+    padding: "6px 12px", 
+    borderRadius: 4, 
+    cursor: "pointer", 
+    fontSize: 12,
+    fontWeight: "600"
+  },
+  pdfButton: { 
+    background: "#dc2626", 
+    color: "#ffffff", 
+    border: "none", 
+    padding: "6px 12px", 
+    borderRadius: 4, 
+    cursor: "pointer", 
+    fontSize: 12,
+    fontWeight: "600",
+    marginBottom: "4px"
+  },
+  actionContainer: { display: "flex", flexDirection: "column", gap: 4 },
+  deleteBtn: { background: "#6b7280", color: "#fff", border: "none", padding: "6px 12px", borderRadius: 4, cursor: "pointer", fontSize: 12 },
 };

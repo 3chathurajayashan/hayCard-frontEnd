@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useLocation, useSearchParams } from "react-router-dom";
 
-// Public backend URL
 const BACKEND_URL = "https://hay-card-back-end.vercel.app";
 
 export default function SampleDetails() {
@@ -13,7 +12,7 @@ export default function SampleDetails() {
   const location = useLocation();
   const [searchParams] = useSearchParams();
 
-  // Get ID from query params
+  // Get ID from query params (for QR scan or manual access)
   const id = searchParams.get("id") || location.pathname.split("/").pop();
 
   useEffect(() => {
@@ -25,7 +24,6 @@ export default function SampleDetails() {
       }
 
       try {
-        // PUBLIC GET request (no Authorization)
         const res = await axios.get(`${BACKEND_URL}/samples/public/${id}`);
         setSample(res.data);
       } catch (err) {
@@ -40,133 +38,66 @@ export default function SampleDetails() {
     fetchSample();
   }, [id]);
 
-  if (loading) return (
-    <div className="loading-state">
-      <div className="loading-spinner"></div>
-      <p>Loading sample details...</p>
-    </div>
-  );
-  
-  if (error) return (
-    <div className="error-state">
-      <p>{error}</p>
-    </div>
-  );
-  
-  if (!sample) return (
-    <div className="not-found-state">
-      <p>Sample not found.</p>
-    </div>
-  );
+  if (loading) return <p>Loading sample details...</p>;
+  if (error) return <p>{error}</p>;
+  if (!sample) return <p>Sample not found.</p>;
 
   const formatDate = (dateStr) => (dateStr ? new Date(dateStr).toLocaleString() : "-");
 
   return (
-    <div className="sample-details-container">
-      <div className="sample-details-card">
-        <div className="sample-header">
-          <h2>Sample Details</h2>
-          <div className="sample-ref-badge">
-            {sample.sampleRefNo || "-"}
-          </div>
-        </div>
-        
-        <div className="details-grid">
-          <div className="detail-item">
-            <strong>Request Ref</strong>
-            <p>{sample.requestRefNo || "-"}</p>
-          </div>
-          
-          <div className="detail-item">
-            <strong>Sample Ref</strong>
-            <p>{sample.sampleRefNo || "-"}</p>
-          </div>
-          
-          <div className="detail-item">
-            <strong>From</strong>
-            <p>{Array.isArray(sample.from) ? sample.from.join(", ") : sample.from || "-"}</p>
-          </div>
-          
-          <div className="detail-item">
-            <strong>To</strong>
-            <p>{sample.to || "-"}</p>
-          </div>
-          
-          <div className="detail-item">
-            <strong>Route</strong>
-            <p>{sample.sampleRoute || "-"}</p>
-          </div>
-          
-          <div className="detail-item">
-            <strong>Test Method</strong>
-            <p>{sample.testMethod || "-"}</p>
-          </div>
-          
-          <div className="detail-item">
-            <strong>Analysed By</strong>
-            <p>{sample.analysedBy || "-"}</p>
-          </div>
-          
-          <div className="detail-item">
-            <strong>Completed Date</strong>
-            <p>{sample.completedDate || "-"}</p>
-          </div>
-          
-          <div className="detail-item">
-            <strong>Completed Time</strong>
-            <p>{sample.completedTime || "-"}</p>
-          </div>
-          
-          <div className="detail-item">
-            <strong>Created At</strong>
-            <p>{formatDate(sample.createdAt)}</p>
-          </div>
-          
-          <div className="detail-item">
-            <strong>Received</strong>
-            <p>{sample.received ? "Yes" : "No"}</p>
-          </div>
-          
-          {sample.received && (
-            <div className="detail-item">
-              <strong>Received Date & Time</strong>
-              <p>{sample.receivedDate || "-"} {sample.receivedTime || "-"}</p>
-            </div>
-          )}
-        </div>
+    <div>
+      <h2>Sample Details</h2>
+      <p><strong>Sample Reference No:</strong> {sample.sampleRefNo || "-"}</p>
+      <p><strong>Request Reference No:</strong> {sample.requestRefNo || "-"}</p>
+      <p><strong>From:</strong> {Array.isArray(sample.from) ? sample.from.join(", ") : sample.from || "-"}</p>
+      <p><strong>To:</strong> {sample.to || "-"}</p>
+      <p><strong>Route:</strong> {sample.sampleRoute || "-"}</p>
+      <p><strong>Test Method:</strong> {sample.testMethod || "-"}</p>
+      <p><strong>Remarks:</strong> {sample.remarks || "-"}</p>
+      <p><strong>Analysed By:</strong> {sample.analysedBy || "-"}</p>
 
-        <div className="results-section">
-          <h3>Results</h3>
-          {sample.results && sample.results.length > 0 ? (
-            <div className="results-table-container">
-              <table className="results-table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>As (ppb)</th>
-                    <th>Sb (ppb)</th>
-                    <th>Al (ppb)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sample.results.map((r, i) => (
-                    <tr key={i}>
-                      <td>{i + 1}</td>
-                      <td>{r.As_ppb ?? "-"}</td>
-                      <td>{r.Sb_ppb ?? "-"}</td>
-                      <td>{r.Al_ppb ?? "-"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="no-results">
-              <p>No results entered.</p>
-            </div>
-          )}
-        </div>
-      </div>
+      {/* ✅ Added completion date and time fields */}
+      <p><strong>Completion Date:</strong> {sample.completedDate || "-"}</p>
+      <p><strong>Completion Time:</strong> {sample.completedTime || "-"}</p>
+
+      <p><strong>Created At:</strong> {formatDate(sample.createdAt)}</p>
+      <p><strong>Received:</strong> {sample.received ? "Yes" : "No"}</p>
+
+      {sample.received && (
+        <>
+          <p><strong>Received Date:</strong> {sample.receivedDate || sample.sampleReceivedDate || "-"}</p>
+          <p><strong>Received Time:</strong> {sample.receivedTime || sample.sampleReceivedTime || "-"}</p>
+        </>
+      )}
+
+      {sample.status && <p><strong>Status:</strong> {sample.status}</p>}
+      {sample.assignedLab && <p><strong>Assigned Lab:</strong> {sample.assignedLab}</p>}
+
+      <h3>Results</h3>
+      {sample.results && sample.results.length > 0 ? (
+        <table border="1" cellPadding="6">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>As (ppb)</th>
+              <th>Sb (ppb)</th>
+              <th>Al (ppb)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sample.results.map((r, i) => (
+              <tr key={i}>
+                <td>{i + 1}</td>
+                <td>{r.As_ppb ?? "-"}</td>
+                <td>{r.Sb_ppb ?? "-"}</td>
+                <td>{r.Al_ppb ?? "-"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p>No results found.</p>
+      )}
     </div>
   );
 }

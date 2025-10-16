@@ -4,7 +4,10 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import jsPDF from "jspdf";
 import QRCode from "qrcode";
+import emailjs from "emailjs-com";
+
 const FRONTEND_URL = "https://hay-card-front-end.vercel.app/";
+
 export default function LabAdminDashboard() {
   const [samples, setSamples] = useState([]);
   const [selectedSample, setSelectedSample] = useState(null);
@@ -84,151 +87,205 @@ export default function LabAdminDashboard() {
     }
   };
 
-  const finalizeSample = async (id) => {
-    if (window.confirm("Are you sure you want to finalize this sample? This action cannot be undone.")) {
-      try {
-        await axios.put(
-          `https://hay-card-back-end.vercel.app/samples/${id}`,
-          { isFinalized: true },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        toast.success("Sample finalized successfully!");
-        fetchSamples();
-      } catch (err) {
-        console.error("Error finalizing sample:", err);
-        toast.error("Failed to finalize sample");
-      }
+  const generatePDF = (sample) => {
+    const doc = new jsPDF();
+    let y = 20; // starting y position
+
+    doc.setFontSize(16);
+    doc.text(`Sample Report - ${sample.sampleId}`, 20, y);
+    y += 10;
+
+    doc.setFontSize(12);
+    doc.text(`Request Ref: ${sample.requestRefNo}`, 20, y);
+    y += 10;
+    doc.text(`Sample Ref: ${sample.sampleRefNo}`, 20, y);
+    y += 10;
+    doc.text(`From: ${Array.isArray(sample.from) ? sample.from.join(", ") : sample.from}`, 20, y);
+    y += 10;
+    doc.text(`To: ${sample.to}`, 20, y);
+    y += 10;
+    doc.text(`Route: ${sample.sampleRoute}`, 20, y);
+    y += 10;
+    doc.text(`Test Method: ${sample.testMethod}`, 20, y);
+    y += 10;
+    doc.text(`Analysed By: ${sample.analysedBy || "-"}`, 20, y);
+    y += 10;
+    doc.text(`Completed Date: ${sample.completedDate || "-"}`, 20, y);
+    y += 10;
+    doc.text(`Completed Time: ${sample.completedTime || "-"}`, 20, y);
+    y += 10;
+    doc.text(`Created At: ${new Date(sample.createdAt).toLocaleString()}`, 20, y);
+    y += 10;
+
+    // Received info
+    if (sample.received) {
+      doc.text(`Received: Yes`, 20, y);
+      y += 10;
+      doc.text(`Received Date: ${sample.receivedDate || "-"}`, 20, y);
+      y += 10;
+      doc.text(`Received Time: ${sample.receivedTime || "-"}`, 20, y);
+      y += 10;
+    } else {
+      doc.text(`Received: No`, 20, y);
+      y += 10;
     }
+
+    // Results section
+    doc.text("Results:", 20, y);
+    y += 10;
+    if (sample.results && sample.results.length > 0) {
+      sample.results.forEach((r, i) => {
+        doc.text(
+          `Row ${i + 1} - As: ${r.As_ppb || "-"}, Sb: ${r.Sb_ppb || "-"}, Al: ${r.Al_ppb || "-"}`,
+          25,
+          y
+        );
+        y += 10;
+      });
+    } else {
+      doc.text("No results entered.", 25, y);
+      y += 10;
+    }
+
+    return doc;
   };
 
- 
+  const finalizeSample = async (id) => {
+  if (window.confirm("Are you sure you want to finalize this sample? This action cannot be undone.")) {
+    try {
+      // Get the sample data first
+      const sample = samples.find(s => s._id === id);
+      if (!sample) {
+        toast.error("Sample not found");
+        return;
+      }
 
-const BACKEND_URL = "https://hay-card-back-end.vercel.app";
- // use your ngrok URL
-
-const FRONTEND_URL = "https://hay-card-front-end.vercel.app";
-
-const generateQR = async (sample) => {
-  try {
-    // Append sample ID only (public access for QR)
-    // QR points to public route
-    const url = `${FRONTEND_URL}/sample-details?id=${sample._id}`; 
-
-    const qrDataUrl = await QRCode.toDataURL(url);
-
-    const win = window.open();
-    win.document.write(`
-      <div style="
-        font-family: 'Poppins', sans-serif;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-        background: linear-gradient(135deg, #e0f7fa, #ffffff);
-        margin: 0;
-        padding: 20px;
-        color: #333;
-        text-align: center;
-      ">
-        <h3 style="
-          font-size: 24px;
-          margin-bottom: 20px;
-          color: #00796b;
-        ">Scan this QR to view sample details:</h3>
-        <img src="${qrDataUrl}" alt="QR Code" style="
-          width: 250px;
-          height: 250px;
-          border: 8px solid #00796b;
-          border-radius: 20px;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-          margin-bottom: 25px;
-        " />
-        <p style="
-          font-size: 16px;
-          max-width: 80%;
-          word-break: break-word;
-        ">
-          Or open this link: <br>
-          <a href="${url}" target="_blank" style="
-            color: #00695c;
-            text-decoration: none;
-            font-weight: bold;
-          ">${url}</a>
-        </p>
-      </div>
-    `);
-    win.document.close();
-  } catch (err) {
-    console.error("QR generation error:", err);
-  }
-};
-
-;
-
-  const generatePDF = (sample) => {
-  const doc = new jsPDF();
-  let y = 20; // starting y position
-
-  doc.setFontSize(16);
-  doc.text(`Sample Report - ${sample.sampleId}`, 20, y);
-  y += 10;
-
-  doc.setFontSize(12);
-  doc.text(`Request Ref: ${sample.requestRefNo}`, 20, y);
-  y += 10;
-  doc.text(`Sample Ref: ${sample.sampleRefNo}`, 20, y);
-  y += 10;
-  doc.text(`From: ${Array.isArray(sample.from) ? sample.from.join(", ") : sample.from}`, 20, y);
-  y += 10;
-  doc.text(`To: ${sample.to}`, 20, y);
-  y += 10;
-  doc.text(`Route: ${sample.sampleRoute}`, 20, y);
-  y += 10;
-  doc.text(`Test Method: ${sample.testMethod}`, 20, y);
-  y += 10;
-  doc.text(`Analysed By: ${sample.analysedBy || "-"}`, 20, y);
-  y += 10;
-  doc.text(`Completed Date: ${sample.completedDate || "-"}`, 20, y);
-  y += 10;
-  doc.text(`Completed Time: ${sample.completedTime || "-"}`, 20, y);
-  y += 10;
-  doc.text(`Created At: ${new Date(sample.createdAt).toLocaleString()}`, 20, y);
-  y += 10;
-
-  // Received info
-  if (sample.received) {
-    doc.text(`Received: Yes`, 20, y);
-    y += 10;
-    doc.text(`Received Date: ${sample.receivedDate || "-"}`, 20, y);
-    y += 10;
-    doc.text(`Received Time: ${sample.receivedTime || "-"}`, 20, y);
-    y += 10;
-  } else {
-    doc.text(`Received: No`, 20, y);
-    y += 10;
-  }
-
-  // Results section
-  doc.text("Results:", 20, y);
-  y += 10;
-  if (sample.results && sample.results.length > 0) {
-    sample.results.forEach((r, i) => {
-      doc.text(
-        `Row ${i + 1} - As: ${r.As_ppb || "-"}, Sb: ${r.Sb_ppb || "-"}, Al: ${r.Al_ppb || "-"}`,
-        25,
-        y
+      // 1️⃣ Finalize sample in database
+      await axios.put(
+        `https://hay-card-back-end.vercel.app/samples/${id}`,
+        { isFinalized: true },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      y += 10;
-    });
-  } else {
-    doc.text("No results entered.", 25, y);
-    y += 10;
-  }
 
-  doc.save(`Sample_${sample.sampleId}.pdf`);
+      // 2️⃣ Generate PDF and convert to base64
+      const pdfDoc = generatePDF(sample);
+      const pdfBlob = pdfDoc.output('blob');
+      
+      // Convert blob to base64 for EmailJS
+      const pdfBase64 = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          // Remove data:application/pdf;base64, prefix
+          const base64 = reader.result.split(',')[1];
+          resolve(base64);
+        };
+        reader.readAsDataURL(pdfBlob);
+      });
+
+      // 3️⃣ Prepare email parameters
+      const templateParams = {
+        to_email: "pcf@haycarb.com", // Replace with actual recipient email
+        subject: `Sample Finalized - ${sample.sampleId}`,
+        message: `
+          Sample has been finalized successfully.
+          
+          Sample Details:
+          - Sample ID: ${sample.sampleId}
+          - Request Ref: ${sample.requestRefNo}
+          - Sample Ref: ${sample.sampleRefNo}
+          - From: ${Array.isArray(sample.from) ? sample.from.join(", ") : sample.from}
+          - To: ${sample.to}
+          - Route: ${sample.sampleRoute}
+          - Test Method: ${sample.testMethod}
+          - Analysed By: ${sample.analysedBy || "N/A"}
+          - Completed Date: ${sample.completedDate || "N/A"}
+          
+          Please find the detailed report attached as PDF.
+        `,
+        sample_id: sample.sampleId,
+        from_lab: "HayCarb Laboratory",
+        attachment: pdfBase64,
+        attachment_name: `Sample_${sample.sampleId}_Report.pdf`
+      };
+
+      // 4️⃣ Send email using EmailJS (without form data)
+      await emailjs.send(
+        'service_y3opwg9',
+        'template_94e9por',
+        templateParams,
+        'cqdoVe_FZGHqgnpDW'
+      );
+
+      toast.success("Sample finalized and email with PDF sent successfully!");
+      fetchSamples();
+      
+    } catch (err) {
+      console.error("Error finalizing sample or sending email:", err);
+      
+      // More specific error messages
+      if (err.response && err.response.status === 400) {
+        toast.error("Failed to finalize sample: Invalid data");
+      } else if (err.message && err.message.includes("Network Error")) {
+        toast.error("Network error: Please check your connection");
+      } else {
+        toast.error("Failed to finalize sample or send email. Please try again.");
+      }
+    }
+  }
 };
 
+  const generateQR = async (sample) => {
+    try {
+      const url = `${FRONTEND_URL}/sample-details?id=${sample._id}`; 
+      const qrDataUrl = await QRCode.toDataURL(url);
+
+      const win = window.open();
+      win.document.write(`
+        <div style="
+          font-family: 'Poppins', sans-serif;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+          background: linear-gradient(135deg, #e0f7fa, #ffffff);
+          margin: 0;
+          padding: 20px;
+          color: #333;
+          text-align: center;
+        ">
+          <h3 style="
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #00796b;
+          ">Scan this QR to view sample details:</h3>
+          <img src="${qrDataUrl}" alt="QR Code" style="
+            width: 250px;
+            height: 250px;
+            border: 8px solid #00796b;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 25px;
+          " />
+          <p style="
+            font-size: 16px;
+            max-width: 80%;
+            word-break: break-word;
+          ">
+            Or open this link: <br>
+            <a href="${url}" target="_blank" style="
+              color: #00695c;
+              text-decoration: none;
+              font-weight: bold;
+            ">${url}</a>
+          </p>
+        </div>
+      `);
+      win.document.close();
+    } catch (err) {
+      console.error("QR generation error:", err);
+    }
+  };
 
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to logout?")) {
@@ -254,6 +311,7 @@ const generateQR = async (sample) => {
     }
   };
 
+  // ... (rest of the component JSX remains exactly the same)
   return (
     <div style={styles.container}>
       <ToastContainer position="top-right" autoClose={3000} />
@@ -383,7 +441,7 @@ const generateQR = async (sample) => {
                               ...styles.button,
                               ...styles.primaryButton
                             }}
-                            onClick={() => generatePDF(sample)}
+                            onClick={() => generatePDF(sample).save(`Sample_${sample.sampleId}.pdf`)}
                           >
                             PDF
                           </button>
@@ -503,8 +561,7 @@ const generateQR = async (sample) => {
   );
 }
 
-// styles remain exactly same as your previous file
-
+// ... (styles remain exactly the same)
 const styles = {
   container: {
     minHeight: "100vh",

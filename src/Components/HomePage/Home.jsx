@@ -9,7 +9,7 @@ import i6 from '../../assets/i6.jpg'
 import i8 from '../../assets/i8.jpg'
 import v1 from '../../assets/v1.jpg'
 
-
+import Features from '../Features/Features'
 
 import c1 from '../../assets/c1.webp'
 import c2 from '../../assets/c2.webp'
@@ -569,6 +569,7 @@ function Home() {
           </div>
         </div>
       </section>
+      <Features />
 
       {/* About Section */}
       <section style={styles.aboutSection}>

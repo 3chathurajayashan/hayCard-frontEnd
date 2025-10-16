@@ -7,6 +7,7 @@ import i3 from '../../assets/i3.jpg'
 import i4 from '../../assets/i4.jpg'
 import i6 from '../../assets/i6.jpg'
 import i8 from '../../assets/i8.jpg'
+import v1 from '../../assets/v1.jpg'
 
 
 
@@ -99,7 +100,7 @@ function Home() {
     {
       title: "Fast. Safe. Sustainable Charging for Every EV",
       subtitle: "Experience next-generation EV charging with EV Filling Station. Our stations are designed with cutting-edge technology to ensure maximum safety.",
-      image: i2
+      image: v1
     },
     {
       title: "Shaping lasting Relationships through trust",

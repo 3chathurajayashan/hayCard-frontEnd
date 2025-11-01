@@ -11,11 +11,12 @@ import PreSign from './Components/BeforSign/PreSign.jsx'
 import Guide from './Components/Guidelines/Guide.jsx'
 import SampleDetails from './Components/SampleDetails/SampleDetails.jsx';
 import Feature from './Components/TestsSection/Test.jsx'
+import Maintenece from './Maintenece.jsx';
 const router = createBrowserRouter([
 
   {
     path:"/",
-    element: <App/>,
+    element: <Maintenece/>,
   },
     {
     path:"/sign",

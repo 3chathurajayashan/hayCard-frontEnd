@@ -15,6 +15,7 @@ import Storage from './Components/StorageSection/Storage.jsx'
 import Maintenece from './Maintenece.jsx';
 import ChemHome from './Components/ChemicalSection/ChemHome.jsx';
 import ChemicalRequestPage from './Components/RequestForm/Request.jsx';
+import SampleMenu from './Components/SampleMenu/SampleMenu.jsx';
 const router = createBrowserRouter([
 
   {
@@ -64,6 +65,10 @@ const router = createBrowserRouter([
     {
     path:"/purchasing",
     element: <ChemicalRequestPage />,
+  },
+   {
+    path:"/cushome",
+    element: <SampleMenu />,
   },
 ]);
 

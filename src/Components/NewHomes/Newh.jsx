@@ -16,7 +16,11 @@ export default function Dashboard() {
 
       if (section === "Chemical") {
         navigate("/chemHome");
-      } else {
+      }else if(section ==="Customer"){
+         navigate("/cushome");
+      } 
+      
+      else {
         setMessage(`Proceeding to ${section} section...`);
         setTimeout(() => setMessage(""), 2500);
       }
@@ -47,7 +51,7 @@ export default function Dashboard() {
         {[
           { title: "Chemical", desc: "Manage and track all chemical inventory details." },
           { title: "Logins", desc: "Control and monitor user access and authentication." },
-          { title: "Samples", desc: "Analyze, record, and manage lab sample data easily." },
+          { title: "Customer", desc: "Analyze, record, and manage lab sample data easily." },
         ].map((item, i) => (
           <div key={i} className="card">
             <div className="card-content">

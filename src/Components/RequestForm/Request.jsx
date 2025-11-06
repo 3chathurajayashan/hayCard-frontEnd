@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { FaArrowLeft } from "react-icons/fa"; // back icon
 
 export default function ChemicalRequestPage() {
   const [formData, setFormData] = useState({
@@ -11,6 +12,7 @@ export default function ChemicalRequestPage() {
 
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
 
   const chemicalOptions = [
     "Hydrochloric Acid",
@@ -42,6 +44,7 @@ export default function ChemicalRequestPage() {
     e.preventDefault();
     setIsSubmitting(true);
     setMessage("");
+    setShowNotification(false);
 
     try {
       const submissionData = {
@@ -57,7 +60,10 @@ export default function ChemicalRequestPage() {
         submissionData
       );
 
-      setMessage(res.data.message);
+      setMessage(res.data.message || "✅ Request sent successfully!");
+      setShowNotification(true);
+      setTimeout(() => setShowNotification(false), 3500);
+
       setFormData({
         chemicalName: "",
         quantity: "",
@@ -65,11 +71,15 @@ export default function ChemicalRequestPage() {
         customChemical: "",
       });
     } catch (error) {
-      setMessage(error.response?.data?.message || "Error submitting form ❌");
+      setMessage(error.response?.data?.message || "❌ Error submitting form");
+      setShowNotification(true);
+      setTimeout(() => setShowNotification(false), 3500);
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  const goBack = () => window.history.back();
 
   return (
     <>
@@ -88,6 +98,7 @@ export default function ChemicalRequestPage() {
           justify-content: center;
           min-height: 100vh;
           padding: 20px;
+          position: relative;
         }
 
         .form-container {
@@ -98,6 +109,28 @@ export default function ChemicalRequestPage() {
           width: 100%;
           box-shadow: 0 8px 30px rgba(0,0,0,0.08);
           border: 1px solid #e1e8f0;
+          position: relative;
+        }
+
+        .back-btn {
+          position: absolute;
+          top: 18px;
+          left: 18px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #f1f5f9;
+          border: none;
+          border-radius: 50%;
+          width: 38px;
+          height: 38px;
+          cursor: pointer;
+          transition: 0.3s;
+        }
+
+        .back-btn:hover {
+          background: #e2e8f0;
+          transform: scale(1.1);
         }
 
         .title {
@@ -166,29 +199,48 @@ export default function ChemicalRequestPage() {
           cursor: not-allowed;
         }
 
-        .message {
-          text-align: center;
-          margin-top: 20px;
-          padding: 12px;
-          border-radius: 8px;
-          font-weight: 500;
+        /* Notification (popup style) */
+        .notification {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%) scale(0.9);
+          background: white;
+          padding: 20px 30px;
+          border-radius: 15px;
+          box-shadow: 0 10px 35px rgba(0,0,0,0.15);
+          font-size: 16px;
+          font-weight: 600;
+          animation: popUp 0.4s ease forwards;
+          z-index: 1000;
         }
 
-        .success {
-          background-color: #d1fae5;
+        .notification.success {
+          border-left: 6px solid #10b981;
           color: #065f46;
-          border: 1px solid #a7f3d0;
         }
 
-        .error {
-          background-color: #fee2e2;
+        .notification.error {
+          border-left: 6px solid #ef4444;
           color: #991b1b;
-          border: 1px solid #fecaca;
+        }
+
+        @keyframes popUp {
+          from { opacity: 0; transform: translate(-50%, -40%) scale(0.9); }
+          to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        @keyframes fadeOut {
+          to { opacity: 0; transform: translate(-50%, -60%) scale(0.95); }
         }
       `}</style>
 
       <div className="page-container">
         <div className="form-container">
+          <button className="back-btn" onClick={goBack} title="Go Back">
+            <FaArrowLeft color="#1e293b" />
+          </button>
+
           <h1 className="title">Chemical Request Form</h1>
           <p className="subtitle">Submit your chemical requirement below</p>
 
@@ -248,19 +300,19 @@ export default function ChemicalRequestPage() {
               {isSubmitting ? "Submitting..." : "Submit Request"}
             </button>
           </form>
-
-          {message && (
-            <div
-              className={`message ${
-                message.includes("Error") || message.includes("❌")
-                  ? "error"
-                  : "success"
-              }`}
-            >
-              {message}
-            </div>
-          )}
         </div>
+
+        {showNotification && (
+          <div
+            className={`notification ${
+              message.includes("Error") || message.includes("❌")
+                ? "error"
+                : "success"
+            }`}
+          >
+            {message}
+          </div>
+        )}
       </div>
     </>
   );

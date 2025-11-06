@@ -10,7 +10,7 @@ import i8 from '../../assets/i8.jpg'
 import v1 from '../../assets/v1.jpg'
 
 import Features from '../Features/Features'
-
+import Newh from '../NewHomes/Newh'
 import c1 from '../../assets/c1.webp'
 import c2 from '../../assets/c2.webp'
 import c3 from '../../assets/c3.webp'
@@ -410,32 +410,9 @@ function Home() {
         }
       `}</style>
       
-      {/* Header */}
-      <header style={{
-        ...styles.header,
-        backgroundColor: isHeaderScrolled ? 'rgba(255, 255, 255, 0.98)' : 'transparent',
-        backdropFilter: isHeaderScrolled ? 'blur(20px)' : 'none',
-        boxShadow: isHeaderScrolled ? '0 4px 30px rgba(0,0,0,0.08)' : 'none',
-        padding: isHeaderScrolled ? '0.8rem 0' : '1.5rem 0'
-      }}>
-        <div style={styles.headerContent}>
-          <div style={styles.logo} className="slide-in-left">
-            <span style={styles.logoText}>HayCarb</span>
-            <div style={styles.logoSubtext}>Activated carbon solution</div>
-          </div>
-          <nav style={styles.nav} className="slide-in-right">
-            <a href="/" style={styles.navLink} className="nav-link-hover">Home</a>
-            <a href="/test" style={styles.navLink} className="nav-link-hover">Features</a>
-            <a href="/services" style={styles.navLink} className="nav-link-hover">Services</a>
-            
-            <Link to="/guide"style={styles.navLink} className="nav-link-hover">Guidelines</Link>
-            <a href="/contact" style={styles.navLink} className="nav-link-hover">Contact</a>
-            <a href="/preSign" style={styles.signInBtn} className="btn-primary">
-              Sign in
-            </a>
-          </nav>
-        </div>
-      </header>
+      <Newh />
+
+     
 
       {/* Hero Section with Slider */}
       <section style={styles.hero}>

@@ -12,11 +12,12 @@ import Guide from './Components/Guidelines/Guide.jsx'
 import SampleDetails from './Components/SampleDetails/SampleDetails.jsx';
 import Feature from './Components/TestsSection/Test.jsx'
 import Maintenece from './Maintenece.jsx';
+import ChemHome from './Components/ChemicalSection/ChemHome.jsx';
 const router = createBrowserRouter([
 
   {
     path:"/",
-    element: <Maintenece/>,
+    element: <App/>,
   },
     {
     path:"/sign",
@@ -50,7 +51,10 @@ const router = createBrowserRouter([
     path:"/test",
     element: <Feature />,
   },
-  
+   {
+    path:"/ChemHome",
+    element: <ChemHome />,
+  },
   
 ]);
 

@@ -6,11 +6,11 @@ export default function ChemicalRequestPage() {
     chemicalName: "",
     quantity: "",
     handOverRange: "",
-    fixedHandOverDate: "",
-    
+    customChemical: "",
   });
 
   const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const chemicalOptions = [
     "Hydrochloric Acid",
@@ -25,231 +25,239 @@ export default function ChemicalRequestPage() {
   const handoverOptions = [
     "Within 1 Week",
     "Within 2 Weeks",
+    "Within 3 Weeks",
     "Within 1 Month",
-    "Within 2 Months",
-    "Fixed Date",
   ];
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+      ...(name === "chemicalName" && value !== "Other" && { customChemical: "" }),
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setMessage("");
+
     try {
-      const res = await axios.post("http://localhost:5000/api/chemicals/add", formData);
+      const submissionData = {
+        chemicalName: formData.chemicalName,
+        customChemical:
+          formData.chemicalName === "Other" ? formData.customChemical : "",
+        quantity: formData.quantity,
+        handOverRange: formData.handOverRange,
+      };
+
+      const res = await axios.post(
+        "http://localhost:5000/api/chemicals/add",
+        submissionData
+      );
+
       setMessage(res.data.message);
       setFormData({
         chemicalName: "",
         quantity: "",
         handOverRange: "",
-        fixedHandOverDate: "",
-        customDate: "",
+        customChemical: "",
       });
     } catch (error) {
-      setMessage(error.response?.data?.message || "Error submitting form");
+      setMessage(error.response?.data?.message || "Error submitting form ❌");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <>
       <style>{`
-        /* Background */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-          margin: 0;
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          background: linear-gradient(135deg, #e6f0ff, #d0e4ff);
+          font-family: 'Inter', 'Segoe UI', sans-serif;
+          background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+          min-height: 100vh;
         }
 
         .page-container {
-          min-height: 100vh;
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 30px;
+          min-height: 100vh;
+          padding: 20px;
         }
 
         .form-container {
-          background: #fff;
-          padding: 40px;
-          border-radius: 16px;
+          background: white;
+          padding: 48px 40px;
+          border-radius: 20px;
+          max-width: 560px;
           width: 100%;
-          max-width: 550px;
-          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-          border: 1px solid #e0e0e0;
+          box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+          border: 1px solid #e1e8f0;
         }
 
         .title {
+          font-size: 32px;
+          font-weight: 700;
+          color: #1a365d;
           text-align: center;
-          color: #0a4b9f;
-          font-size: 28px;
-          font-weight: bold;
           margin-bottom: 10px;
         }
 
         .subtitle {
+          color: #64748b;
+          font-size: 15px;
           text-align: center;
-          color: #666;
-          font-size: 14px;
-          margin-bottom: 25px;
-        }
-
-        .form-group {
-          margin-bottom: 18px;
+          margin-bottom: 30px;
         }
 
         label {
-          display: block;
-          color: #333;
           font-weight: 600;
-          margin-bottom: 6px;
+          color: #374151;
+          display: block;
+          margin-bottom: 8px;
         }
 
-        input[type="text"],
-        input[type="date"],
-        select {
+        .required::after {
+          content: " *";
+          color: #dc2626;
+        }
+
+        input, select {
           width: 100%;
-          padding: 10px 12px;
-          border: 1px solid #ccc;
-          border-radius: 6px;
-          font-size: 14px;
+          padding: 12px 14px;
+          font-size: 15px;
+          border: 2px solid #e2e8f0;
+          border-radius: 10px;
+          margin-bottom: 20px;
           outline: none;
-          transition: 0.3s;
+          transition: border-color 0.2s ease;
         }
 
-        input:focus,
-        select:focus {
-          border-color: #2b6ef7;
-          box-shadow: 0 0 5px rgba(43, 110, 247, 0.3);
+        input:focus, select:focus {
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
         .submit-btn {
           width: 100%;
-          background: #2b6ef7;
+          background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
           color: white;
           font-weight: 600;
-          padding: 10px 0;
+          font-size: 16px;
+          padding: 14px 0;
           border: none;
-          border-radius: 6px;
+          border-radius: 10px;
           cursor: pointer;
           transition: 0.3s;
         }
 
-        .submit-btn:hover {
-          background: #1f56c0;
+        .submit-btn:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(59,130,246,0.3);
+        }
+
+        .submit-btn:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
         }
 
         .message {
           text-align: center;
-          margin-top: 15px;
+          margin-top: 20px;
+          padding: 12px;
+          border-radius: 8px;
+          font-weight: 500;
         }
 
-        .success-text {
-          color: green;
-          font-weight: 600;
+        .success {
+          background-color: #d1fae5;
+          color: #065f46;
+          border: 1px solid #a7f3d0;
         }
 
-        .error-text {
-          color: red;
-          font-weight: 600;
+        .error {
+          background-color: #fee2e2;
+          color: #991b1b;
+          border: 1px solid #fecaca;
         }
       `}</style>
 
       <div className="page-container">
         <div className="form-container">
-          <h1 className="title">Chemical Request Portal</h1>
-          <p className="subtitle">Fill in the chemical details and submit your request.</p>
+          <h1 className="title">Chemical Request Form</h1>
+          <p className="subtitle">Submit your chemical requirement below</p>
 
           <form onSubmit={handleSubmit}>
-            {/* Chemical Name */}
-            <div className="form-group">
-              <label>Chemical Name</label>
-              <select
-                name="chemicalName"
-                value={formData.chemicalName}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Select Chemical</option>
-                {chemicalOptions.map((chem, idx) => (
-                  <option key={idx} value={chem}>
-                    {chem}
-                  </option>
-                ))}
-              </select>
+            <label className="required">Chemical Name</label>
+            <select
+              name="chemicalName"
+              value={formData.chemicalName}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Chemical</option>
+              {chemicalOptions.map((chem, i) => (
+                <option key={i} value={chem}>
+                  {chem}
+                </option>
+              ))}
+            </select>
 
-              {formData.chemicalName === "Other" && (
-                <input
-                  type="text"
-                  name="chemicalName"
-                  placeholder="Enter chemical name"
-                  onChange={handleChange}
-                />
-              )}
-            </div>
-
-            {/* Quantity */}
-            <div className="form-group">
-              <label>Quantity</label>
+            {formData.chemicalName === "Other" && (
               <input
                 type="text"
-                name="quantity"
-                placeholder="e.g. 25 L, 10 kg"
-                value={formData.quantity}
+                name="customChemical"
+                placeholder="Enter specific chemical name"
+                value={formData.customChemical}
                 onChange={handleChange}
                 required
               />
-            </div>
-
-            {/* Handover Range */}
-            <div className="form-group">
-              <label>Hand Over Range</label>
-              <select
-                name="handOverRange"
-                value={formData.handOverRange}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Select Range</option>
-                {handoverOptions.map((range, idx) => (
-                  <option key={idx} value={range}>
-                    {range}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Fixed Date */}
-            {formData.handOverRange === "Fixed Date" && (
-              <div className="form-group">
-                <label>Fixed Hand Over Date</label>
-                <input
-                  type="date"
-                  name="fixedHandOverDate"
-                  value={formData.fixedHandOverDate}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
             )}
 
-           
+            <label className="required">Quantity</label>
+            <input
+              type="text"
+              name="quantity"
+              placeholder="Example: 25 L, 10 kg, 500 mL"
+              value={formData.quantity}
+              onChange={handleChange}
+              required
+            />
 
-            {/* Submit Button */}
-            <button type="submit" className="submit-btn">
-              Submit Request
+            <label className="required">Hand Over Timeline</label>
+            <select
+              name="handOverRange"
+              value={formData.handOverRange}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Timeline</option>
+              {handoverOptions.map((range, i) => (
+                <option key={i} value={range}>
+                  {range}
+                </option>
+              ))}
+            </select>
+
+            <button type="submit" className="submit-btn" disabled={isSubmitting}>
+              {isSubmitting ? "Submitting..." : "Submit Request"}
             </button>
           </form>
 
           {message && (
-            <div className="message">
-              <p
-                className={
-                  message.includes("Error") ? "error-text" : "success-text"
-                }
-              >
-                {message}
-              </p>
+            <div
+              className={`message ${
+                message.includes("Error") || message.includes("❌")
+                  ? "error"
+                  : "success"
+              }`}
+            >
+              {message}
             </div>
           )}
         </div>

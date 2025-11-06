@@ -11,6 +11,7 @@ import PreSign from './Components/BeforSign/PreSign.jsx'
 import Guide from './Components/Guidelines/Guide.jsx'
 import SampleDetails from './Components/SampleDetails/SampleDetails.jsx';
 import Feature from './Components/TestsSection/Test.jsx'
+import Storage from './Components/StorageSection/Storage.jsx'
 import Maintenece from './Maintenece.jsx';
 import ChemHome from './Components/ChemicalSection/ChemHome.jsx';
 const router = createBrowserRouter([
@@ -55,7 +56,10 @@ const router = createBrowserRouter([
     path:"/ChemHome",
     element: <ChemHome />,
   },
-  
+   {
+    path:"/storage",
+    element: <Storage />,
+  },
 ]);
 
 

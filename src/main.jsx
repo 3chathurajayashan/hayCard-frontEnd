@@ -16,6 +16,7 @@ import Maintenece from './Maintenece.jsx';
 import ChemHome from './Components/ChemicalSection/ChemHome.jsx';
 import ChemicalRequestPage from './Components/RequestForm/Request.jsx';
 import SampleMenu from './Components/SampleMenu/SampleMenu.jsx';
+import SampleIn from './Components/SampleIn/SampleIn.jsx'
 const router = createBrowserRouter([
 
   {
@@ -69,6 +70,10 @@ const router = createBrowserRouter([
    {
     path:"/cushome",
     element: <SampleMenu />,
+  },
+    {
+    path:"/samplein",
+    element: <SampleIn />,
   },
 ]);
 

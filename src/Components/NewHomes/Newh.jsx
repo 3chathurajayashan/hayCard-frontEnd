@@ -18,7 +18,9 @@ export default function Dashboard() {
         navigate("/chemHome");
       }else if(section ==="Customer"){
          navigate("/cushome");
-      } 
+      } else if(section === "Logins"){
+        navigate("/preSign")
+      }
       
       else {
         setMessage(`Proceeding to ${section} section...`);

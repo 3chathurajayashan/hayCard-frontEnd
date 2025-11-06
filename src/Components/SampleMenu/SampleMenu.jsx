@@ -12,7 +12,7 @@ export default function SampleMenu() {
       icon: <FaFlask size={60} />,
       description: "Register new samples received for laboratory testing.",
       color: "#0056b3",
-      link: "/sample-in",
+      link: "/samplein",
     },
     {
       title: "Sample Assign",

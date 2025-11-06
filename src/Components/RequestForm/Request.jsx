@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+"use client";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { FaArrowLeft } from "react-icons/fa"; // back icon
+import { motion, AnimatePresence } from "framer-motion";
+import { FaArrowLeft } from "react-icons/fa";
 
 export default function ChemicalRequestPage() {
   const [formData, setFormData] = useState({
@@ -10,6 +12,7 @@ export default function ChemicalRequestPage() {
     customChemical: "",
   });
 
+  const [chemicals, setChemicals] = useState([]);
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
@@ -29,7 +32,22 @@ export default function ChemicalRequestPage() {
     "Within 2 Weeks",
     "Within 3 Weeks",
     "Within 1 Month",
+    "Fixed Date",
   ];
+
+  // ✅ Fetch all chemicals on load
+  useEffect(() => {
+    fetchChemicals();
+  }, []);
+
+  const fetchChemicals = async () => {
+    try {
+      const res = await axios.get("https://hay-card-back-end.vercel.app/api/request");
+      setChemicals(res.data);
+    } catch (error) {
+      console.error("Error fetching chemicals:", error);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -55,13 +73,11 @@ export default function ChemicalRequestPage() {
         handOverRange: formData.handOverRange,
       };
 
-      const res = await axios.post(
-        "http://localhost:5000/api/chemicals/add",
-        submissionData
-      );
+      const res = await axios.post("https://hay-card-back-end.vercel.app/api/request/add", submissionData);
 
       setMessage(res.data.message || "✅ Request sent successfully!");
       setShowNotification(true);
+      fetchChemicals(); // refresh list
       setTimeout(() => setShowNotification(false), 3500);
 
       setFormData({
@@ -94,22 +110,23 @@ export default function ChemicalRequestPage() {
 
         .page-container {
           display: flex;
+          flex-direction: column;
           align-items: center;
-          justify-content: center;
+          justify-content: start;
           min-height: 100vh;
-          padding: 20px;
-          position: relative;
+          padding: 40px 20px;
         }
 
         .form-container {
           background: white;
-          padding: 48px 40px;
+          padding: 36px 40px;
           border-radius: 20px;
           max-width: 560px;
           width: 100%;
           box-shadow: 0 8px 30px rgba(0,0,0,0.08);
           border: 1px solid #e1e8f0;
           position: relative;
+          margin-bottom: 40px;
         }
 
         .back-btn {
@@ -134,7 +151,7 @@ export default function ChemicalRequestPage() {
         }
 
         .title {
-          font-size: 32px;
+          font-size: 30px;
           font-weight: 700;
           color: #1a365d;
           text-align: center;
@@ -145,7 +162,7 @@ export default function ChemicalRequestPage() {
           color: #64748b;
           font-size: 15px;
           text-align: center;
-          margin-bottom: 30px;
+          margin-bottom: 25px;
         }
 
         label {
@@ -199,7 +216,36 @@ export default function ChemicalRequestPage() {
           cursor: not-allowed;
         }
 
-        /* Notification (popup style) */
+        .table-container {
+          width: 100%;
+          max-width: 900px;
+          background: white;
+          border-radius: 16px;
+          padding: 20px;
+          box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          text-align: left;
+        }
+
+        th, td {
+          padding: 12px 10px;
+          border-bottom: 1px solid #e2e8f0;
+          font-size: 14px;
+        }
+
+        th {
+          color: #1e293b;
+          font-weight: 700;
+        }
+
+        td {
+          color: #475569;
+        }
+
         .notification {
           position: fixed;
           top: 50%;
@@ -228,10 +274,6 @@ export default function ChemicalRequestPage() {
         @keyframes popUp {
           from { opacity: 0; transform: translate(-50%, -40%) scale(0.9); }
           to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-        }
-
-        @keyframes fadeOut {
-          to { opacity: 0; transform: translate(-50%, -60%) scale(0.95); }
         }
       `}</style>
 
@@ -300,6 +342,41 @@ export default function ChemicalRequestPage() {
               {isSubmitting ? "Submitting..." : "Submit Request"}
             </button>
           </form>
+        </div>
+
+        {/* 🧪 Display all requested chemicals */}
+        <div className="table-container">
+          <h2 style={{ marginBottom: "15px", color: "#1e293b" }}>
+            Requested Chemicals
+          </h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Chemical</th>
+                <th>Quantity</th>
+                <th>Hand Over</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <AnimatePresence>
+                {chemicals.map((chem) => (
+                  <motion.tr
+                    key={chem._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <td>{chem.chemicalName}</td>
+                    <td>{chem.quantity}</td>
+                    <td>{chem.handOverRange}</td>
+                    <td>{new Date(chem.createdAt).toLocaleDateString()}</td>
+                  </motion.tr>
+                ))}
+              </AnimatePresence>
+            </tbody>
+          </table>
         </div>
 
         {showNotification && (

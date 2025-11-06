@@ -14,6 +14,7 @@ import Feature from './Components/TestsSection/Test.jsx'
 import Storage from './Components/StorageSection/Storage.jsx'
 import Maintenece from './Maintenece.jsx';
 import ChemHome from './Components/ChemicalSection/ChemHome.jsx';
+import ChemicalRequestPage from './Components/RequestForm/Request.jsx';
 const router = createBrowserRouter([
 
   {
@@ -59,6 +60,10 @@ const router = createBrowserRouter([
    {
     path:"/storage",
     element: <Storage />,
+  },
+    {
+    path:"/purchasing",
+    element: <ChemicalRequestPage />,
   },
 ]);
 

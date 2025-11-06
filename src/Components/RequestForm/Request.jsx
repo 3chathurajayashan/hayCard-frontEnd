@@ -56,7 +56,7 @@ export default function ChemicalRequestPage() {
       };
 
       const res = await axios.post(
-        "http://localhost:5000/api/chemicals/add",
+        "https://hay-card-back-end.vercel.app/api/chemicals/add",
         submissionData
       );
 

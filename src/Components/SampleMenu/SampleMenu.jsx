@@ -19,14 +19,14 @@ export default function SampleMenu() {
       icon: <FaTasks size={60} />,
       description: "Assign received samples to laboratory technicians.",
       color: "#2e7d32",
-      link: "/sample-assign",
+      link: "/sampleassign",
     },
     {
       title: "Sample Out",
       icon: <FaTruck size={60} />,
       description: "Dispatch completed samples and finalize reports.",
       color: "#b71c1c",
-      link: "/sample-out",
+      link: "/sampleout",
     },
   ];
 

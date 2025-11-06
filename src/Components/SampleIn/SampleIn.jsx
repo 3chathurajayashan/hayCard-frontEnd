@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function SamplePage() {
@@ -16,41 +17,65 @@ export default function SamplePage() {
 
   const gradeOptions = ["A", "B", "C", "D", "Other"];
 
-  // Handle input changes
+  const fetchSamples = async () => {
+    try {
+      const res = await axios.get("https://hay-card-back-end.vercel.app/api/cusSamples");
+      setSamples(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchSamples();
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setMessage({ text: "", type: "" });
 
-    // Simulate async submission
-    setTimeout(() => {
-      if (formData.referenceNumber && formData.quantity) {
-        setSamples([...samples, { ...formData }]);
-        setMessage({ text: "Sample added successfully!", type: "success" });
-        setFormData({ referenceNumber: "", quantity: "", grade: "A", date: "", time: "" });
-      } else {
-        setMessage({ text: "Please fill all required fields.", type: "error" });
-      }
+    try {
+      const res = await axios.post(
+        "https://hay-card-back-end.vercel.app/api/cusSamples/add",
+        formData
+      );
+      setMessage({ text: res.data.message, type: "success" });
+      setFormData({ referenceNumber: "", quantity: "", grade: "A", date: "", time: "" });
+      fetchSamples();
+    } catch (err) {
+      setMessage({
+        text: err.response?.data?.message || "Error submitting sample",
+        type: "error",
+      });
+    } finally {
       setIsSubmitting(false);
-    }, 1000);
+    }
   };
 
-  // Handle delete
-  const handleDelete = (ref) => {
-    setSamples(samples.filter((s) => s.referenceNumber !== ref));
-    setMessage({ text: "Sample deleted successfully!", type: "success" });
+  const handleDelete = async (ref) => {
+    if (!window.confirm("Are you sure you want to delete this sample?")) return;
+    try {
+      const res = await axios.delete(`https://hay-card-back-end.vercel.app/api/cusSamples/${ref}`);
+      setMessage({ text: res.data.message, type: "success" });
+      fetchSamples();
+    } catch (err) {
+      setMessage({
+        text: err.response?.data?.message || "Error deleting sample",
+        type: "error",
+      });
+    }
   };
 
   const handleBack = () => window.history.back();
 
   return (
     <div className="container">
-      {/* Back Button */}
       <motion.button
         className="back-btn"
         onClick={handleBack}
@@ -71,7 +96,6 @@ export default function SamplePage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            onClick={() => setMessage({ text: "", type: "" })}
           >
             {message.text}
           </motion.div>
@@ -110,15 +134,7 @@ export default function SamplePage() {
         <input type="date" name="date" value={formData.date} onChange={handleChange} required />
         <input type="time" name="time" value={formData.time} onChange={handleChange} required />
         <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? (
-            <motion.div
-              className="loader"
-              animate={{ rotate: 360 }}
-              transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-            />
-          ) : (
-            "Add Sample"
-          )}
+          {isSubmitting ? <motion.div className="loader" animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }}/> : "Add Sample"}
         </button>
       </motion.form>
 
@@ -137,7 +153,7 @@ export default function SamplePage() {
             </tr>
           </thead>
           <tbody>
-            {samples.length > 0 ? samples.map((s) => (
+            {samples.length > 0 ? samples.map(s => (
               <motion.tr key={s.referenceNumber} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
                 <td>{s.referenceNumber}</td>
                 <td>{s.quantity}</td>
@@ -149,13 +165,13 @@ export default function SamplePage() {
                 </td>
               </motion.tr>
             )) : (
-              <tr><td colSpan="6" style={{ textAlign: "center", color: "#777" }}>No samples added yet.</td></tr>
+              <tr><td colSpan="6" style={{ textAlign: "center", color: "#777" }}>No samples found.</td></tr>
             )}
           </tbody>
         </table>
       </motion.div>
 
-      {/* CSS */}
+      {/* Inline CSS */}
       <style>{`
         .container {
           max-width: 950px;
@@ -184,7 +200,6 @@ export default function SamplePage() {
           text-align: center;
           font-weight: 500;
           box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-          cursor: pointer;
         }
         .notification.success { background: #e6fffa; color: #065f46; }
         .notification.error { background: #fee2e2; color: #991b1b; }

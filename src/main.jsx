@@ -17,6 +17,8 @@ import ChemHome from './Components/ChemicalSection/ChemHome.jsx';
 import ChemicalRequestPage from './Components/RequestForm/Request.jsx';
 import SampleMenu from './Components/SampleMenu/SampleMenu.jsx';
 import SampleIn from './Components/SampleIn/SampleIn.jsx'
+import SampleAssign from './Components/SampleAssigns/Assign.jsx';
+import SampleOut from './Components/SampleOut/Out.jsx';
 const router = createBrowserRouter([
 
   {
@@ -74,6 +76,14 @@ const router = createBrowserRouter([
     {
     path:"/samplein",
     element: <SampleIn />,
+  },
+   {
+    path:"/sampleassign",
+    element: <SampleAssign />,
+  },
+  {
+    path:"/sampleout",
+    element: <SampleOut />,
   },
 ]);
 

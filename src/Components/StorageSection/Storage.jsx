@@ -27,10 +27,12 @@ export default function ChemicalStorage() {
     location: "",
     expiry: "",
     hazard: "",
+    emailReminder: false,
   });
 
   const handleChange = (e) => {
-    setNewChem({ ...newChem, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+    setNewChem({ ...newChem, [name]: type === "checkbox" ? checked : value });
   };
 
   const handleAdd = (e) => {
@@ -42,29 +44,34 @@ export default function ChemicalStorage() {
     }
 
     setChemicals([...chemicals, newChem]);
-    setNewChem({ name: "", quantity: "", location: "", expiry: "", hazard: "" });
+    setNewChem({ name: "", quantity: "", location: "", expiry: "", hazard: "", emailReminder: false });
     setShowForm(false);
-    setMessage("✅ Chemical added successfully!");
-    setTimeout(() => setMessage(""), 2500);
+
+    if (newChem.emailReminder) {
+      setMessage(`📧 Reminder set! You’ll get expiry alerts at chathurachamod88@gmail.com`);
+    } else {
+      setMessage("✅ Chemical added successfully!");
+    }
+    setTimeout(() => setMessage(""), 3000);
   };
 
   return (
     <div className="storage-page">
-      {/* Header */}
+      <button className="back-btn" onClick={() => window.history.back()}>
+        ← Back
+      </button>
+
       <header className="storage-header">
         <h1>Chemical Storage</h1>
         <p>Manage and track all chemicals stored in the laboratory</p>
       </header>
 
-      {/* Notification */}
       {message && <div className="notification">{message}</div>}
 
-      {/* Add Button */}
       <div className="add-btn-container">
         <button className="add-btn" onClick={() => setShowForm(true)}>+ Add Chemical</button>
       </div>
 
-      {/* Chemical Table */}
       <div className="table-container">
         <table className="chem-table">
           <thead>
@@ -72,8 +79,9 @@ export default function ChemicalStorage() {
               <th>Name</th>
               <th>Quantity</th>
               <th>Location</th>
-              <th>Expiry Date</th>
-              <th>Hazard Level</th>
+              <th>Expiry</th>
+              <th>Hazard</th>
+              <th>Email Reminder</th>
             </tr>
           </thead>
           <tbody>
@@ -84,13 +92,13 @@ export default function ChemicalStorage() {
                 <td>{chem.location}</td>
                 <td>{chem.expiry}</td>
                 <td className={`hazard ${chem.hazard.toLowerCase()}`}>{chem.hazard}</td>
+                <td>{chem.emailReminder ? "✔️" : "✖️"}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* Add Chemical Form */}
       {showForm && (
         <div className="modal">
           <div className="modal-content">
@@ -108,6 +116,11 @@ export default function ChemicalStorage() {
                 <option value="Toxic">Toxic</option>
               </select>
 
+              <label className="reminder-check">
+                <input type="checkbox" name="emailReminder" checked={newChem.emailReminder} onChange={handleChange} />
+                Remind me by email (chathurachamod88@gmail.com)
+              </label>
+
               <div className="form-buttons">
                 <button type="submit" className="save-btn">Save</button>
                 <button type="button" className="cancel-btn" onClick={() => setShowForm(false)}>Cancel</button>
@@ -117,14 +130,8 @@ export default function ChemicalStorage() {
         </div>
       )}
 
-      {/* Inline CSS */}
       <style>{`
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-          font-family: 'Poppins', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
 
         .storage-page {
           min-height: 100vh;
@@ -134,6 +141,22 @@ export default function ChemicalStorage() {
           align-items: center;
         }
 
+        .back-btn {
+          position: absolute;
+          top: 25px;
+          left: 25px;
+          background: #1d2d50;
+          color: white;
+          border: none;
+          padding: 10px 18px;
+          border-radius: 8px;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: 0.3s;
+        }
+
+        .back-btn:hover { background: #2a3c6a; transform: scale(1.05); }
+
         .storage-header {
           text-align: center;
           background: #fff;
@@ -141,159 +164,61 @@ export default function ChemicalStorage() {
           padding: 70px 20px 40px;
           box-shadow: 0 4px 12px rgba(0,0,0,0.1);
           border-bottom: 3px solid #e4e8f0;
-          animation: fadeDown 0.8s ease;
         }
 
-        .storage-header h1 {
-          color: #1d2d50;
-          font-size: 2.6rem;
-        }
+        .storage-header h1 { color: #1d2d50; font-size: 2.6rem; }
+        .storage-header p { color: #5c6475; margin-top: 10px; }
 
-        .storage-header p {
-          color: #5c6475;
-          margin-top: 10px;
-        }
+        .add-btn-container { margin-top: 40px; }
+        .add-btn { background: #1d2d50; color: #fff; border: none; padding: 14px 30px; border-radius: 10px; cursor: pointer; }
+        .add-btn:hover { background: #2a3c6a; transform: scale(1.05); }
 
-        .add-btn-container {
-          margin-top: 40px;
-        }
-
-        .add-btn {
-          background: #1d2d50;
-          color: #fff;
-          border: none;
-          padding: 14px 30px;
-          border-radius: 10px;
-          font-size: 1rem;
-          cursor: pointer;
-          transition: 0.3s;
-        }
-
-        .add-btn:hover {
-          background: #2a3c6a;
-          transform: scale(1.05);
-        }
-
-        .table-container {
-          margin-top: 40px;
-          width: 90%;
-          overflow-x: auto;
-          animation: fadeUp 0.8s ease;
-        }
-
-        .chem-table {
-          width: 100%;
-          border-collapse: collapse;
-          background: white;
-          border-radius: 15px;
-          overflow: hidden;
-          box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-        }
-
-        .chem-table th, .chem-table td {
-          padding: 16px 20px;
-          text-align: left;
-          border-bottom: 1px solid #eaeaea;
-        }
-
-        .chem-table th {
-          background: #1d2d50;
-          color: white;
-          font-weight: 600;
-        }
-
-        .chem-table tr:hover {
-          background: #f6f8fc;
-        }
+        .table-container { margin-top: 40px; width: 90%; overflow-x: auto; }
+        .chem-table { width: 100%; border-collapse: collapse; background: white; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        .chem-table th, .chem-table td { padding: 16px 20px; border-bottom: 1px solid #eaeaea; text-align: left; }
+        .chem-table th { background: #1d2d50; color: white; font-weight: 600; }
+        .chem-table tr:hover { background: #f6f8fc; }
 
         .hazard.flammable { color: #ff4500; font-weight: 600; }
         .hazard.corrosive { color: #d9534f; font-weight: 600; }
         .hazard.low { color: #5cb85c; font-weight: 600; }
         .hazard.toxic { color: #c0392b; font-weight: 600; }
 
-        /* Modal */
-        .modal {
-          position: fixed;
-          top: 0; left: 0;
-          width: 100%;
-          height: 100%;
-          background: rgba(0,0,0,0.5);
+        .reminder-check {
+          font-size: 0.95rem;
+          color: #333;
+          margin-top: 10px;
           display: flex;
           align-items: center;
-          justify-content: center;
-          z-index: 1000;
-          animation: fadeIn 0.4s ease;
+          gap: 8px;
         }
+
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+          display: flex; align-items: center; justify-content: center; z-index: 1000; }
 
         .modal-content {
-          background: white;
-          width: 420px;
-          border-radius: 20px;
-          padding: 30px;
+          background: white; width: 420px; border-radius: 20px; padding: 30px;
           box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-          animation: scaleIn 0.3s ease;
         }
 
-        .modal-content h2 {
-          text-align: center;
-          margin-bottom: 20px;
-          color: #1d2d50;
-        }
+        .modal-content h2 { text-align: center; margin-bottom: 20px; color: #1d2d50; }
 
-        .modal-content form {
-          display: flex;
-          flex-direction: column;
-          gap: 15px;
-        }
-
+        .modal-content form { display: flex; flex-direction: column; gap: 15px; }
         .modal-content input, .modal-content select {
-          padding: 10px 14px;
-          border: 1px solid #ccc;
-          border-radius: 8px;
-          font-size: 1rem;
+          padding: 10px 14px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem;
         }
 
-        .form-buttons {
-          display: flex;
-          justify-content: space-between;
-          margin-top: 10px;
-        }
+        .form-buttons { display: flex; justify-content: space-between; margin-top: 10px; }
 
-        .save-btn {
-          background: #1d2d50;
-          color: white;
-          border: none;
-          padding: 10px 25px;
-          border-radius: 8px;
-          cursor: pointer;
-        }
+        .save-btn { background: #1d2d50; color: white; border: none; padding: 10px 25px; border-radius: 8px; cursor: pointer; }
+        .cancel-btn { background: #ccc; border: none; padding: 10px 25px; border-radius: 8px; cursor: pointer; }
 
-        .cancel-btn {
-          background: #ccc;
-          border: none;
-          padding: 10px 25px;
-          border-radius: 8px;
-          cursor: pointer;
-        }
-
-        /* Notification */
         .notification {
-          position: fixed;
-          top: 20px;
-          right: 20px;
-          background: #1d2d50;
-          color: white;
-          padding: 15px 28px;
-          border-radius: 10px;
-          box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+          position: fixed; top: 20px; right: 20px; background: #1d2d50; color: white;
+          padding: 15px 28px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3);
           animation: slideIn 0.4s ease forwards, fadeOut 2.5s ease forwards 0.5s;
         }
 
-        /* Animations */
-        @keyframes fadeDown { from { opacity: 0; transform: translateY(-40px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes scaleIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         @keyframes slideIn { from { opacity: 0; transform: translateX(60px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes fadeOut { 0%, 80% { opacity: 1; } 100% { opacity: 0; transform: translateX(100px); } }
       `}</style>

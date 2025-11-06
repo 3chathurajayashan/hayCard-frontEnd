@@ -12,7 +12,7 @@ export default function SampleOut() {
 
   const fetchSamples = async () => {
     try {
-      const res = await axios.get("https://hay-card-back-end.vercel.app/api/samples/all");
+      const res = await axios.get("http://localhost:5000/api/samples/all");
       setSamples(res.data);
     } catch (err) {
       console.error(err);
@@ -26,7 +26,7 @@ export default function SampleOut() {
     setMessage("Processing sample...");
 
     try {
-      await axios.patch(`https://hay-card-back-end.vercel.app/api/samples/out/${id}`);
+      await axios.patch(`http://localhost:5000/api/samples/out/${id}`);
       setSamples((prev) =>
         prev.map((s) =>
           s._id === id ? { ...s, isOut: true } : s
@@ -129,7 +129,7 @@ export default function SampleOut() {
           <span style={{ fontWeight: "500", color: "#333" }}>{sample.referenceNumber}</span>
           <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
             <a
-              href={`https://hay-card-back-end.vercel.app/${sample.documentPath}`}
+              href={`http://localhost:5000/${sample.documentPath}`}
               target="_blank"
               rel="noreferrer"
               style={{

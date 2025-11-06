@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-
+const FRONTEND_URL = "https://hay-card-front-end.vercel.app/";
+const BACKEND_URL = "https://hay-card-back-end.vercel.app/";
 export default function SamplePage() {
   const [formData, setFormData] = useState({
     referenceNumber: "",

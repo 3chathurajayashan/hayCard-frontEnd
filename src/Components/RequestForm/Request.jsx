@@ -1,154 +1,396 @@
-import React, { useEffect, useState } from "react";
+"use client";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
+import { FaArrowLeft } from "react-icons/fa";
 
-export default function RequestPage() {
-  const [requests, setRequests] = useState([]);
+export default function ChemicalRequestPage() {
   const [formData, setFormData] = useState({
     chemicalName: "",
     quantity: "",
-    requester: "",
+    handOverRange: "",
+    customChemical: "",
   });
-  const [loading, setLoading] = useState(false);
-  const [notification, setNotification] = useState({ show: false, message: "", type: "" });
 
-  const backendURL = "https://hay-card-back-end.vercel.app/api/request";
+  const [chemicals, setChemicals] = useState([]);
+  const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
 
-  // ✅ Fetch all requests
-  const fetchRequests = async () => {
-    try {
-      const res = await axios.get(backendURL);
-      setRequests(res.data);
-    } catch (err) {
-      console.error("Error fetching chemicals:", err);
-      showNotification("Failed to fetch data. Please check backend.", "error");
-    }
-  };
+  const chemicalOptions = [
+    "Hydrochloric Acid",
+    "Sulfuric Acid",
+    "Ethanol",
+    "Sodium Hydroxide",
+    "Ammonia Solution",
+    "Acetone",
+    "Other",
+  ];
 
+  const handoverOptions = [
+    "Within 1 Week",
+    "Within 2 Weeks",
+    "Within 3 Weeks",
+    "Within 1 Month",
+    "Fixed Date",
+  ];
+
+  // ✅ Fetch all chemicals on load
   useEffect(() => {
-    fetchRequests();
+    fetchChemicals();
   }, []);
 
-  // ✅ Add a new request
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  const fetchChemicals = async () => {
     try {
-      await axios.post(`${backendURL}/add`, formData);
-      showNotification("Chemical request added successfully!", "success");
-      setFormData({ chemicalName: "", quantity: "", requester: "" });
-      fetchRequests();
-    } catch (err) {
-      console.error(err);
-      showNotification("Failed to add chemical request!", "error");
-    } finally {
-      setLoading(false);
+      const res = await axios.get("https://hay-card-back-end.vercel.app/api/request");
+      setChemicals(res.data);
+    } catch (error) {
+      console.error("Error fetching chemicals:", error);
     }
   };
 
-  // ✅ Show custom notifications
-  const showNotification = (message, type) => {
-    setNotification({ show: true, message, type });
-    setTimeout(() => setNotification({ show: false, message: "", type: "" }), 3000);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+      ...(name === "chemicalName" && value !== "Other" && { customChemical: "" }),
+    });
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setMessage("");
+    setShowNotification(false);
+
+    try {
+      const submissionData = {
+        chemicalName: formData.chemicalName,
+        customChemical:
+          formData.chemicalName === "Other" ? formData.customChemical : "",
+        quantity: formData.quantity,
+        handOverRange: formData.handOverRange,
+      };
+
+      const res = await axios.post("https://hay-card-back-end.vercel.app/api/request/add", submissionData);
+
+      setMessage(res.data.message || "✅ Request sent successfully!");
+      setShowNotification(true);
+      fetchChemicals(); // refresh list
+      setTimeout(() => setShowNotification(false), 3500);
+
+      setFormData({
+        chemicalName: "",
+        quantity: "",
+        handOverRange: "",
+        customChemical: "",
+      });
+    } catch (error) {
+      setMessage(error.response?.data?.message || "❌ Error submitting form");
+      setShowNotification(true);
+      setTimeout(() => setShowNotification(false), 3500);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const goBack = () => window.history.back();
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col items-center p-6">
-      <motion.h1
-        className="text-3xl font-bold mb-6 text-gray-800"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        Chemical Request Management
-      </motion.h1>
+    <>
+      <style>{`
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
-      {/* ✅ Notification */}
-      <AnimatePresence>
-        {notification.show && (
-          <motion.div
-            className={`fixed top-4 right-4 px-5 py-3 rounded-xl shadow-lg text-white font-medium ${
-              notification.type === "success" ? "bg-green-500" : "bg-red-500"
-            }`}
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-          >
-            {notification.message}
-          </motion.div>
-        )}
-      </AnimatePresence>
+        body {
+          font-family: 'Inter', 'Segoe UI', sans-serif;
+          background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+          min-height: 100vh;
+        }
 
-      {/* ✅ Add Request Form */}
-      <motion.form
-        onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-2xl shadow-md w-full max-w-lg mb-10"
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-      >
-        <div className="mb-4">
-          <label className="block text-gray-700 font-semibold mb-1">Chemical Name</label>
-          <input
-            type="text"
-            value={formData.chemicalName}
-            onChange={(e) => setFormData({ ...formData, chemicalName: e.target.value })}
-            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 font-semibold mb-1">Quantity (L or Kg)</label>
-          <input
-            type="number"
-            value={formData.quantity}
-            onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
-            required
-          />
-        </div>
-        <div className="mb-6">
-          <label className="block text-gray-700 font-semibold mb-1">Requester Name</label>
-          <input
-            type="text"
-            value={formData.requester}
-            onChange={(e) => setFormData({ ...formData, requester: e.target.value })}
-            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
-            required
-          />
-        </div>
+        .page-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: start;
+          min-height: 100vh;
+          padding: 40px 20px;
+        }
 
-        <motion.button
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          type="submit"
-          disabled={loading}
-          className="w-full py-3 bg-blue-600 text-white rounded-xl font-semibold shadow-md hover:bg-blue-700 transition-all"
-        >
-          {loading ? "Processing..." : "Add Request"}
-        </motion.button>
-      </motion.form>
+        .form-container {
+          background: white;
+          padding: 36px 40px;
+          border-radius: 20px;
+          max-width: 560px;
+          width: 100%;
+          box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+          border: 1px solid #e1e8f0;
+          position: relative;
+          margin-bottom: 40px;
+        }
 
-      {/* ✅ Display Requests */}
-      <motion.div
-        className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-      >
-        {requests.length > 0 ? (
-          requests.map((req, index) => (
-            <motion.div
-              key={index}
-              className="bg-white p-5 rounded-2xl shadow-md hover:shadow-xl transition-all"
-              whileHover={{ scale: 1.02 }}
+        .back-btn {
+          position: absolute;
+          top: 18px;
+          left: 18px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #f1f5f9;
+          border: none;
+          border-radius: 50%;
+          width: 38px;
+          height: 38px;
+          cursor: pointer;
+          transition: 0.3s;
+        }
+
+        .back-btn:hover {
+          background: #e2e8f0;
+          transform: scale(1.1);
+        }
+
+        .title {
+          font-size: 30px;
+          font-weight: 700;
+          color: #1a365d;
+          text-align: center;
+          margin-bottom: 10px;
+        }
+
+        .subtitle {
+          color: #64748b;
+          font-size: 15px;
+          text-align: center;
+          margin-bottom: 25px;
+        }
+
+        label {
+          font-weight: 600;
+          color: #374151;
+          display: block;
+          margin-bottom: 8px;
+        }
+
+        .required::after {
+          content: " *";
+          color: #dc2626;
+        }
+
+        input, select {
+          width: 100%;
+          padding: 12px 14px;
+          font-size: 15px;
+          border: 2px solid #e2e8f0;
+          border-radius: 10px;
+          margin-bottom: 20px;
+          outline: none;
+          transition: border-color 0.2s ease;
+        }
+
+        input:focus, select:focus {
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .submit-btn {
+          width: 100%;
+          background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+          color: white;
+          font-weight: 600;
+          font-size: 16px;
+          padding: 14px 0;
+          border: none;
+          border-radius: 10px;
+          cursor: pointer;
+          transition: 0.3s;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(59,130,246,0.3);
+        }
+
+        .submit-btn:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
+
+        .table-container {
+          width: 100%;
+          max-width: 900px;
+          background: white;
+          border-radius: 16px;
+          padding: 20px;
+          box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          text-align: left;
+        }
+
+        th, td {
+          padding: 12px 10px;
+          border-bottom: 1px solid #e2e8f0;
+          font-size: 14px;
+        }
+
+        th {
+          color: #1e293b;
+          font-weight: 700;
+        }
+
+        td {
+          color: #475569;
+        }
+
+        .notification {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%) scale(0.9);
+          background: white;
+          padding: 20px 30px;
+          border-radius: 15px;
+          box-shadow: 0 10px 35px rgba(0,0,0,0.15);
+          font-size: 16px;
+          font-weight: 600;
+          animation: popUp 0.4s ease forwards;
+          z-index: 1000;
+        }
+
+        .notification.success {
+          border-left: 6px solid #10b981;
+          color: #065f46;
+        }
+
+        .notification.error {
+          border-left: 6px solid #ef4444;
+          color: #991b1b;
+        }
+
+        @keyframes popUp {
+          from { opacity: 0; transform: translate(-50%, -40%) scale(0.9); }
+          to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+      `}</style>
+
+      <div className="page-container">
+        <div className="form-container">
+          <button className="back-btn" onClick={goBack} title="Go Back">
+            <FaArrowLeft color="#1e293b" />
+          </button>
+
+          <h1 className="title">Chemical Request Form</h1>
+          <p className="subtitle">Submit your chemical requirement below</p>
+
+          <form onSubmit={handleSubmit}>
+            <label className="required">Chemical Name</label>
+            <select
+              name="chemicalName"
+              value={formData.chemicalName}
+              onChange={handleChange}
+              required
             >
-              <h2 className="text-lg font-bold text-gray-800">{req.chemicalName}</h2>
-              <p className="text-gray-600 mt-1">Quantity: {req.quantity}</p>
-              <p className="text-gray-500 mt-1 text-sm">Requested by: {req.requester}</p>
-            </motion.div>
-          ))
-        ) : (
-          <p className="text-gray-500 text-center w-full">No chemical requests found.</p>
+              <option value="">Select Chemical</option>
+              {chemicalOptions.map((chem, i) => (
+                <option key={i} value={chem}>
+                  {chem}
+                </option>
+              ))}
+            </select>
+
+            {formData.chemicalName === "Other" && (
+              <input
+                type="text"
+                name="customChemical"
+                placeholder="Enter specific chemical name"
+                value={formData.customChemical}
+                onChange={handleChange}
+                required
+              />
+            )}
+
+            <label className="required">Quantity</label>
+            <input
+              type="text"
+              name="quantity"
+              placeholder="Example: 25 L, 10 kg, 500 mL"
+              value={formData.quantity}
+              onChange={handleChange}
+              required
+            />
+
+            <label className="required">Hand Over Timeline</label>
+            <select
+              name="handOverRange"
+              value={formData.handOverRange}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Timeline</option>
+              {handoverOptions.map((range, i) => (
+                <option key={i} value={range}>
+                  {range}
+                </option>
+              ))}
+            </select>
+
+            <button type="submit" className="submit-btn" disabled={isSubmitting}>
+              {isSubmitting ? "Submitting..." : "Submit Request"}
+            </button>
+          </form>
+        </div>
+
+        {/* 🧪 Display all requested chemicals */}
+        <div className="table-container">
+          <h2 style={{ marginBottom: "15px", color: "#1e293b" }}>
+            Requested Chemicals
+          </h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Chemical</th>
+                <th>Quantity</th>
+                <th>Hand Over</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <AnimatePresence>
+                {chemicals.map((chem) => (
+                  <motion.tr
+                    key={chem._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <td>{chem.chemicalName}</td>
+                    <td>{chem.quantity}</td>
+                    <td>{chem.handOverRange}</td>
+                    <td>{new Date(chem.createdAt).toLocaleDateString()}</td>
+                  </motion.tr>
+                ))}
+              </AnimatePresence>
+            </tbody>
+          </table>
+        </div>
+
+        {showNotification && (
+          <div
+            className={`notification ${
+              message.includes("Error") || message.includes("❌")
+                ? "error"
+                : "success"
+            }`}
+          >
+            {message}
+          </div>
         )}
-      </motion.div>
-    </div>
+      </div>
+    </>
   );
 }

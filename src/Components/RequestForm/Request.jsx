@@ -43,7 +43,7 @@ export default function ChemicalRequestPage() {
   const fetchChemicals = async () => {
     try {
       setLoading(true);
-      const response = await fetch("https://hay-card-back-end.vercel.app/api/api/chemicals/all");
+      const response = await fetch("https://hay-card-back-end.vercel.app/api/chemicals/all");
       const data = await response.json();
       setChemicals(data);
     } catch (error) {

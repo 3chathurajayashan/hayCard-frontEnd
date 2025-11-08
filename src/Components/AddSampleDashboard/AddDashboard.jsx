@@ -209,7 +209,7 @@ const generatePDF = (sample) => {
     try {
       // Append sample ID only (public access for QR)
       // QR points to public route
-    const url = `https://hay-card-back-end.vercel.app/api/samples/public/${sample._id}`;
+    const url = `https://hay-card-front-end.vercel.app/samples/public/${sample._id}`;
 
   
       const qrDataUrl = await QRCode.toDataURL(url);

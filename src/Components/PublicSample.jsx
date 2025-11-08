@@ -24,8 +24,36 @@ export default function PublicSample() {
     fetchSample();
   }, [id]);
 
-  if (loading) return <p>Loading sample...</p>;
-  if (!sample) return <p>Sample not found.</p>;
+  if (loading) {
+    // Loading animation
+    return (
+      <div style={{
+        fontFamily: 'Poppins, sans-serif',
+        minHeight: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        background: 'linear-gradient(135deg, #e0f7fa, #ffffff)'
+      }}>
+        <div style={{
+          width: '60px',
+          height: '60px',
+          border: '6px solid #00796b',
+          borderTop: '6px solid #e0f7fa',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite'
+        }} />
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  if (!sample) return <p style={{ textAlign: 'center', marginTop: '50px', fontFamily: 'Poppins, sans-serif' }}>Sample not found.</p>;
 
   return (
     <div style={{
@@ -36,42 +64,78 @@ export default function PublicSample() {
       color: '#333',
       display: 'flex',
       flexDirection: 'column',
-      alignItems: 'center'
+      alignItems: 'center',
+      animation: 'fadeIn 0.8s ease-in-out'
     }}>
-      <h2 style={{ color: '#00796b' }}>Sample Details - {sample.sampleId}</h2>
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+
+      <h2 style={{
+        color: '#00796b',
+        marginBottom: '20px',
+        textShadow: '1px 1px 3px rgba(0,0,0,0.2)'
+      }}>Sample Details - {sample.sampleId}</h2>
+
       <div style={{
         background: '#fff',
-        padding: '20px',
-        borderRadius: '12px',
-        boxShadow: '0 6px 15px rgba(0,0,0,0.1)',
+        padding: '25px',
+        borderRadius: '15px',
+        boxShadow: '0 8px 20px rgba(0,0,0,0.1)',
         width: '100%',
         maxWidth: '600px',
-        marginBottom: '20px'
+        marginBottom: '30px',
+        transition: 'all 0.3s ease-in-out',
       }}>
-        <p><strong>Request Ref No:</strong> {sample.requestRefNo}</p>
-        <p><strong>Sample Ref No:</strong> {sample.sampleRefNo}</p>
-        <p><strong>From:</strong> {sample.from.join(", ")}</p>
-        <p><strong>To:</strong> {sample.to}</p>
-        <p><strong>Route:</strong> {sample.sampleRoute}</p>
-        <p><strong>Test Method:</strong> {sample.testMethod}</p>
-        <p><strong>Remarks:</strong> {sample.remarks}</p>
-        <p><strong>Analysed By:</strong> {sample.analysedBy}</p>
-        <p><strong>Created At:</strong> {new Date(sample.createdAt).toLocaleString()}</p>
-        <p><strong>Completed Date:</strong> {sample.completedDate}</p>
-        <p><strong>Completed Time:</strong> {sample.completedTime}</p>
+        {[
+          ["Request Ref No", sample.requestRefNo],
+          ["Sample Ref No", sample.sampleRefNo],
+          ["From", sample.from.join(", ")],
+          ["To", sample.to],
+          ["Route", sample.sampleRoute],
+          ["Test Method", sample.testMethod],
+          ["Remarks", sample.remarks],
+          ["Analysed By", sample.analysedBy],
+          ["Created At", new Date(sample.createdAt).toLocaleString()],
+          ["Completed Date", sample.completedDate],
+          ["Completed Time", sample.completedTime]
+        ].map(([label, value], i) => (
+          <p key={i} style={{
+            margin: '8px 0',
+            fontSize: '16px',
+            transition: `opacity 0.4s ease ${(i + 1) * 0.1}s`,
+            opacity: 1
+          }}><strong>{label}:</strong> {value || "-"}</p>
+        ))}
       </div>
 
-      <h3>Results</h3>
+      <h3 style={{ marginBottom: '15px', color: '#00796b', textShadow: '1px 1px 2px rgba(0,0,0,0.2)' }}>Results</h3>
       {sample.results && sample.results.length > 0 ? (
-        <table style={{ borderCollapse: 'collapse', width: '100%', maxWidth: '600px' }}>
+        <table style={{
+          borderCollapse: 'collapse',
+          width: '100%',
+          maxWidth: '600px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          borderRadius: '12px',
+          overflow: 'hidden'
+        }}>
           <thead>
-            <tr style={{ background: '#00796b', color: '#fff' }}>
-              <th>#</th><th>As (ppb)</th><th>Sb (ppb)</th><th>Al (ppb)</th>
+            <tr style={{ background: '#00796b', color: '#fff', textAlign: 'center' }}>
+              <th>#</th>
+              <th>As (ppb)</th>
+              <th>Sb (ppb)</th>
+              <th>Al (ppb)</th>
             </tr>
           </thead>
           <tbody>
             {sample.results.map((r, i) => (
-              <tr key={i}>
+              <tr key={i} style={{
+                background: i % 2 === 0 ? '#e0f7fa' : '#ffffff',
+                transition: 'background 0.3s'
+              }}>
                 <td style={{ textAlign: 'center', border: '1px solid #00796b' }}>{i + 1}</td>
                 <td style={{ textAlign: 'center', border: '1px solid #00796b' }}>{r.As_ppb}</td>
                 <td style={{ textAlign: 'center', border: '1px solid #00796b' }}>{r.Sb_ppb}</td>

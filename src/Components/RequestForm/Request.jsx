@@ -84,7 +84,7 @@ export default function ChemicalRequestPage() {
         handOverRange: formData.handOverRange,
       };
 
-      await fetch("http://localhost:5000/api/chemicals/add", {
+      await fetch("https://hay-card-back-end.vercel.app/api/chemicals/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

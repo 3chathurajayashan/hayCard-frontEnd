@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import cv1 from '../../assets/cv1.jpg'
 import cv2 from '../../assets/cv2.jpg'
+import cv3 from '../../assets/cv3.jpg'
+
+
 export default function Dashboard() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -95,7 +98,7 @@ export default function Dashboard() {
           { 
             title: "Logins", 
             desc: "Control and monitor user access and authentication.",
-            image: "https://images.unsplash.com/photo-1633265486064-086b219458ec?w=800&auto=format&fit=crop&q=80"
+            image:  cv3
           },
           { 
             title: "Customer", 

@@ -47,7 +47,7 @@ export default function SampleDetails() {
   return (
     <div>
       <h2>Sample Details</h2>
-      <p><strong>Sample Reference No:</strong> {sample.sampleRefNo || "-"}</p>
+      <p><strong>Sample Reference Nos:</strong> {sample.sampleRefNo || "-"}</p>
       <p><strong>Request Reference No:</strong> {sample.requestRefNo || "-"}</p>
       <p><strong>From:</strong> {Array.isArray(sample.from) ? sample.from.join(", ") : sample.from || "-"}</p>
       <p><strong>To:</strong> {sample.to || "-"}</p>

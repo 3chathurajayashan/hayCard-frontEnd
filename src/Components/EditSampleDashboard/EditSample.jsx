@@ -30,7 +30,7 @@ export default function LabAdminDashboard() {
   const fetchSamples = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:5000/samples", {
+      const res = await axios.get("https://hay-card-back-end.vercel.app/api/samples", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSamples(res.data);
@@ -69,7 +69,7 @@ export default function LabAdminDashboard() {
     e.preventDefault();
     try {
       await axios.put(
-        `http://localhost:5000/samples/${selectedSample._id}`,
+        `https://hay-card-back-end.vercel.app/api/samples/${selectedSample._id}`,
         {
           results: form.results,
           analysedBy: form.analysedBy,
@@ -162,7 +162,7 @@ export default function LabAdminDashboard() {
 
       // 1️⃣ Finalize sample in database
       await axios.put(
-        `http://localhost:5000/samples/${id}`,
+        `https://hay-card-back-end.vercel.app/api/samples/${id}`,
         { isFinalized: true },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -236,7 +236,7 @@ export default function LabAdminDashboard() {
 
   const generateQR = async (sample) => {
     try {
-      const url = `http://localhost:5173/sample-details?id=${sample._id}`; 
+      const url = `https://hay-card-back-end.vercel.app/api/sample-details?id=${sample._id}`; 
       const qrDataUrl = await QRCode.toDataURL(url);
 
       const win = window.open();
@@ -299,7 +299,7 @@ export default function LabAdminDashboard() {
   const handleReceivedChange = async (sample, checked) => {
     try {
       await axios.put(
-        `http://localhost:5000/samples/samples/${sample._id}/received`,
+        `https://hay-card-back-end.vercel.app/api/samples/samples/${sample._id}/received`,
         { received: checked },
         { headers: { Authorization: `Bearer ${token}` } }
       );

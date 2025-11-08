@@ -13,7 +13,7 @@ export default function CustomerSamplePage() {
 
   const fetchSamples = async () => {
   try {
-    const res = await axios.get("https://hay-card-back-end.vercel.app/api/samples/all");
+    const res = await axios.get("http://localhost:5000/api/samples/all");
     console.log("Fetched samples:", res.data); // 👈 add this
     setSamples(res.data);
   } catch (err) {
@@ -33,7 +33,7 @@ export default function CustomerSamplePage() {
     formData.append("document", document);
 
     try {
-     await axios.post("https://hay-card-back-end.vercel.app/api/samples/add", formData, {
+     await axios.post("http://localhost:5000/api/samples/add", formData, {
   headers: { "Content-Type": "multipart/form-data" },
 });
 
@@ -182,7 +182,7 @@ export default function CustomerSamplePage() {
         >
           <span style={{ fontWeight: "500", color: "#333" }}>{sample.referenceNumber}</span>
           <a
-            href={`https://hay-card-back-end.vercel.app/${sample.documentPath}`}
+            href={`http://localhost:5000/${sample.documentPath}`}
             target="_blank"
             rel="noreferrer"
             style={{

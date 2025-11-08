@@ -24,7 +24,7 @@ export default function SampleDetails() {
       }
 
       try {
-        const res = await axios.get(`${BACKEND_URL}/samples/public/${id}`);
+        const res = await axios.get(`http://localhost:5000/samples/public/${id}`);
         setSample(res.data);
       } catch (err) {
         console.error("Error fetching sample:", err);

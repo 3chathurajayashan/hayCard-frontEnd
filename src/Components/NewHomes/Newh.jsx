@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import cv1 from '../../assets/cv1.jpg'
+import cv2 from '../../assets/cv2.jpg'
 export default function Dashboard() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -89,7 +90,7 @@ export default function Dashboard() {
           { 
             title: "Chemical", 
             desc: "Manage and track all chemical inventory details.",
-            image: "https://unsplash.com/photos/a-person-in-a-lab-coat-pouring-liquid-into-a-container-bKd9KEELfmg"
+            image:  cv2
           },
           { 
             title: "Logins", 

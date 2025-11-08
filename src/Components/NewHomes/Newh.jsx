@@ -151,6 +151,23 @@ export default function Dashboard() {
           color: #ffffff;
           margin-bottom: 12px;
           letter-spacing: -0.02em;
+          animation: titleReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes titleReveal {
+          0% {
+            opacity: 0;
+            transform: translateY(-30px);
+            letter-spacing: 0.3em;
+          }
+          50% {
+            letter-spacing: 0.05em;
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+            letter-spacing: -0.02em;
+          }
         }
 
         .header p {

@@ -87,7 +87,7 @@ const router = createBrowserRouter([
     element: <SampleOut />,
   },
    {
-    path:"/sample/public/:id",
+    path:"/samples/public/:id",
     element: <PublicSample />,
   },
 ]);

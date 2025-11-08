@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const BACKEND_URL = "https://hay-card-back-end.vercel.app/api/sample-assign"; // replace with your Vercel backend
+const BACKEND_URL = "https://hay-card-back-end.vercel.app/api/sample-assign";
 
 export default function SampleAssign() {
   const [referenceNumber, setReferenceNumber] = useState("");
@@ -10,13 +10,13 @@ export default function SampleAssign() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Fetch all uploaded sample assignments
   const fetchSamples = async () => {
     try {
-      const res = await axios.get(`${BACKEND_URL}/all`);
+      const res = await axios.get(BACKEND_URL); // GET /
       setSamples(res.data);
     } catch (err) {
       console.error(err);
+      setError("Failed to fetch samples");
     }
   };
 
@@ -24,7 +24,6 @@ export default function SampleAssign() {
     fetchSamples();
   }, []);
 
-  // Handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!referenceNumber || !documentFile) {
@@ -40,11 +39,10 @@ export default function SampleAssign() {
       formData.append("referenceNumber", referenceNumber);
       formData.append("document", documentFile);
 
-      const res = await axios.post(`${BACKEND_URL}/add`, formData, {
+      const res = await axios.post(BACKEND_URL, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      // Update the list after successful upload
       setSamples((prev) => [...prev, res.data]);
       setReferenceNumber("");
       setDocumentFile(null);
@@ -60,10 +58,7 @@ export default function SampleAssign() {
     <div className="max-w-3xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-4">Sample Assignment</h1>
 
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col gap-4 border p-4 rounded shadow"
-      >
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4 border p-4 rounded shadow">
         <input
           type="text"
           placeholder="Reference Number"
@@ -71,13 +66,11 @@ export default function SampleAssign() {
           onChange={(e) => setReferenceNumber(e.target.value)}
           className="border p-2 rounded"
         />
-
         <input
           type="file"
           onChange={(e) => setDocumentFile(e.target.files[0])}
           className="border p-2 rounded"
         />
-
         <button
           type="submit"
           disabled={loading}
@@ -85,7 +78,6 @@ export default function SampleAssign() {
         >
           {loading ? "Uploading..." : "Upload"}
         </button>
-
         {error && <p className="text-red-500">{error}</p>}
       </form>
 
@@ -96,18 +88,9 @@ export default function SampleAssign() {
         ) : (
           <ul className="space-y-2">
             {samples.map((s) => (
-              <li
-                key={s._id}
-                className="flex justify-between items-center border p-2 rounded"
-              >
+              <li key={s._id} className="flex justify-between items-center border p-2 rounded">
                 <span>{s.referenceNumber}</span>
-                <a
-                  href={s.documentUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline"
-                  download
-                >
+                <a href={s.documentUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline" download>
                   Download
                 </a>
               </li>

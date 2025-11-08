@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const BACKEND_URL = "https://hay-card-back-end.vercel.app/api/sample-assign.js";
+const BACKEND_URL = "https://hay-card-back-end.vercel.app/api/sample-assign";
 
 
 export default function SampleAssign() {

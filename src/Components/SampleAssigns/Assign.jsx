@@ -12,7 +12,7 @@ export default function SampleAssign() {
 
   const fetchSamples = async () => {
     try {
-      const res = await axios.get(BACKEND_URL); // GET /
+      const res = await axios.get(BACKEND_URL);
       setSamples(res.data);
     } catch (err) {
       console.error(err);
@@ -43,7 +43,7 @@ export default function SampleAssign() {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      setSamples((prev) => [...prev, res.data]);
+      setSamples((prev) => [res.data, ...prev]);
       setReferenceNumber("");
       setDocumentFile(null);
     } catch (err) {

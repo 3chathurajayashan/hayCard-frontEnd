@@ -413,84 +413,8 @@ function Home() {
       <Newh />
 
      
-
-      {/* Hero Section with Slider */}
-      <section style={styles.hero}>
-        {heroSlides.map((slide, index) => (
-          <div
-            key={index}
-            style={{
-              ...styles.heroSlide,
-              opacity: index === activeSlide ? 1 : 0,
-              transform: `scale(${index === activeSlide ? 1 : 1.1})`,
-              zIndex: index === activeSlide ? 1 : 0
-            }}
-          >
-            <div style={styles.heroImageContainer}>
-              <img 
-                src={slide.image} 
-                alt={slide.title}
-                style={styles.heroImage}
-              />
-              <div style={styles.heroOverlay}></div>
-            </div>
-            
-            <div style={styles.heroContent}>
-              <div style={styles.heroTextContent}>
-                <h1 style={styles.heroTitle} className="fade-in-up">
-                  {slide.title}
-                </h1>
-                <p style={styles.heroSubtitle} className="fade-in-up">
-                  {slide.subtitle}
-                </p>
-                <div style={styles.heroButtons} className="fade-in-up">
-                  <button style={styles.heroPrimaryBtn} className="btn-primary">
-                    Explore Solutions
-                  </button>
-                  <button style={styles.heroSecondaryBtn} className="hero-secondary-btn">
-                    Watch Video
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
+ 
         
-        {/* Slider Controls */}
-        <div style={styles.sliderControls}>
-          <button 
-            style={styles.sliderArrow}
-            className="slider-arrow"
-            onClick={() => setActiveSlide((activeSlide - 1 + 5) % 5)}
-          >
-            ←
-          </button>
-          <div style={styles.sliderDots}>
-            {heroSlides.map((_, index) => (
-              <button
-                key={index}
-                style={{
-                  ...styles.sliderDot,
-                  backgroundColor: index === activeSlide ? '#8dc63f' : 'rgba(255,255,255,0.5)',
-                  width: index === activeSlide ? '40px' : '12px'
-                }}
-                onClick={() => setActiveSlide(index)}
-              />
-            ))}
-          </div>
-          <button 
-            style={styles.sliderArrow}
-            className="slider-arrow"
-            onClick={() => setActiveSlide((activeSlide + 1) % 5)}
-          >
-            →
-          </button>
-        </div>
-
-        {/* Floating Elements */}
-        <div style={styles.floatingElement1} className="float"></div>
-        <div style={styles.floatingElement2} className="float"></div>
-      </section>
 
       {/* Features Bar */}
       <section style={styles.featuresBar}>

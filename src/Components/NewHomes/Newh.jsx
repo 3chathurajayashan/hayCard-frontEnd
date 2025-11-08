@@ -91,12 +91,12 @@ export default function Dashboard() {
       <div className="cards">
         {[
           { 
-            title: "Chemical", 
+            title: "Chemicals", 
             desc: "Manage and track all chemical inventory details.",
             image:  cv2
           },
           { 
-            title: "Logins", 
+            title: "Samples", 
             desc: "Control and monitor user access and authentication.",
             image:  cv3
           },

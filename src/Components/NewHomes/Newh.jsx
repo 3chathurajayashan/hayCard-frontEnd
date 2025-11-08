@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import cv1 from '../../assets/cv1.jpg'
 export default function Dashboard() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -99,7 +99,7 @@ export default function Dashboard() {
           { 
             title: "Customer", 
             desc: "Analyze, record, and manage lab sample data easily.",
-            image: "https://unsplash.com/photos/a-group-of-surgeons-performing-surgery-CsmYGrZTti8"
+            image: cv1
           },
         ].map((item, i) => (
           <div key={i} className="card" style={{ animationDelay: `${i * 0.1}s` }}>

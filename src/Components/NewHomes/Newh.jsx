@@ -34,8 +34,18 @@ export default function Dashboard() {
       {/* Header */}
       <header className="header">
         <div className="header-content">
-          <h1>Haycarb Laboratory System</h1>
+          <div className="header-decoration">
+            <span className="decoration-line left"></span>
+            <span className="decoration-dot"></span>
+            <span className="decoration-line right"></span>
+          </div>
+          <h1>
+            <span className="word word-1">Haycarb</span>
+            <span className="word word-2">Laboratory</span>
+            <span className="word word-3">System</span>
+          </h1>
           <p>Your centralized platform for chemical, login, and sample management</p>
+          <div className="header-underline"></div>
         </div>
       </header>
 
@@ -79,7 +89,7 @@ export default function Dashboard() {
           { 
             title: "Chemical", 
             desc: "Manage and track all chemical inventory details.",
-            image: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=800&auto=format&fit=crop&q=80"
+            image: "https://unsplash.com/photos/a-person-in-a-lab-coat-pouring-liquid-into-a-container-bKd9KEELfmg"
           },
           { 
             title: "Logins", 
@@ -89,7 +99,7 @@ export default function Dashboard() {
           { 
             title: "Customer", 
             desc: "Analyze, record, and manage lab sample data easily.",
-            image: "https://images.unsplash.com/photo-1581093458791-9d42e1c5e2f4?w=800&auto=format&fit=crop&q=80"
+            image: "https://unsplash.com/photos/a-group-of-surgeons-performing-surgery-CsmYGrZTti8"
           },
         ].map((item, i) => (
           <div key={i} className="card" style={{ animationDelay: `${i * 0.1}s` }}>
@@ -136,37 +146,107 @@ export default function Dashboard() {
           padding: 60px 20px 40px;
           background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
           box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-          animation: slideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .header::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+          animation: headerShine 3s ease-in-out infinite;
+        }
+
+        @keyframes headerShine {
+          0% { left: -100%; }
+          50% { left: 100%; }
+          100% { left: 100%; }
         }
 
         .header-content {
           max-width: 1200px;
           margin: 0 auto;
           text-align: center;
+          position: relative;
+          z-index: 1;
+        }
+
+        .header-decoration {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          margin-bottom: 24px;
+          animation: decorationFade 1s ease 0.5s backwards;
+        }
+
+        @keyframes decorationFade {
+          from {
+            opacity: 0;
+            transform: scale(0.5);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
+        .decoration-line {
+          height: 2px;
+          width: 60px;
+          background: linear-gradient(90deg, transparent, #ffffff, transparent);
+          animation: lineGrow 1.2s ease 0.6s backwards;
+        }
+
+        @keyframes lineGrow {
+          from { width: 0; }
+          to { width: 60px; }
+        }
+
+        .decoration-dot {
+          width: 8px;
+          height: 8px;
+          background: #ffffff;
+          border-radius: 50%;
+          animation: dotPulseHeader 2s ease-in-out infinite;
+        }
+
+        @keyframes dotPulseHeader {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.5); opacity: 0.7; }
         }
 
         .header h1 {
           font-size: 3rem;
           font-weight: 700;
           color: #ffffff;
-          margin-bottom: 12px;
+          margin-bottom: 16px;
           letter-spacing: -0.02em;
-          animation: titleReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+          display: flex;
+          justify-content: center;
+          gap: 16px;
+          flex-wrap: wrap;
         }
 
-        @keyframes titleReveal {
-          0% {
-            opacity: 0;
-            transform: translateY(-30px);
-            letter-spacing: 0.3em;
-          }
-          50% {
-            letter-spacing: 0.05em;
-          }
-          100% {
+        .word {
+          display: inline-block;
+          opacity: 0;
+          transform: translateY(-40px) rotateX(-90deg);
+          animation: wordDrop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .word-1 { animation-delay: 0.2s; }
+        .word-2 { animation-delay: 0.4s; }
+        .word-3 { animation-delay: 0.6s; }
+
+        @keyframes wordDrop {
+          to {
             opacity: 1;
-            transform: translateY(0);
-            letter-spacing: -0.02em;
+            transform: translateY(0) rotateX(0);
           }
         }
 
@@ -174,6 +254,37 @@ export default function Dashboard() {
           color: #bdc3c7;
           font-size: 1.1rem;
           line-height: 1.6;
+          animation: subtitleFade 1s ease 0.8s backwards;
+        }
+
+        @keyframes subtitleFade {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .header-underline {
+          width: 80px;
+          height: 3px;
+          background: linear-gradient(90deg, transparent, #ffffff, transparent);
+          margin: 20px auto 0;
+          animation: underlineGrow 1s ease 1s backwards;
+        }
+
+        @keyframes underlineGrow {
+          from {
+            width: 0;
+            opacity: 0;
+          }
+          to {
+            width: 80px;
+            opacity: 1;
+          }
         }
 
         /* Cards Container */
@@ -191,52 +302,90 @@ export default function Dashboard() {
         .card {
           background: #ffffff;
           width: 380px;
-          border-radius: 16px;
+          border-radius: 24px;
           overflow: hidden;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-          animation: cardEntry 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+          transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+          animation: cardEntry 0.8s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+          position: relative;
+          border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         @keyframes cardEntry {
           from {
             opacity: 0;
-            transform: translateY(40px);
+            transform: translateY(60px) scale(0.9) rotateX(20deg);
           }
           to {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0) scale(1) rotateX(0);
           }
         }
 
         .card:hover {
-          transform: translateY(-10px);
-          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+          transform: translateY(-16px) scale(1.03);
+          box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+          border-color: rgba(44, 62, 80, 0.15);
+        }
+
+        .card::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 4px;
+          background: linear-gradient(90deg, #2c3e50, #3498db, #2c3e50);
+          transform: scaleX(0);
+          transition: transform 0.5s ease;
+        }
+
+        .card:hover::after {
+          transform: scaleX(1);
         }
 
         .card-image-wrapper {
           height: 220px;
           position: relative;
           overflow: hidden;
+          background: linear-gradient(135deg, #ecf0f1 0%, #bdc3c7 100%);
+        }
+
+        .card-image-wrapper::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+          z-index: 1;
+          transition: left 0.6s ease;
+        }
+
+        .card:hover .card-image-wrapper::before {
+          left: 100%;
         }
 
         .card-image {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+          transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .card:hover .card-image {
-          transform: scale(1.08);
+          transform: scale(1.2);
+          filter: brightness(1.1) contrast(1.1);
         }
 
         .card-overlay {
           position: absolute;
           inset: 0;
-          background: linear-gradient(180deg, transparent 0%, rgba(44, 62, 80, 0.7) 100%);
+          background: linear-gradient(180deg, transparent 30%, rgba(44, 62, 80, 0.9) 100%);
           opacity: 0;
-          transition: opacity 0.4s ease;
+          transition: opacity 0.5s ease;
+          z-index: 1;
         }
 
         .card:hover .card-overlay {
@@ -244,7 +393,29 @@ export default function Dashboard() {
         }
 
         .card-content {
-          padding: 28px 24px;
+          padding: 32px 28px 36px;
+          position: relative;
+          background: #ffffff;
+        }
+
+        .card-content h2 {
+          position: relative;
+          display: inline-block;
+        }
+
+        .card-content h2::after {
+          content: '';
+          position: absolute;
+          bottom: -4px;
+          left: 0;
+          width: 0;
+          height: 2px;
+          background: linear-gradient(90deg, #2c3e50, #3498db);
+          transition: width 0.4s ease;
+        }
+
+        .card:hover .card-content h2::after {
+          width: 100%;
         }
 
         .card-content h2 {
@@ -267,8 +438,8 @@ export default function Dashboard() {
           background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
           color: white;
           border: none;
-          padding: 14px 24px;
-          border-radius: 10px;
+          padding: 16px 24px;
+          border-radius: 12px;
           font-size: 1rem;
           font-weight: 600;
           cursor: pointer;
@@ -276,22 +447,49 @@ export default function Dashboard() {
           align-items: center;
           justify-content: center;
           gap: 8px;
-          transition: all 0.3s ease;
-          box-shadow: 0 4px 12px rgba(44, 62, 80, 0.2);
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: 0 4px 15px rgba(44, 62, 80, 0.2);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .card-content button::before {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 0;
+          height: 0;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.2);
+          transform: translate(-50%, -50%);
+          transition: width 0.5s ease, height 0.5s ease;
+        }
+
+        .card-content button:hover::before {
+          width: 300px;
+          height: 300px;
         }
 
         .card-content button:hover {
           background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(44, 62, 80, 0.3);
+          transform: translateY(-3px);
+          box-shadow: 0 8px 25px rgba(44, 62, 80, 0.35);
+        }
+
+        .card-content button span {
+          position: relative;
+          z-index: 1;
         }
 
         .card-content button svg {
           transition: transform 0.3s ease;
+          position: relative;
+          z-index: 1;
         }
 
         .card-content button:hover svg {
-          transform: translateX(4px);
+          transform: translateX(6px);
         }
 
         /* Custom Notification */

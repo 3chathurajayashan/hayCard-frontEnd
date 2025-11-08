@@ -19,6 +19,7 @@ import SampleMenu from './Components/SampleMenu/SampleMenu.jsx';
 import SampleIn from './Components/SampleIn/SampleIn.jsx'
 import SampleAssign from './Components/SampleAssigns/Assign.jsx';
 import SampleOut from './Components/SampleOut/Out.jsx';
+import PublicSample from './Components/PublicSample.jsx';
 const router = createBrowserRouter([
 
   {
@@ -84,6 +85,10 @@ const router = createBrowserRouter([
   {
     path:"/sampleout",
     element: <SampleOut />,
+  },
+   {
+    path:"/sample/public/:id",
+    element: <PublicSample />,
   },
 ]);
 

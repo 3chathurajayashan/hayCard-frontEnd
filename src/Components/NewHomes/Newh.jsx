@@ -16,109 +16,147 @@ export default function Dashboard() {
 
       if (section === "Chemical") {
         navigate("/chemHome");
-      } else if (section === "Customer") {
-        navigate("/cushome");
-      } else if (section === "Logins") {
-        navigate("/preSign");
-      } else {
+      }else if(section ==="Customer"){
+         navigate("/cushome");
+      } else if(section === "Logins"){
+        navigate("/preSign")
+      }
+      
+      else {
         setMessage(`Proceeding to ${section} section...`);
         setTimeout(() => setMessage(""), 2500);
       }
     }, 2000);
   };
 
-  const cardsData = [
-    {
-      title: "Chemical",
-      desc: "Manage and track all chemical inventory details.",
-      img: "/images/chemical.jpg",
-    },
-    {
-      title: "Logins",
-      desc: "Control and monitor user access and authentication.",
-      img: "/images/logins.jpg",
-    },
-    {
-      title: "Customer",
-      desc: "Analyze, record, and manage lab sample data easily.",
-      img: "/images/customer.jpg",
-    },
-  ];
-
   return (
     <div className="page">
       {/* Header */}
       <header className="header">
-        <h1>Haycarb Laboratory System</h1>
-        <p>Your centralized platform for chemical, login, and sample management</p>
+        <div className="header-content">
+          <h1>Haycarb Laboratory System</h1>
+          <p>Your centralized platform for chemical, login, and sample management</p>
+        </div>
       </header>
 
-      {/* Notification */}
-      {message && <div className="notification">{message}</div>}
+      {/* Custom Notification */}
+      {message && (
+        <div className="notification-container">
+          <div className="notification">
+            <div className="notification-icon">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <circle cx="10" cy="10" r="9" stroke="currentColor" strokeWidth="2"/>
+                <path d="M10 6V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                <circle cx="10" cy="14" r="1" fill="currentColor"/>
+              </svg>
+            </div>
+            <span>{message}</span>
+          </div>
+        </div>
+      )}
 
-      {/* Loading Overlay */}
+      {/* Advanced Loading Overlay */}
       {loading && (
         <div className="loading-overlay">
-          <div className="loader"></div>
-          <p>Processing...</p>
+          <div className="loading-content">
+            <div className="spinner-container">
+              <div className="spinner"></div>
+              <div className="spinner-inner"></div>
+            </div>
+            <p className="loading-text">Authenticating</p>
+            <div className="loading-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
         </div>
       )}
 
       {/* Cards Section */}
       <div className="cards">
-        {cardsData.map((item, i) => (
-          <div key={i} className="card">
-            <div className="card-image">
-              <img src={item.img} alt={item.title} />
+        {[
+          { 
+            title: "Chemical", 
+            desc: "Manage and track all chemical inventory details.",
+            image: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=800&auto=format&fit=crop&q=80"
+          },
+          { 
+            title: "Logins", 
+            desc: "Control and monitor user access and authentication.",
+            image: "https://images.unsplash.com/photo-1633265486064-086b219458ec?w=800&auto=format&fit=crop&q=80"
+          },
+          { 
+            title: "Customer", 
+            desc: "Analyze, record, and manage lab sample data easily.",
+            image: "https://images.unsplash.com/photo-1581093458791-9d42e1c5e2f4?w=800&auto=format&fit=crop&q=80"
+          },
+        ].map((item, i) => (
+          <div key={i} className="card" style={{ animationDelay: `${i * 0.1}s` }}>
+            <div className="card-image-wrapper">
+              <img src={item.image} alt={item.title} className="card-image" />
+              <div className="card-overlay"></div>
             </div>
             <div className="card-content">
               <h2>{item.title}</h2>
               <p>{item.desc}</p>
-              <button onClick={() => handleProceed(item.title)}>Proceed</button>
+              <button onClick={() => handleProceed(item.title)}>
+                <span>Proceed</span>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Styles */}
+      {/* Inline CSS */}
       <style>{`
         * {
           margin: 0;
           padding: 0;
           box-sizing: border-box;
-          font-family: 'Poppins', sans-serif;
+          font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
         }
 
         .page {
           min-height: 100vh;
-          background: linear-gradient(135deg, #e9eef5, #f9fafc);
+          background: linear-gradient(135deg, #f5f7fa 0%, #e8edf2 100%);
           display: flex;
           flex-direction: column;
           align-items: center;
           position: relative;
-          overflow: hidden;
+          overflow-x: hidden;
         }
 
         /* Header */
         .header {
           width: 100%;
+          padding: 60px 20px 40px;
+          background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+          animation: slideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .header-content {
+          max-width: 1200px;
+          margin: 0 auto;
           text-align: center;
-          padding: 80px 20px 60px;
-          background: linear-gradient(135deg, #1d2d50 0%, #243a73 100%);
-          box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-          animation: fadeDown 0.8s ease;
-          color: white;
         }
 
         .header h1 {
           font-size: 3rem;
-          font-weight: 600;
+          font-weight: 700;
+          color: #ffffff;
+          margin-bottom: 12px;
+          letter-spacing: -0.02em;
         }
 
         .header p {
-          margin-top: 12px;
-          color: rgba(255,255,255,0.85);
+          color: #bdc3c7;
           font-size: 1.1rem;
+          line-height: 1.6;
         }
 
         /* Cards Container */
@@ -126,146 +164,217 @@ export default function Dashboard() {
           display: flex;
           justify-content: center;
           flex-wrap: wrap;
-          gap: 50px;
+          gap: 40px;
           margin-top: 80px;
-          padding: 0 20px 60px;
-          animation: fadeUp 0.9s ease;
+          padding: 0 20px 80px;
+          max-width: 1400px;
         }
 
         /* Card */
         .card {
           background: #ffffff;
-          width: 360px;
-          border-radius: 24px;
-          box-shadow: 0 10px 40px rgba(29,45,80,0.08);
+          width: 380px;
+          border-radius: 16px;
           overflow: hidden;
-          transition: all 0.4s ease;
-          border: 1px solid rgba(228,232,240,0.5);
-          display: flex;
-          flex-direction: column;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          animation: cardEntry 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+        }
+
+        @keyframes cardEntry {
+          from {
+            opacity: 0;
+            transform: translateY(40px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
         .card:hover {
           transform: translateY(-10px);
-          box-shadow: 0 20px 60px rgba(29,45,80,0.15);
-          border-color: rgba(162,182,223,0.3);
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
         }
 
-        .card-image img {
+        .card-image-wrapper {
+          height: 220px;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .card-image {
           width: 100%;
-          height: 180px;
+          height: 100%;
           object-fit: cover;
-          transition: transform 0.5s ease;
+          transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .card:hover .card-image img {
-          transform: scale(1.05);
+        .card:hover .card-image {
+          transform: scale(1.08);
+        }
+
+        .card-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(180deg, transparent 0%, rgba(44, 62, 80, 0.7) 100%);
+          opacity: 0;
+          transition: opacity 0.4s ease;
+        }
+
+        .card:hover .card-overlay {
+          opacity: 1;
         }
 
         .card-content {
-          text-align: center;
-          padding: 25px 20px 40px;
+          padding: 28px 24px;
         }
 
         .card-content h2 {
-          color: #1d2d50;
-          font-size: 1.8rem;
-          margin-bottom: 15px;
+          color: #2c3e50;
+          font-size: 1.75rem;
+          margin-bottom: 12px;
+          font-weight: 700;
+          letter-spacing: -0.01em;
         }
 
         .card-content p {
-          color: #5a6473;
-          font-size: 1rem;
-          margin-bottom: 30px;
-          min-height: 50px;
+          color: #7f8c8d;
+          font-size: 0.95rem;
+          line-height: 1.6;
+          margin-bottom: 24px;
         }
 
         .card-content button {
-          background: linear-gradient(135deg, #1d2d50 0%, #243a73 100%);
+          width: 100%;
+          background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
           color: white;
           border: none;
-          padding: 14px 32px;
-          border-radius: 12px;
+          padding: 14px 24px;
+          border-radius: 10px;
           font-size: 1rem;
+          font-weight: 600;
           cursor: pointer;
-          font-weight: 500;
-          box-shadow: 0 4px 15px rgba(29,45,80,0.2);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
           transition: all 0.3s ease;
+          box-shadow: 0 4px 12px rgba(44, 62, 80, 0.2);
         }
 
         .card-content button:hover {
-          transform: scale(1.05);
-          box-shadow: 0 6px 20px rgba(29,45,80,0.3);
+          background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(44, 62, 80, 0.3);
         }
 
-        /* Notification */
-        .notification {
+        .card-content button svg {
+          transition: transform 0.3s ease;
+        }
+
+        .card-content button:hover svg {
+          transform: translateX(4px);
+        }
+
+        /* Custom Notification */
+        .notification-container {
           position: fixed;
-          top: 20px;
-          right: 20px;
-          background: #1d2d50;
-          color: white;
-          padding: 15px 28px;
-          border-radius: 10px;
-          box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-          animation: slideIn 0.4s ease forwards, fadeOut 2.5s ease forwards 0.5s;
-          z-index: 1000;
+          top: 24px;
+          right: 24px;
+          z-index: 3000;
+          animation: notificationSlide 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* Loading Overlay */
+        @keyframes notificationSlide {
+          from {
+            opacity: 0;
+            transform: translateX(100px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        .notification {
+          background: #ffffff;
+          color: #2c3e50;
+          padding: 16px 24px;
+          border-radius: 12px;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+          border: 1px solid #ecf0f1;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          min-width: 320px;
+        }
+
+        .notification-icon {
+          width: 36px;
+          height: 36px;
+          background: linear-gradient(135deg, #2c3e50, #34495e);
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          flex-shrink: 0;
+        }
+
+        .notification span {
+          font-size: 0.95rem;
+          font-weight: 500;
+        }
+
+        /* Advanced Loading Overlay */
         .loading-overlay {
           position: fixed;
           inset: 0;
-          background: rgba(255, 255, 255, 0.85);
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(10px);
           display: flex;
-          flex-direction: column;
           align-items: center;
           justify-content: center;
-          z-index: 2000;
-          animation: fadeIn 0.3s ease;
+          z-index: 4000;
+          animation: overlayFade 0.3s ease;
         }
 
-        .loader {
-          width: 60px;
-          height: 60px;
-          border: 6px solid #c7d2fe;
-          border-top: 6px solid #1d2d50;
+        @keyframes overlayFade {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        .loading-content {
+          text-align: center;
+        }
+
+        .spinner-container {
+          position: relative;
+          width: 100px;
+          height: 100px;
+          margin: 0 auto;
+        }
+
+        .spinner {
+          width: 100px;
+          height: 100px;
+          border: 4px solid #ecf0f1;
+          border-top: 4px solid #2c3e50;
           border-radius: 50%;
           animation: spin 1s linear infinite;
         }
 
-        .loading-overlay p {
-          margin-top: 20px;
-          color: #1d2d50;
-          font-weight: 500;
-          font-size: 1.1rem;
-          animation: pulse 1.5s infinite;
-        }
-
-        /* Animations */
-        @keyframes fadeDown {
-          from { opacity: 0; transform: translateY(-40px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(40px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes slideIn {
-          from { opacity: 0; transform: translateX(60px); }
-          to { opacity: 1; transform: translateX(0); }
-        }
-
-        @keyframes fadeOut {
-          0%, 80% { opacity: 1; }
-          100% { opacity: 0; transform: translateX(100px); }
-        }
-
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
+        .spinner-inner {
+          position: absolute;
+          top: 12px;
+          left: 12px;
+          width: 76px;
+          height: 76px;
+          border: 4px solid #ecf0f1;
+          border-top: 4px solid #34495e;
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite reverse;
         }
 
         @keyframes spin {
@@ -273,9 +382,79 @@ export default function Dashboard() {
           100% { transform: rotate(360deg); }
         }
 
-        @keyframes pulse {
-          0%, 100% { opacity: 0.6; }
-          50% { opacity: 1; }
+        .loading-text {
+          margin-top: 28px;
+          color: #2c3e50;
+          font-size: 1.2rem;
+          font-weight: 600;
+          letter-spacing: 0.03em;
+        }
+
+        .loading-dots {
+          display: flex;
+          gap: 8px;
+          justify-content: center;
+          margin-top: 16px;
+        }
+
+        .loading-dots span {
+          width: 8px;
+          height: 8px;
+          background: #2c3e50;
+          border-radius: 50%;
+          animation: dotPulse 1.4s infinite ease-in-out;
+        }
+
+        .loading-dots span:nth-child(1) { animation-delay: 0s; }
+        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes dotPulse {
+          0%, 60%, 100% {
+            transform: scale(0.8);
+            opacity: 0.5;
+          }
+          30% {
+            transform: scale(1.2);
+            opacity: 1;
+          }
+        }
+
+        /* Animations */
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translateY(-40px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+          .header h1 {
+            font-size: 2.2rem;
+          }
+
+          .header p {
+            font-size: 1rem;
+          }
+
+          .card {
+            width: 100%;
+            max-width: 400px;
+          }
+
+          .notification-container {
+            left: 20px;
+            right: 20px;
+          }
+
+          .notification {
+            min-width: auto;
+          }
         }
       `}</style>
     </div>

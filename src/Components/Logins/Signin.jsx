@@ -41,7 +41,7 @@ function Signin() {
     setLoading(true);
 
     try {
-      const res = await axios.post("https://hay-card-back-end.vercel.app/users/login", {
+      const res = await axios.post("https://hay-card-back-end.vercel.app/api/users/login", {
         email: inputs.email,
         password: inputs.password,
       });

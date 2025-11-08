@@ -9,11 +9,13 @@ function Signin() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState({ show: false, message: "", type: "" });
+  const [emailFocused, setEmailFocused] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
 
   // Show notification
   const showNotification = (message, type) => {
     setNotification({ show: true, message, type });
-    setTimeout(() => setNotification({ show: false, message: "", type: "" }), 4000);
+    setTimeout(() => setNotification({ show: false, message: "", type: "" }), 5000);
   };
 
   // Handle input change
@@ -46,7 +48,6 @@ function Signin() {
         password: inputs.password,
       });
 
-      // Save token + user info
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
@@ -54,7 +55,6 @@ function Signin() {
 
       showNotification("Login successful! Redirecting...", "success");
 
-      // Redirect based on role
       setTimeout(() => {
         if (userRole === "factory") navigate("/addDashboard");
         else if (userRole === "tester") navigate("/tester");
@@ -71,44 +71,52 @@ function Signin() {
 
   return (
     <div style={styles.container}>
+      {/* Animated Background */}
+      <div style={styles.backgroundAnimation}>
+        <div style={styles.circle1}></div>
+        <div style={styles.circle2}></div>
+        <div style={styles.circle3}></div>
+      </div>
+
       {/* Custom Notification */}
       {notification.show && (
         <div style={{
           ...styles.notification,
           ...(notification.type === "success" ? styles.notificationSuccess : styles.notificationError)
         }}>
-          <div style={styles.notificationContent}>
-            <div style={styles.notificationIcon}>
-              {notification.type === "success" ? (
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+          <div style={styles.notificationIconContainer}>
+            {notification.type === "success" ? (
+              <div style={styles.successIconWrapper}>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="white">
                   <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
                 </svg>
-              ) : (
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              </div>
+            ) : (
+              <div style={styles.errorIconWrapper}>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="white">
                   <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
                 </svg>
-              )}
-            </div>
-            <div style={styles.notificationText}>
-              <div style={styles.notificationTitle}>
-                {notification.type === "success" ? "Success" : "Error"}
               </div>
-              <div style={styles.notificationMessage}>{notification.message}</div>
-            </div>
-            <button 
-              onClick={() => setNotification({ show: false, message: "", type: "" })}
-              style={styles.notificationClose}
-            >
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-              </svg>
-            </button>
+            )}
           </div>
-          <div style={styles.notificationProgress}>
+          <div style={styles.notificationContent}>
+            <div style={styles.notificationTitle}>
+              {notification.type === "success" ? "Success!" : "Error"}
+            </div>
+            <div style={styles.notificationMessage}>{notification.message}</div>
+          </div>
+          <button 
+            onClick={() => setNotification({ show: false, message: "", type: "" })}
+            style={styles.notificationClose}
+          >
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+            </svg>
+          </button>
+          <div style={styles.notificationProgressBar}>
             <div style={{
-              ...styles.notificationProgressBar,
-              animation: `progress 4s linear forwards`,
-              backgroundColor: notification.type === "success" ? '#8dc63f' : '#dc3545'
+              ...styles.notificationProgress,
+              backgroundColor: notification.type === "success" ? '#10b981' : '#ef4444'
             }}></div>
           </div>
         </div>
@@ -116,66 +124,93 @@ function Signin() {
 
       <div style={styles.loginContainer}>
         <div style={styles.loginCard}>
-          {/* Header */}
+          {/* Header with Logo Animation */}
           <div style={styles.header}>
             <div style={styles.logoContainer}>
-              <img src={logo} alt="Company Logo" style={styles.logoImage} />
-               
+              <div style={styles.logoWrapper}>
+                <img src={logo} alt="Company Logo" style={styles.logoImage} />
+                <div style={styles.logoPulse}></div>
+              </div>
             </div>
-            <h1 style={styles.title}>Sign In</h1>
-            <p style={styles.subtitle}>Enter your credentials to access your account</p>
+            <h1 style={styles.title}>
+              <span style={styles.titleWord}>Welcome</span>
+              <span style={{...styles.titleWord, animationDelay: '0.1s'}}>Back</span>
+            </h1>
+            <p style={styles.subtitle}>Sign in to continue to your account</p>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} style={styles.form}>
             {error && (
               <div style={styles.errorBox}>
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style={styles.errorIcon}>
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-                </svg>
-                {error}
+                <div style={styles.errorIconBounce}>
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                  </svg>
+                </div>
+                <span>{error}</span>
               </div>
             )}
 
             <div style={styles.inputGroup}>
               <label style={styles.label}>Email Address</label>
-              <div style={styles.inputContainer}>
+              <div style={{
+                ...styles.inputContainer,
+                ...(emailFocused ? styles.inputContainerFocused : {})
+              }}>
+                <div style={styles.inputIconLeft}>
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill={emailFocused ? "#8dc63f" : "#94a3b8"}>
+                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                  </svg>
+                </div>
                 <input
                   type="email"
                   name="email"
                   placeholder="Enter your email"
                   value={inputs.email}
                   onChange={handleChange}
+                  onFocus={() => setEmailFocused(true)}
+                  onBlur={() => setEmailFocused(false)}
                   style={styles.input}
                   required
                   disabled={loading}
                 />
-                <div style={styles.inputIcon}>
-                  <svg viewBox="0 0 24 24" width="20" height="20" fill="#6c757d">
-                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-                  </svg>
-                </div>
+                {inputs.email && (
+                  <div style={styles.inputIconRight}>
+                    <div style={styles.checkmarkAnimation}>✓</div>
+                  </div>
+                )}
               </div>
             </div>
 
             <div style={styles.inputGroup}>
               <label style={styles.label}>Password</label>
-              <div style={styles.inputContainer}>
+              <div style={{
+                ...styles.inputContainer,
+                ...(passwordFocused ? styles.inputContainerFocused : {})
+              }}>
+                <div style={styles.inputIconLeft}>
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill={passwordFocused ? "#8dc63f" : "#94a3b8"}>
+                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                  </svg>
+                </div>
                 <input
                   type="password"
                   name="password"
                   placeholder="Enter your password"
                   value={inputs.password}
                   onChange={handleChange}
+                  onFocus={() => setPasswordFocused(true)}
+                  onBlur={() => setPasswordFocused(false)}
                   style={styles.input}
                   required
                   disabled={loading}
                 />
-                <div style={styles.inputIcon}>
-                  <svg viewBox="0 0 24 24" width="20" height="20" fill="#6c757d">
-                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
-                  </svg>
-                </div>
+                {inputs.password && (
+                  <div style={styles.inputIconRight}>
+                    <div style={styles.checkmarkAnimation}>✓</div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -189,21 +224,37 @@ function Signin() {
             >
               {loading ? (
                 <div style={styles.loadingContainer}>
-                  <div style={styles.spinner}></div>
-                  <span>Authenticating...</span>
+                  <div style={styles.spinnerContainer}>
+                    <div style={styles.spinner}></div>
+                    <div style={styles.spinnerCore}></div>
+                  </div>
+                  <span style={styles.loadingText}>Authenticating</span>
+                  <div style={styles.loadingDots}>
+                    <span style={styles.dot1}>.</span>
+                    <span style={styles.dot2}>.</span>
+                    <span style={styles.dot3}>.</span>
+                  </div>
                 </div>
               ) : (
-                "Sign In"
+                <>
+                  <span>Sign In</span>
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="white" style={styles.buttonArrow}>
+                    <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+                  </svg>
+                </>
               )}
+              <div style={styles.buttonRipple}></div>
             </button>
           </form>
 
           {/* Footer */}
           <div style={styles.footer}>
-            <div style={styles.footerLine}></div>
-            <p style={styles.footerText}>
-              Secure enterprise authentication system
-            </p>
+            <div style={styles.securityBadge}>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="#8dc63f">
+                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+              </svg>
+              <span>Secure SSL Encrypted</span>
+            </div>
           </div>
         </div>
       </div>
@@ -214,81 +265,150 @@ function Signin() {
 const styles = {
   container: {
     minHeight: "100vh",
-    background: "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
+    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     padding: "20px",
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
     position: "relative",
+    overflow: "hidden",
+  },
+  backgroundAnimation: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    overflow: "hidden",
+    zIndex: 0,
+  },
+  circle1: {
+    position: "absolute",
+    width: "500px",
+    height: "500px",
+    borderRadius: "50%",
+    background: "rgba(255, 255, 255, 0.05)",
+    top: "-250px",
+    right: "-100px",
+    animation: "float 20s ease-in-out infinite",
+  },
+  circle2: {
+    position: "absolute",
+    width: "300px",
+    height: "300px",
+    borderRadius: "50%",
+    background: "rgba(255, 255, 255, 0.03)",
+    bottom: "-150px",
+    left: "-50px",
+    animation: "float 15s ease-in-out infinite reverse",
+  },
+  circle3: {
+    position: "absolute",
+    width: "400px",
+    height: "400px",
+    borderRadius: "50%",
+    background: "rgba(255, 255, 255, 0.04)",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    animation: "pulse 10s ease-in-out infinite",
   },
   loginContainer: {
     width: "100%",
-    maxWidth: "440px",
+    maxWidth: "460px",
+    position: "relative",
+    zIndex: 1,
   },
   loginCard: {
-    background: "white",
-    borderRadius: "12px",
-    boxShadow: "0 10px 40px rgba(0, 0, 0, 0.08)",
-    padding: "48px 40px",
-    border: "1px solid rgba(0, 0, 0, 0.05)",
-    animation: "slideUp 0.5s ease-out",
+    background: "rgba(255, 255, 255, 0.95)",
+    backdropFilter: "blur(20px)",
+    borderRadius: "24px",
+    boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3), 0 0 100px rgba(102, 126, 234, 0.2)",
+    padding: "48px",
+    border: "1px solid rgba(255, 255, 255, 0.3)",
+    animation: "slideUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)",
   },
   header: {
     textAlign: "center",
-    marginBottom: "32px",
+    marginBottom: "40px",
   },
   logoContainer: {
     display: "flex",
-    alignItems: "center",
     justifyContent: "center",
-    gap: "12px",
     marginBottom: "24px",
+  },
+  logoWrapper: {
+    position: "relative",
+    display: "inline-block",
   },
   logoImage: {
     width: "158px",
     height: "108px",
     objectFit: "contain",
+    position: "relative",
+    zIndex: 2,
+    animation: "logoFloat 3s ease-in-out infinite",
   },
-  logoText: {
-    fontSize: "16px",
-    fontWeight: "700",
-    color: "#2c3e50",
-    letterSpacing: "0.5px",
+  logoPulse: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "120px",
+    height: "120px",
+    borderRadius: "50%",
+    background: "rgba(141, 198, 63, 0.2)",
+    animation: "logoPulse 2s ease-in-out infinite",
+    zIndex: 1,
   },
   title: {
-    fontSize: "28px",
-    fontWeight: "600",
-    color: "#2c3e50",
-    margin: "0 0 8px 0",
-    letterSpacing: "-0.5px",
+    fontSize: "32px",
+    fontWeight: "700",
+    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    backgroundClip: "text",
+    margin: "0 0 12px 0",
+    letterSpacing: "-1px",
+    display: "flex",
+    justifyContent: "center",
+    gap: "12px",
+  },
+  titleWord: {
+    display: "inline-block",
+    animation: "fadeInUp 0.6s ease-out forwards",
+    opacity: 0,
   },
   subtitle: {
-    fontSize: "14px",
-    color: "#6c757d",
+    fontSize: "15px",
+    color: "#64748b",
     margin: 0,
     fontWeight: "400",
+    animation: "fadeIn 0.8s ease-out 0.3s forwards",
+    opacity: 0,
   },
   form: {
     display: "flex",
     flexDirection: "column",
-    gap: "20px",
+    gap: "24px",
   },
   errorBox: {
-    background: "#f8d7da",
-    color: "#721c24",
-    padding: "12px 16px",
-    borderRadius: "8px",
+    background: "linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)",
+    color: "#991b1b",
+    padding: "14px 18px",
+    borderRadius: "12px",
     fontSize: "14px",
     display: "flex",
     alignItems: "center",
-    gap: "10px",
-    border: "1px solid #f5c6cb",
-    animation: "slideDown 0.3s ease-out",
+    gap: "12px",
+    border: "1px solid #fca5a5",
+    animation: "shake 0.5s ease-in-out",
   },
-  errorIcon: {
-    color: "#dc3545",
-    flexShrink: 0,
+  errorIconBounce: {
+    animation: "bounce 0.6s ease-in-out",
+    display: "flex",
+    alignItems: "center",
   },
   inputGroup: {
     display: "flex",
@@ -297,146 +417,254 @@ const styles = {
   },
   label: {
     fontSize: "14px",
-    fontWeight: "500",
-    color: "#2c3e50",
+    fontWeight: "600",
+    color: "#334155",
     marginBottom: "4px",
+    transition: "all 0.3s ease",
   },
   inputContainer: {
     position: "relative",
+    display: "flex",
+    alignItems: "center",
+    background: "#f8fafc",
+    borderRadius: "12px",
+    border: "2px solid #e2e8f0",
+    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
   },
-  input: {
-    width: "100%",
-    padding: "14px 48px 14px 16px",
-    borderRadius: "8px",
-    border: "2px solid #e9ecef",
-    fontSize: "15px",
-    background: "#f8f9fa",
-    transition: "all 0.2s ease",
-    outline: "none",
-    fontFamily: "inherit",
+  inputContainerFocused: {
+    border: "2px solid #8dc63f",
+    background: "#ffffff",
+    boxShadow: "0 0 0 4px rgba(141, 198, 63, 0.1), 0 8px 16px rgba(141, 198, 63, 0.1)",
+    transform: "translateY(-2px)",
   },
-  inputIcon: {
+  inputIconLeft: {
+    position: "absolute",
+    left: "16px",
+    display: "flex",
+    alignItems: "center",
+    transition: "all 0.3s ease",
+  },
+  inputIconRight: {
     position: "absolute",
     right: "16px",
-    top: "50%",
-    transform: "translateY(-50%)",
     display: "flex",
     alignItems: "center",
   },
+  checkmarkAnimation: {
+    color: "#10b981",
+    fontSize: "18px",
+    fontWeight: "bold",
+    animation: "checkmark 0.4s ease-in-out",
+  },
+  input: {
+    width: "100%",
+    padding: "16px 50px",
+    borderRadius: "12px",
+    border: "none",
+    fontSize: "15px",
+    background: "transparent",
+    outline: "none",
+    fontFamily: "inherit",
+    color: "#1e293b",
+    transition: "all 0.3s ease",
+  },
   submitButton: {
     width: "100%",
-    padding: "16px 24px",
-    borderRadius: "8px",
+    padding: "18px 32px",
+    borderRadius: "12px",
     border: "none",
-    background: "#8dc63f",
+    background: "linear-gradient(135deg, #8dc63f 0%, #7cb32e 100%)",
     color: "white",
-    fontSize: "15px",
+    fontSize: "16px",
     fontWeight: "600",
     cursor: "pointer",
-    transition: "all 0.2s ease",
     fontFamily: "inherit",
     marginTop: "8px",
     position: "relative",
     overflow: "hidden",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "8px",
+    boxShadow: "0 10px 30px rgba(141, 198, 63, 0.3)",
+    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
   },
   submitButtonLoading: {
-    background: "#7cb32e",
+    background: "linear-gradient(135deg, #7cb32e 0%, #6aa127 100%)",
     cursor: "not-allowed",
+  },
+  buttonArrow: {
+    transition: "transform 0.3s ease",
+  },
+  buttonRipple: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    width: "0",
+    height: "0",
+    borderRadius: "50%",
+    background: "rgba(255, 255, 255, 0.3)",
+    transform: "translate(-50%, -50%)",
+    transition: "width 0.6s ease, height 0.6s ease",
   },
   loadingContainer: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "10px",
+    gap: "12px",
+  },
+  spinnerContainer: {
+    position: "relative",
+    width: "24px",
+    height: "24px",
   },
   spinner: {
-    width: "18px",
-    height: "18px",
-    border: "2px solid rgba(255, 255, 255, 0.3)",
-    borderTop: "2px solid white",
+    position: "absolute",
+    width: "24px",
+    height: "24px",
+    border: "3px solid rgba(255, 255, 255, 0.3)",
+    borderTop: "3px solid white",
     borderRadius: "50%",
     animation: "spin 0.8s linear infinite",
   },
+  spinnerCore: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "12px",
+    height: "12px",
+    background: "white",
+    borderRadius: "50%",
+    animation: "pulse 1s ease-in-out infinite",
+  },
+  loadingText: {
+    fontWeight: "600",
+  },
+  loadingDots: {
+    display: "flex",
+    gap: "2px",
+  },
+  dot1: {
+    animation: "dotBounce 1.4s ease-in-out infinite",
+  },
+  dot2: {
+    animation: "dotBounce 1.4s ease-in-out 0.2s infinite",
+  },
+  dot3: {
+    animation: "dotBounce 1.4s ease-in-out 0.4s infinite",
+  },
   footer: {
-    marginTop: "32px",
+    marginTop: "40px",
     textAlign: "center",
   },
-  footerLine: {
-    height: "1px",
-    background: "#e9ecef",
-    marginBottom: "20px",
-  },
-  footerText: {
-    fontSize: "12px",
-    color: "#6c757d",
-    margin: 0,
+  securityBadge: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "8px",
+    padding: "10px 20px",
+    background: "rgba(141, 198, 63, 0.1)",
+    borderRadius: "50px",
+    fontSize: "13px",
+    color: "#475569",
+    fontWeight: "500",
+    border: "1px solid rgba(141, 198, 63, 0.2)",
   },
   // Notification Styles
   notification: {
     position: "fixed",
     top: "24px",
     right: "24px",
-    width: "380px",
+    width: "400px",
     background: "white",
-    borderRadius: "8px",
-    boxShadow: "0 10px 30px rgba(0, 0, 0, 0.15)",
-    zIndex: 1000,
-    animation: "slideInRight 0.3s ease-out",
+    borderRadius: "16px",
+    boxShadow: "0 20px 50px rgba(0, 0, 0, 0.2), 0 0 100px rgba(0, 0, 0, 0.1)",
+    zIndex: 10000,
+    animation: "notificationSlide 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
     overflow: "hidden",
-    border: "1px solid rgba(0, 0, 0, 0.1)",
-  },
-  notificationSuccess: {
-    borderTop: "3px solid #8dc63f",
-  },
-  notificationError: {
-    borderTop: "3px solid #dc3545",
-  },
-  notificationContent: {
-    padding: "16px 20px",
     display: "flex",
     alignItems: "flex-start",
-    gap: "12px",
+    padding: "20px",
+    gap: "16px",
+    position: "relative",
   },
-  notificationIcon: {
+  notificationSuccess: {
+    borderLeft: "4px solid #10b981",
+  },
+  notificationError: {
+    borderLeft: "4px solid #ef4444",
+  },
+  notificationIconContainer: {
     flexShrink: 0,
-    marginTop: "2px",
   },
-  notificationText: {
+  successIconWrapper: {
+    width: "40px",
+    height: "40px",
+    borderRadius: "50%",
+    background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    animation: "scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
+    boxShadow: "0 8px 20px rgba(16, 185, 129, 0.3)",
+  },
+  errorIconWrapper: {
+    width: "40px",
+    height: "40px",
+    borderRadius: "50%",
+    background: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    animation: "scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
+    boxShadow: "0 8px 20px rgba(239, 68, 68, 0.3)",
+  },
+  notificationContent: {
     flex: 1,
   },
   notificationTitle: {
-    fontSize: "14px",
-    fontWeight: "600",
-    marginBottom: "2px",
+    fontSize: "16px",
+    fontWeight: "700",
+    color: "#1e293b",
+    marginBottom: "4px",
   },
   notificationMessage: {
-    fontSize: "13px",
-    color: "#6c757d",
-    lineHeight: "1.4",
+    fontSize: "14px",
+    color: "#64748b",
+    lineHeight: "1.5",
   },
   notificationClose: {
     background: "none",
     border: "none",
-    color: "#6c757d",
+    color: "#94a3b8",
     cursor: "pointer",
     padding: "4px",
-    borderRadius: "4px",
-    transition: "background 0.2s ease",
+    borderRadius: "8px",
+    transition: "all 0.2s ease",
     flexShrink: 0,
-  },
-  notificationProgress: {
-    width: "100%",
-    height: "3px",
-    background: "rgba(0, 0, 0, 0.1)",
+    width: "32px",
+    height: "32px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
   notificationProgressBar: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    width: "100%",
+    height: "4px",
+    background: "rgba(0, 0, 0, 0.05)",
+  },
+  notificationProgress: {
     height: "100%",
     width: "100%",
     transformOrigin: "left",
+    animation: "progress 5s linear forwards",
   },
 };
 
-// Add styles to document head
+// Add keyframe animations
 const styleSheet = document.createElement("style");
 styleSheet.textContent = `
   @keyframes spin {
@@ -444,19 +672,71 @@ styleSheet.textContent = `
     100% { transform: rotate(360deg); }
   }
   
-  @keyframes slideInRight {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
   }
   
-  @keyframes slideDown {
-    from { transform: translateY(-10px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-30px); }
   }
   
   @keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  
+  @keyframes fadeInUp {
     from { transform: translateY(20px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+  }
+  
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  @keyframes checkmark {
+    0% { transform: scale(0) rotate(45deg); opacity: 0; }
+    50% { transform: scale(1.2) rotate(45deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+  
+  @keyframes dotBounce {
+    0%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-8px); }
+  }
+  
+  @keyframes logoFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  @keyframes logoPulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+    50% { transform: translate(-50%, -50%) scale(1.3); opacity: 0.1; }
+  }
+  
+  @keyframes notificationSlide {
+    from { transform: translateX(120%) rotate(10deg); opacity: 0; }
+    to { transform: translateX(0) rotate(0); opacity: 1; }
+  }
+  
+  @keyframes scaleIn {
+    from { transform: scale(0) rotate(-180deg); opacity: 0; }
+    to { transform: scale(1) rotate(0); opacity: 1; }
   }
   
   @keyframes progress {
@@ -464,45 +744,30 @@ styleSheet.textContent = `
     100% { transform: scaleX(0); }
   }
   
-  /* Input focus effects */
-  input:focus {
-    border-color: #8dc63f !important;
-    background: white !important;
-    box-shadow: 0 0 0 3px rgba(141, 198, 63, 0.1) !important;
-  }
-  
-  /* Button hover effects */
+  /* Hover effects */
   button:not(:disabled):hover {
-    background: #7cb32e !important;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(141, 198, 63, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 15px 40px rgba(141, 198, 63, 0.4) !important;
   }
   
-  /* Notification close button hover */
-  .notification-close:hover {
-    background: rgba(0, 0, 0, 0.05) !important;
+  button:not(:disabled):hover svg {
+    transform: translateX(5px);
   }
   
-  /* Responsive design */
+  button:not(:disabled):active {
+    transform: translateY(0);
+  }
+  
+  input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  /* Responsive */
   @media (max-width: 480px) {
-    .login-card {
-      padding: 32px 24px;
-      margin: 0 16px;
-    }
-    
     .notification {
-      width: calc(100% - 48px);
+      width: calc(100% - 32px);
       right: 16px;
-      left: 16px;
-    }
-    
-    .logo-image {
-      width: 40px;
-      height: 40px;
-    }
-    
-    .logo-text {
-      font-size: 14px;
     }
   }
 `;

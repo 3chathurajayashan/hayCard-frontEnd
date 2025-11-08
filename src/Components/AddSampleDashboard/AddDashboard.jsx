@@ -206,106 +206,60 @@ const generatePDF = (sample) => {
 };
 
   const generateQR = async (sample) => {
-     try {
-    // Fetch sample details
-    const res = await axios.get(`https://hay-card-back-end.vercel.app/api/samples/public/${sampleId}`);
-    const sample = res.data;
-
-    // Generate QR pointing to public route
+    try {
+      // Append sample ID only (public access for QR)
+      // QR points to public route
     const url = `https://hay-card-back-end.vercel.app/api/samples/public/${sample._id}`;
-    const qrDataUrl = await QRCode.toDataURL(url);
 
-    // Open new window and render sample details
-    const win = window.open();
-    win.document.write(`
-      <html>
-      <head>
-        <title>Sample Details - ${sample.sampleId}</title>
-        <style>
-          body {
-            font-family: 'Poppins', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #e0f7fa, #ffffff);
-            margin: 0;
-            padding: 20px;
-            color: #333;
-          }
-          h2, h3 { color: #00796b; }
-          .card {
-            background: #fff;
-            padding: 20px 25px;
-            border-radius: 12px;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 600px;
+  
+      const qrDataUrl = await QRCode.toDataURL(url);
+
+      const win = window.open();
+      win.document.write(`
+        <div style="
+          font-family: 'Poppins', sans-serif;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+          background: linear-gradient(135deg, #e0f7fa, #ffffff);
+          margin: 0;
+          padding: 20px;
+          color: #333;
+          text-align: center;
+        ">
+          <h3 style="
+            font-size: 24px;
             margin-bottom: 20px;
-          }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-          }
-          table, th, td { border: 1px solid #00796b; }
-          th, td { padding: 8px; text-align: center; }
-          img { width: 200px; height: 200px; margin-bottom: 20px; }
-        </style>
-      </head>
-      <body>
-        <h2>Sample Details</h2>
-        <div class="card">
-          <p><strong>Sample ID:</strong> ${sample.sampleId}</p>
-          <p><strong>Request Ref No:</strong> ${sample.requestRefNo}</p>
-          <p><strong>Sample Ref No:</strong> ${sample.sampleRefNo}</p>
-          <p><strong>From:</strong> ${Array.isArray(sample.from) ? sample.from.join(", ") : sample.from}</p>
-          <p><strong>To:</strong> ${sample.to}</p>
-          <p><strong>Route:</strong> ${sample.sampleRoute}</p>
-          <p><strong>Test Method:</strong> ${sample.testMethod}</p>
-          <p><strong>Remarks:</strong> ${sample.remarks}</p>
-          <p><strong>Analysed By:</strong> ${sample.analysedBy}</p>
-          <p><strong>Created At:</strong> ${new Date(sample.createdAt).toLocaleString()}</p>
-          <p><strong>Received:</strong> ${sample.received ? "Yes" : "No"}</p>
-          ${sample.received ? `<p><strong>Received Date:</strong> ${sample.receivedDate}</p>
-          <p><strong>Received Time:</strong> ${sample.receivedTime}</p>` : ""}
-          <p><strong>Completed Date:</strong> ${sample.completedDate}</p>
-          <p><strong>Completed Time:</strong> ${sample.completedTime}</p>
+            color: #00796b;
+          ">Scan this QR to view sample details:</h3>
+          <img src="${qrDataUrl}" alt="QR Code" style="
+            width: 250px;
+            height: 250px;
+            border: 8px solid #00796b;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 25px;
+          " />
+          <p style="
+            font-size: 16px;
+            max-width: 80%;
+            word-break: break-word;
+          ">
+            Or open this link: <br>
+            <a href="${url}" target="_blank" style="
+              color: #00695c;
+              text-decoration: none;
+              font-weight: bold;
+            ">${url}</a>
+          </p>
         </div>
-
-        <h3>Results</h3>
-        <div class="card">
-          ${sample.results && sample.results.length > 0 ? `
-            <table>
-              <thead>
-                <tr><th>#</th><th>As (ppb)</th><th>Sb (ppb)</th><th>Al (ppb)</th></tr>
-              </thead>
-              <tbody>
-                ${sample.results.map((r, i) => `
-                  <tr>
-                    <td>${i + 1}</td>
-                    <td>${r.As_ppb ?? "-"}</td>
-                    <td>${r.Sb_ppb ?? "-"}</td>
-                    <td>${r.Al_ppb ?? "-"}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          ` : `<p>No results found.</p>`}
-        </div>
-
-        <h3>QR Code</h3>
-        <img src="${qrDataUrl}" alt="QR Code" />
-        <p>Or open this link: <a href="${url}" target="_blank">${url}</a></p>
-      </body>
-      </html>
-    `);
-
-    win.document.close();
-  } catch (err) {
-    console.error("Error generating QR + sample details:", err);
-  }
+      `);
+      win.document.close();
+    } catch (err) {
+      console.error("QR generation error:", err);
+    }
   };
 
   const handleChange = (e) => {

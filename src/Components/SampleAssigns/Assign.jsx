@@ -1,203 +1,182 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { motion, AnimatePresence } from "framer-motion";
 
-export default function CustomerSamplePage() {
+const BACKEND_URL = "https://hay-card-back-end.vercel.app/api/sample-assign";
+
+export default function SampleAssign() {
   const [referenceNumber, setReferenceNumber] = useState("");
-  const [document, setDocument] = useState(null);
+  const [file, setFile] = useState(null);
   const [samples, setSamples] = useState([]);
-  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [notification, setNotification] = useState("");
+
+  // 🔹 Fetch all samples
+  const fetchSamples = async () => {
+    try {
+      const res = await axios.get(`${BACKEND_URL}/all`);
+      setSamples(res.data);
+    } catch (err) {
+      console.error("Error fetching samples:", err);
+    }
+  };
 
   useEffect(() => {
     fetchSamples();
   }, []);
 
-  const fetchSamples = async () => {
-  try {
-    const res = await axios.get("http://localhost:5000/api/samples/all");
-    console.log("Fetched samples:", res.data); // 👈 add this
-    setSamples(res.data);
-  } catch (err) {
-    console.error("Error fetching samples:", err);
-  }
-};
+  // 🔹 Convert file to Base64
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
 
+  // 🔹 Handle Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!referenceNumber || !document) {
-      setMessage("Please provide reference number and document");
+
+    if (!referenceNumber || !file) {
+      setNotification("⚠️ Please provide both reference number and file!");
       return;
     }
 
-    const formData = new FormData();
-    formData.append("referenceNumber", referenceNumber);
-    formData.append("document", document);
+    setLoading(true);
+    setNotification("Uploading your document...");
 
     try {
-     await axios.post("http://localhost:5000/api/samples/add", formData, {
-  headers: { "Content-Type": "multipart/form-data" },
-});
+      const base64File = await convertToBase64(file);
 
-      setMessage("Sample added successfully!");
-      setReferenceNumber("");
-      setDocument(null);
-      fetchSamples();
-      setTimeout(() => setMessage(""), 3000);
-    } catch (err) {
-      setMessage(err.response?.data?.message || "Error adding sample");
-      setTimeout(() => setMessage(""), 3000);
+      const res = await axios.post(`${BACKEND_URL}/add`, {
+        referenceNumber,
+        file: base64File,
+      });
+
+      if (res.status === 201) {
+        setNotification("✅ Document uploaded successfully!");
+        setReferenceNumber("");
+        setFile(null);
+        fetchSamples();
+      }
+    } catch (error) {
+      console.error(error);
+      setNotification("❌ Upload failed! Try again.");
+    } finally {
+      setLoading(false);
+      setTimeout(() => setNotification(""), 4000);
     }
   };
 
-  // Styles
-  const containerStyle = {
-    maxWidth: "750px",
-    margin: "50px auto",
-    padding: "25px",
-    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-    backgroundColor: "#f5f6fa",
-    borderRadius: "12px",
-    boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
-  };
-
-  const formStyle = {
-    display: "flex",
-    flexDirection: "column",
-    gap: "15px",
-    marginBottom: "30px",
-    background: "#fff",
-    padding: "25px",
-    borderRadius: "10px",
-    boxShadow: "0px 4px 15px rgba(0,0,0,0.1)",
-    transition: "transform 0.3s ease",
-  };
-
-  const inputStyle = {
-    padding: "12px",
-    fontSize: "16px",
-    borderRadius: "8px",
-    border: "1px solid #ccc",
-    outline: "none",
-    transition: "all 0.3s ease",
-  };
-
-  const buttonStyle = {
-    padding: "14px",
-    fontSize: "16px",
-    backgroundColor: "#007bff",
-    color: "#fff",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-    transition: "0.3s all ease",
-  };
-
-  const buttonHover = {
-    backgroundColor: "#0056b3",
-    transform: "scale(1.03)",
-  };
-
-  const messageStyle = {
-    padding: "12px",
-    backgroundColor: "#d1e7dd",
-    color: "#0f5132",
-    borderRadius: "8px",
-    marginBottom: "20px",
-    textAlign: "center",
-    fontWeight: "500",
-    animation: "fadeIn 0.5s ease",
-  };
-
-  const sampleCard = {
-    background: "#fff",
-    padding: "18px",
-    borderRadius: "10px",
-    boxShadow: "0 3px 10px rgba(0,0,0,0.08)",
-    marginBottom: "12px",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    transition: "transform 0.3s ease, box-shadow 0.3s ease",
-    cursor: "pointer",
-  };
-
-  const sampleCardHover = {
-    transform: "translateY(-3px)",
-    boxShadow: "0 8px 20px rgba(0,0,0,0.12)",
-  };
-
-  const titleStyle = {
-    textAlign: "center",
-    marginBottom: "25px",
-    fontSize: "28px",
-    fontWeight: "600",
-    color: "#333",
-  };
-
   return (
-    <div style={containerStyle}>
-      <h2 style={titleStyle}>Customer Sample Upload</h2>
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4">
+      <motion.h1
+        className="text-3xl font-bold mb-8 text-gray-800"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        Sample Assign Dashboard
+      </motion.h1>
 
-      {message && <div style={messageStyle}>{message}</div>}
+      {/* Notification */}
+      <AnimatePresence>
+        {notification && (
+          <motion.div
+            key="notify"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="bg-indigo-600 text-white px-6 py-3 rounded-xl shadow-md mb-6"
+          >
+            {notification}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      <form style={formStyle} onSubmit={handleSubmit}>
-        <input
-          style={inputStyle}
-          type="text"
-          placeholder="Reference Number"
-          value={referenceNumber}
-          onChange={(e) => setReferenceNumber(e.target.value)}
-          required
-          onFocus={(e) => (e.target.style.borderColor = "#007bff")}
-          onBlur={(e) => (e.target.style.borderColor = "#ccc")}
-        />
-        <input
-          style={inputStyle}
-          type="file"
-          accept=".xls,.xlsx"
-          onChange={(e) => setDocument(e.target.files[0])}
-          required
-        />
+      {/* Upload Form */}
+      <motion.form
+        onSubmit={handleSubmit}
+        className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-lg"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <label className="block mb-4">
+          <span className="text-gray-700 font-semibold">Reference Number</span>
+          <input
+            type="text"
+            value={referenceNumber}
+            onChange={(e) => setReferenceNumber(e.target.value)}
+            className="mt-2 w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-400 outline-none"
+            placeholder="Enter reference number..."
+          />
+        </label>
+
+        <label className="block mb-6">
+          <span className="text-gray-700 font-semibold">Upload Document</span>
+          <input
+            type="file"
+            accept=".pdf,.doc,.docx,.xls,.xlsx"
+            onChange={(e) => setFile(e.target.files[0])}
+            className="mt-2 w-full border border-gray-300 rounded-lg p-2 cursor-pointer"
+          />
+        </label>
+
         <button
           type="submit"
-          style={buttonStyle}
-          onMouseOver={(e) => {
-            Object.assign(e.currentTarget.style, buttonHover);
-          }}
-          onMouseOut={(e) => {
-            Object.assign(e.currentTarget.style, buttonStyle);
-          }}
+          disabled={loading}
+          className={`w-full py-3 rounded-lg font-semibold text-white transition ${
+            loading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-indigo-600 hover:bg-indigo-700"
+          }`}
         >
-          Submit
+          {loading ? "Uploading..." : "Submit"}
         </button>
-      </form>
+      </motion.form>
 
-      <h3 style={{ marginBottom: "20px", color: "#555" }}>Uploaded Samples</h3>
-      {samples.length === 0 && <p style={{ textAlign: "center", color: "#888" }}>No samples uploaded yet.</p>}
-      {samples.map((sample) => (
-        <div
-          key={sample._id}
-          style={sampleCard}
-          onMouseEnter={(e) => Object.assign(e.currentTarget.style, sampleCardHover)}
-          onMouseLeave={(e) => Object.assign(e.currentTarget.style, sampleCard)}
+      {/* Loading animation */}
+      {loading && (
+        <motion.div
+          className="mt-6 flex items-center gap-2 text-indigo-600"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
         >
-          <span style={{ fontWeight: "500", color: "#333" }}>{sample.referenceNumber}</span>
-          <a
-            href={`http://localhost:5000/${sample.documentPath}`}
-            target="_blank"
-            rel="noreferrer"
-            style={{
-              color: "#007bff",
-              textDecoration: "none",
-              fontWeight: "500",
-              transition: "0.3s",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
-            onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
-          >
-            Download
-          </a>
+          <div className="w-5 h-5 border-4 border-t-transparent border-indigo-600 rounded-full animate-spin"></div>
+          Uploading your document...
+        </motion.div>
+      )}
+
+      {/* Display Uploaded Samples */}
+      <div className="mt-10 w-full max-w-4xl">
+        <h2 className="text-2xl font-semibold mb-4 text-gray-700">
+          Uploaded Samples
+        </h2>
+
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {samples.map((sample) => (
+            <motion.div
+              key={sample._id}
+              className="bg-white shadow-md rounded-xl p-5 hover:shadow-xl transition-all"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <p className="font-semibold text-gray-800 mb-2">
+                Ref: {sample.referenceNumber}
+              </p>
+              <a
+                href={sample.documentUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-2 text-indigo-600 hover:text-indigo-800 underline"
+              >
+                Download Document
+              </a>
+            </motion.div>
+          ))}
         </div>
-      ))}
+      </div>
     </div>
   );
 }

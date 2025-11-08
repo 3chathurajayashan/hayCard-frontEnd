@@ -18,11 +18,11 @@ export default function Dashboard() {
       setLoading(false);
       setMessage("");
 
-      if (section === "Chemical") {
+      if (section === "Chemicals") {
         navigate("/chemHome");
       }else if(section ==="Customer"){
          navigate("/cushome");
-      } else if(section === "Logins"){
+      } else if(section === "Samples"){
         navigate("/preSign")
       }
       

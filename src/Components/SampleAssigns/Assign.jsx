@@ -7,7 +7,7 @@ export default function ReferenceForm() {
   const [loading, setLoading] = useState(false);
 
   // Change this to your backend URL if deployed
-  const BASE_URL = "https://your-vercel-app.vercel.app/api/reference";
+  const BASE_URL = "https://hay-card-back-end.vercel.app/api/reference";
 
   // Fetch all references from backend
   const fetchReferences = async () => {

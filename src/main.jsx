@@ -18,7 +18,7 @@ import ChemicalRequestPage from './Components/RequestForm/Request.jsx';
 import SampleMenu from './Components/SampleMenu/SampleMenu.jsx';
 import SampleIn from './Components/SampleIn/SampleIn.jsx'
 import SampleAssign from './Components/SampleAssigns/Assign.jsx';
- import SampleOut from './Components/SampleOut.jsx';
+import Sampleout from './Components/SampleOuts'
 import PublicSample from './Components/PublicSample.jsx';
 const router = createBrowserRouter([
 
@@ -84,7 +84,7 @@ const router = createBrowserRouter([
   },
   {
     path:"/sampleout",
-    element: <SampleOut />,
+    element: <Sampleout />,
   },
    {
     path:"/samples/public/:id",

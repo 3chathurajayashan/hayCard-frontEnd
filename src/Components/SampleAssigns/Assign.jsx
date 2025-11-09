@@ -1,144 +1,86 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const BACKEND_URL = "https://your-vercel-app.vercel.app/api/upload-document";
-
-export default function DocumentUploader() {
-  const [referenceNumber, setReferenceNumber] = useState("");
-  const [file, setFile] = useState(null);
-  const [documents, setDocuments] = useState([]);
+export default function ReferenceForm() {
+  const [refNumber, setRefNumber] = useState("");
+  const [references, setReferences] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
 
-  // Fetch all uploaded documents
-  const fetchDocuments = async () => {
+  // Change this to your backend URL if deployed
+  const BASE_URL = "https://your-vercel-app.vercel.app/api/reference";
+
+  // Fetch all references from backend
+  const fetchReferences = async () => {
     try {
-      const res = await axios.get(BACKEND_URL);
-      setDocuments(res.data);
+      const res = await axios.get(`${BASE_URL}/`);
+      setReferences(res.data);
     } catch (err) {
-      console.error("Failed to fetch documents:", err);
+      console.error(err);
     }
   };
 
   useEffect(() => {
-    fetchDocuments();
+    fetchReferences();
   }, []);
 
-  // Handle form submission
+  // Handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!file || !referenceNumber) return alert("Please fill all fields");
-
-    const formData = new FormData();
-    formData.append("referenceNumber", referenceNumber);
-    formData.append("file", file);
-
+    if (!refNumber) return alert("Enter reference number");
+    setLoading(true);
     try {
-      setUploading(true);
-      await axios.post(BACKEND_URL, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      setReferenceNumber("");
-      setFile(null);
-      fetchDocuments();
+      await axios.post(`${BASE_URL}/add`, { refNumber });
+      setRefNumber("");
+      fetchReferences(); // Refresh list
     } catch (err) {
-      console.error("Upload failed:", err);
-      alert("Failed to upload file!");
+      console.error(err);
+      alert("Submission failed");
     } finally {
-      setUploading(false);
+      setLoading(false);
     }
   };
 
   return (
-    <div style={{ maxWidth: 700, margin: "auto", padding: "2rem" }}>
-      <h2 style={{ textAlign: "center", marginBottom: "1rem" }}>
-        Upload Reference Document
-      </h2>
-
-      {/* Upload Form */}
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "1rem",
-          marginBottom: "2rem",
-        }}
-      >
+    <div style={{ maxWidth: "400px", margin: "50px auto", fontFamily: "Arial, sans-serif" }}>
+      <h2>Reference Number Submission</h2>
+      <form onSubmit={handleSubmit}>
         <input
           type="text"
-          placeholder="Reference Number"
-          value={referenceNumber}
-          onChange={(e) => setReferenceNumber(e.target.value)}
-          required
-          style={{ padding: "0.5rem", fontSize: "1rem" }}
+          placeholder="Enter Reference Number"
+          value={refNumber}
+          onChange={(e) => setRefNumber(e.target.value)}
+          style={{
+            width: "100%",
+            padding: "10px",
+            marginBottom: "10px",
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+          }}
         />
-
-        <input
-          type="file"
-          accept=".pdf,.xlsx,.xls,.docx"
-          onChange={(e) => setFile(e.target.files[0])}
-          required
-        />
-
         <button
           type="submit"
-          disabled={uploading}
+          disabled={loading}
           style={{
-            padding: "0.7rem",
-            fontSize: "1rem",
-            backgroundColor: "#4f46e5",
-            color: "white",
+            width: "100%",
+            padding: "10px",
+            borderRadius: "5px",
             border: "none",
-            cursor: uploading ? "not-allowed" : "pointer",
+            backgroundColor: "#007bff",
+            color: "#fff",
+            cursor: "pointer",
           }}
         >
-          {uploading ? "Uploading..." : "Submit"}
+          {loading ? "Submitting..." : "Submit"}
         </button>
       </form>
 
-      {/* Uploaded Documents */}
-      <h3>Uploaded Documents</h3>
-      {loading ? (
-        <p>Loading...</p>
-      ) : documents.length === 0 ? (
-        <p>No documents uploaded yet.</p>
-      ) : (
-        <ul style={{ listStyle: "none", padding: 0 }}>
-          {documents.map((doc) => (
-            <li
-              key={doc._id}
-              style={{
-                marginBottom: "1rem",
-                padding: "1rem",
-                border: "1px solid #ddd",
-                borderRadius: "8px",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <span>
-                <b>{doc.referenceNumber}</b> - {doc.fileName}
-              </span>
-              <a
-                href={doc.fileUrl}
-                target="_blank"
-                rel="noreferrer"
-                style={{
-                  textDecoration: "none",
-                  color: "white",
-                  backgroundColor: "#4f46e5",
-                  padding: "0.5rem 1rem",
-                  borderRadius: "6px",
-                }}
-              >
-                Download
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
+      <h3 style={{ marginTop: "20px" }}>Submitted References:</h3>
+      <ul>
+        {references.length === 0 && <li>No references yet.</li>}
+        {references.map((ref) => (
+          <li key={ref._id}>{ref.refNumber}</li>
+        ))}
+      </ul>
     </div>
   );
 }

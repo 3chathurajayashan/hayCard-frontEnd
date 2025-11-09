@@ -11,7 +11,7 @@ export default function ReferenceForm() {
 
   const fetchReferences = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/`);
+      const res = await axios.get(BASE_URL);
       setReferences(res.data);
     } catch (err) {
       console.error(err);
@@ -47,13 +47,21 @@ export default function ReferenceForm() {
     }
   };
 
+  // Helper to download file
+  const downloadFile = (fileData, fileName) => {
+    const link = document.createElement("a");
+    link.href = `data:application/octet-stream;base64,${fileData}`;
+    link.download = fileName;
+    link.click();
+  };
+
   return (
-    <div style={{ maxWidth: "400px", margin: "50px auto", fontFamily: "Arial, sans-serif" }}>
-      <h2>Reference Number Submission</h2>
+    <div style={{ maxWidth: "500px", margin: "50px auto", fontFamily: "Arial, sans-serif" }}>
+      <h2>Reference Submission</h2>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          placeholder="Enter Reference Number"
+          placeholder="Reference Number"
           value={refNumber}
           onChange={(e) => setRefNumber(e.target.value)}
           style={{ width: "100%", padding: "10px", marginBottom: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
@@ -72,12 +80,20 @@ export default function ReferenceForm() {
         </button>
       </form>
 
-      <h3 style={{ marginTop: "20px" }}>Submitted References:</h3>
+      <h3 style={{ marginTop: "20px" }}>Submitted References</h3>
       <ul>
         {references.length === 0 && <li>No references yet.</li>}
         {references.map((ref) => (
           <li key={ref._id}>
-            {ref.refNumber} {ref.document && <a href={ref.document} target="_blank" rel="noreferrer">[View Document]</a>}
+            <strong>{ref.refNumber}</strong>{" "}
+            {ref.fileData && (
+              <button
+                onClick={() => downloadFile(ref.fileData, ref.fileName)}
+                style={{ marginLeft: "10px", padding: "2px 6px", cursor: "pointer" }}
+              >
+                Download
+              </button>
+            )}
           </li>
         ))}
       </ul>

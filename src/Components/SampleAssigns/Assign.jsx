@@ -3,13 +3,12 @@ import axios from "axios";
 
 export default function ReferenceForm() {
   const [refNumber, setRefNumber] = useState("");
+  const [file, setFile] = useState(null);
   const [references, setReferences] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Change this to your backend URL if deployed
   const BASE_URL = "https://hay-card-back-end.vercel.app/api/reference";
 
-  // Fetch all references from backend
   const fetchReferences = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/`);
@@ -23,15 +22,23 @@ export default function ReferenceForm() {
     fetchReferences();
   }, []);
 
-  // Handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!refNumber) return alert("Enter reference number");
     setLoading(true);
+
     try {
-      await axios.post(`${BASE_URL}/add`, { refNumber });
+      const formData = new FormData();
+      formData.append("refNumber", refNumber);
+      if (file) formData.append("document", file);
+
+      await axios.post(`${BASE_URL}/add`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
       setRefNumber("");
-      fetchReferences(); // Refresh list
+      setFile(null);
+      fetchReferences();
     } catch (err) {
       console.error(err);
       alert("Submission failed");
@@ -49,26 +56,17 @@ export default function ReferenceForm() {
           placeholder="Enter Reference Number"
           value={refNumber}
           onChange={(e) => setRefNumber(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "10px",
-            marginBottom: "10px",
-            borderRadius: "5px",
-            border: "1px solid #ccc",
-          }}
+          style={{ width: "100%", padding: "10px", marginBottom: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
+        />
+        <input
+          type="file"
+          onChange={(e) => setFile(e.target.files[0])}
+          style={{ width: "100%", marginBottom: "10px" }}
         />
         <button
           type="submit"
           disabled={loading}
-          style={{
-            width: "100%",
-            padding: "10px",
-            borderRadius: "5px",
-            border: "none",
-            backgroundColor: "#007bff",
-            color: "#fff",
-            cursor: "pointer",
-          }}
+          style={{ width: "100%", padding: "10px", borderRadius: "5px", border: "none", backgroundColor: "#007bff", color: "#fff", cursor: "pointer" }}
         >
           {loading ? "Submitting..." : "Submit"}
         </button>
@@ -78,7 +76,9 @@ export default function ReferenceForm() {
       <ul>
         {references.length === 0 && <li>No references yet.</li>}
         {references.map((ref) => (
-          <li key={ref._id}>{ref.refNumber}</li>
+          <li key={ref._id}>
+            {ref.refNumber} {ref.document && <a href={ref.document} target="_blank" rel="noreferrer">[View Document]</a>}
+          </li>
         ))}
       </ul>
     </div>

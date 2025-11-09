@@ -68,30 +68,49 @@ export default function ReferenceForm() {
         }
 
         body {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: #0a0f0d;
           min-height: 100vh;
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
         }
 
         .container {
-          max-width: 800px;
+          max-width: 900px;
           margin: 0 auto;
-          padding: 40px 20px;
+          padding: 60px 20px;
         }
 
         .card {
-          background: white;
-          border-radius: 16px;
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-          padding: 40px;
-          margin-bottom: 30px;
-          animation: fadeInUp 0.6s ease-out;
+          background: #ffffff;
+          border-radius: 20px;
+          box-shadow: 0 25px 70px rgba(0, 0, 0, 0.3);
+          padding: 50px;
+          margin-bottom: 40px;
+          animation: fadeInUp 0.7s ease-out;
+          border: 1px solid #e8e8e8;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 5px;
+          background: linear-gradient(90deg, #10b981, #059669);
+          animation: slideRight 2s ease-in-out infinite;
+        }
+
+        @keyframes slideRight {
+          0%, 100% { transform: translateX(-100%); }
+          50% { transform: translateX(100%); }
         }
 
         @keyframes fadeInUp {
           from {
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(40px);
           }
           to {
             opacity: 1;
@@ -100,46 +119,56 @@ export default function ReferenceForm() {
         }
 
         .header {
-          margin-bottom: 32px;
+          margin-bottom: 40px;
+          border-left: 4px solid #10b981;
+          padding-left: 20px;
         }
 
         .title {
-          font-size: 28px;
-          font-weight: 700;
-          color: #1a202c;
-          margin-bottom: 8px;
+          font-size: 32px;
+          font-weight: 800;
+          color: #0a0f0d;
+          margin-bottom: 10px;
+          letter-spacing: -0.5px;
         }
 
         .subtitle {
-          font-size: 14px;
-          color: #718096;
+          font-size: 15px;
+          color: #6b7280;
+          font-weight: 500;
         }
 
         .form-group {
-          margin-bottom: 24px;
+          margin-bottom: 28px;
         }
 
         .label {
-          display: block;
+          display: flex;
+          align-items: center;
           font-size: 14px;
-          font-weight: 600;
-          color: #2d3748;
-          margin-bottom: 8px;
+          font-weight: 700;
+          color: #1f2937;
+          margin-bottom: 10px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
         }
 
         .input {
           width: 100%;
-          padding: 12px 16px;
-          font-size: 15px;
-          border: 2px solid #e2e8f0;
-          border-radius: 8px;
-          transition: all 0.3s ease;
+          padding: 16px 20px;
+          font-size: 16px;
+          border: 2px solid #e5e7eb;
+          border-radius: 12px;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           outline: none;
+          background: #fafafa;
         }
 
         .input:focus {
-          border-color: #667eea;
-          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+          border-color: #10b981;
+          background: #ffffff;
+          box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+          transform: translateY(-2px);
         }
 
         .file-input-wrapper {
@@ -153,19 +182,21 @@ export default function ReferenceForm() {
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 12px 16px;
-          background: #f7fafc;
-          border: 2px dashed #cbd5e0;
-          border-radius: 8px;
+          padding: 24px 20px;
+          background: #f9fafb;
+          border: 3px dashed #d1d5db;
+          border-radius: 12px;
           cursor: pointer;
           transition: all 0.3s ease;
-          font-size: 14px;
-          color: #4a5568;
+          font-size: 15px;
+          color: #4b5563;
+          font-weight: 600;
         }
 
         .file-input-label:hover {
-          border-color: #667eea;
-          background: #edf2f7;
+          border-color: #10b981;
+          background: #ecfdf5;
+          transform: scale(1.02);
         }
 
         .file-input {
@@ -175,46 +206,72 @@ export default function ReferenceForm() {
         }
 
         .file-name {
-          margin-top: 8px;
-          font-size: 13px;
-          color: #667eea;
-          font-weight: 500;
+          margin-top: 12px;
+          font-size: 14px;
+          color: #10b981;
+          font-weight: 600;
+          padding: 8px 16px;
+          background: #ecfdf5;
+          border-radius: 8px;
+          display: inline-block;
         }
 
         .submit-btn {
           width: 100%;
-          padding: 14px 24px;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          padding: 18px 28px;
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
           color: white;
           border: none;
-          border-radius: 8px;
+          border-radius: 12px;
           font-size: 16px;
-          font-weight: 600;
+          font-weight: 700;
           cursor: pointer;
-          transition: all 0.3s ease;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           position: relative;
           overflow: hidden;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          box-shadow: 0 10px 25px rgba(16, 185, 129, 0.25);
+        }
+
+        .submit-btn::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: rgba(255, 255, 255, 0.2);
+          transition: left 0.5s;
+        }
+
+        .submit-btn:hover:not(:disabled)::before {
+          left: 100%;
         }
 
         .submit-btn:hover:not(:disabled) {
-          transform: translateY(-2px);
-          box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+          transform: translateY(-3px);
+          box-shadow: 0 15px 35px rgba(16, 185, 129, 0.35);
+        }
+
+        .submit-btn:active:not(:disabled) {
+          transform: translateY(-1px);
         }
 
         .submit-btn:disabled {
-          opacity: 0.7;
+          opacity: 0.6;
           cursor: not-allowed;
         }
 
         .loader {
           display: inline-block;
-          width: 16px;
-          height: 16px;
-          border: 2px solid rgba(255, 255, 255, 0.3);
+          width: 18px;
+          height: 18px;
+          border: 3px solid rgba(255, 255, 255, 0.3);
           border-radius: 50%;
           border-top-color: white;
-          animation: spin 0.8s linear infinite;
-          margin-right: 8px;
+          animation: spin 0.7s linear infinite;
+          margin-right: 10px;
         }
 
         @keyframes spin {
@@ -222,13 +279,14 @@ export default function ReferenceForm() {
         }
 
         .section-title {
-          font-size: 20px;
-          font-weight: 700;
-          color: #1a202c;
-          margin-bottom: 20px;
+          font-size: 24px;
+          font-weight: 800;
+          color: #0a0f0d;
+          margin-bottom: 24px;
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: 12px;
+          letter-spacing: -0.5px;
         }
 
         .reference-list {
@@ -236,22 +294,40 @@ export default function ReferenceForm() {
         }
 
         .reference-item {
-          background: #f7fafc;
-          padding: 16px 20px;
-          border-radius: 8px;
-          margin-bottom: 12px;
+          background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+          padding: 20px 24px;
+          border-radius: 12px;
+          margin-bottom: 14px;
           display: flex;
           justify-content: space-between;
           align-items: center;
-          transition: all 0.3s ease;
-          animation: slideIn 0.4s ease-out;
-          border: 1px solid #e2e8f0;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          animation: slideIn 0.5s ease-out;
+          border: 2px solid #f3f4f6;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .reference-item::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
+          bottom: 0;
+          width: 4px;
+          background: #10b981;
+          transform: scaleY(0);
+          transition: transform 0.3s ease;
+        }
+
+        .reference-item:hover::before {
+          transform: scaleY(1);
         }
 
         @keyframes slideIn {
           from {
             opacity: 0;
-            transform: translateX(-20px);
+            transform: translateX(-30px);
           }
           to {
             opacity: 1;
@@ -260,47 +336,61 @@ export default function ReferenceForm() {
         }
 
         .reference-item:hover {
-          background: #edf2f7;
-          border-color: #cbd5e0;
-          transform: translateX(4px);
+          background: #ffffff;
+          border-color: #10b981;
+          transform: translateX(8px);
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
         }
 
         .reference-number {
-          font-weight: 600;
-          color: #2d3748;
-          font-size: 15px;
+          font-weight: 700;
+          color: #1f2937;
+          font-size: 16px;
+          letter-spacing: 0.3px;
         }
 
         .download-btn {
-          padding: 8px 16px;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          padding: 10px 20px;
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
           color: white;
           border: none;
-          border-radius: 6px;
-          font-size: 13px;
-          font-weight: 600;
+          border-radius: 8px;
+          font-size: 14px;
+          font-weight: 700;
           cursor: pointer;
-          transition: all 0.3s ease;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
         }
 
         .download-btn:hover {
-          transform: scale(1.05);
-          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+          transform: scale(1.08);
+          box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .download-btn:active {
+          transform: scale(1.02);
         }
 
         .empty-state {
           text-align: center;
-          padding: 40px 20px;
-          color: #718096;
+          padding: 60px 20px;
+          color: #9ca3af;
+        }
+
+        .empty-state-text {
+          font-size: 15px;
+          font-weight: 600;
         }
 
         .skeleton-loader {
-          background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+          background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
           background-size: 200% 100%;
-          animation: loading 1.5s infinite;
-          border-radius: 8px;
-          height: 60px;
-          margin-bottom: 12px;
+          animation: loading 1.4s infinite;
+          border-radius: 12px;
+          height: 70px;
+          margin-bottom: 14px;
+          border: 2px solid #f9fafb;
         }
 
         @keyframes loading {
@@ -309,14 +399,24 @@ export default function ReferenceForm() {
         }
 
         .note-badge {
-          display: inline-block;
-          background: #edf2f7;
-          color: #4a5568;
-          padding: 4px 12px;
-          border-radius: 12px;
-          font-size: 12px;
-          font-weight: 600;
-          margin-left: 8px;
+          display: inline-flex;
+          align-items: center;
+          background: #ecfdf5;
+          color: #065f46;
+          padding: 6px 14px;
+          border-radius: 20px;
+          font-size: 11px;
+          font-weight: 700;
+          margin-left: 10px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          border: 1px solid #d1fae5;
+        }
+
+        .header-badge {
+          background: #0a0f0d;
+          color: #10b981;
+          border: 1px solid #10b981;
         }
       `}</style>
 
@@ -327,7 +427,7 @@ export default function ReferenceForm() {
             <p className="subtitle">Submit your reference documents securely</p>
           </div>
 
-          <form onSubmit={handleSubmit}>
+          <div onSubmit={handleSubmit}>
             <div className="form-group">
               <label className="label">
                 Reference Number
@@ -360,23 +460,23 @@ export default function ReferenceForm() {
               {file && <div className="file-name">{file.name}</div>}
             </div>
 
-            <button type="submit" disabled={loading} className="submit-btn">
+            <button type="button" onClick={handleSubmit} disabled={loading} className="submit-btn">
               {loading ? (
                 <>
                   <span className="loader"></span>
-                  Processing...
+                  Processing
                 </>
               ) : (
                 "Submit Reference"
               )}
             </button>
-          </form>
+          </div>
         </div>
 
         <div className="card">
           <h2 className="section-title">
             Submitted References
-            <span className="note-badge">Assign Samples</span>
+            <span className="note-badge header-badge">Assign Samples</span>
           </h2>
 
           {fetchingReferences ? (
@@ -389,7 +489,7 @@ export default function ReferenceForm() {
             <ul className="reference-list">
               {references.length === 0 ? (
                 <div className="empty-state">
-                  <p>No references submitted yet</p>
+                  <p className="empty-state-text">No references submitted yet</p>
                 </div>
               ) : (
                 references.map((ref) => (

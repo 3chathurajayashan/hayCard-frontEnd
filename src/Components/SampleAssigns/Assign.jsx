@@ -7,8 +7,14 @@ export default function ReferenceForm() {
   const [references, setReferences] = useState([]);
   const [loading, setLoading] = useState(false);
   const [fetchingReferences, setFetchingReferences] = useState(true);
+  const [notification, setNotification] = useState(null);
 
   const BASE_URL = "https://hay-card-back-end.vercel.app/api/reference";
+
+  const showNotification = (message, type = "success") => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 4000);
+  };
 
   const fetchReferences = async () => {
     setFetchingReferences(true);
@@ -28,7 +34,10 @@ export default function ReferenceForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!refNumber) return alert("Enter reference number");
+    if (!refNumber) {
+      showNotification("Please enter a reference number", "error");
+      return;
+    }
     setLoading(true);
 
     try {
@@ -43,9 +52,10 @@ export default function ReferenceForm() {
       setRefNumber("");
       setFile(null);
       fetchReferences();
+      showNotification("Reference submitted successfully", "success");
     } catch (err) {
       console.error(err);
-      alert("Submission failed");
+      showNotification("Submission failed. Please try again", "error");
     } finally {
       setLoading(false);
     }
@@ -56,6 +66,7 @@ export default function ReferenceForm() {
     link.href = `data:application/octet-stream;base64,${fileData}`;
     link.download = fileName;
     link.click();
+    showNotification("Download started", "info");
   };
 
   return (
@@ -68,25 +79,25 @@ export default function ReferenceForm() {
         }
 
         body {
-          background: #0a0f0d;
+          background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 100%);
           min-height: 100vh;
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
         }
 
         .container {
-          max-width: 900px;
+          max-width: 1000px;
           margin: 0 auto;
-          padding: 60px 20px;
+          padding: 50px 20px;
         }
 
         .card {
           background: #ffffff;
-          border-radius: 20px;
-          box-shadow: 0 25px 70px rgba(0, 0, 0, 0.3);
-          padding: 50px;
-          margin-bottom: 40px;
-          animation: fadeInUp 0.7s ease-out;
-          border: 1px solid #e8e8e8;
+          border-radius: 24px;
+          box-shadow: 0 20px 60px rgba(59, 130, 246, 0.1);
+          padding: 48px;
+          margin-bottom: 32px;
+          animation: fadeInUp 0.6s ease-out;
+          border: 2px solid rgba(59, 130, 246, 0.1);
           position: relative;
           overflow: hidden;
         }
@@ -97,20 +108,21 @@ export default function ReferenceForm() {
           top: 0;
           left: 0;
           right: 0;
-          height: 5px;
-          background: linear-gradient(90deg, #10b981, #059669);
-          animation: slideRight 2s ease-in-out infinite;
+          height: 6px;
+          background: linear-gradient(90deg, #3b82f6, #10b981, #3b82f6);
+          background-size: 200% 100%;
+          animation: gradientShift 3s linear infinite;
         }
 
-        @keyframes slideRight {
-          0%, 100% { transform: translateX(-100%); }
-          50% { transform: translateX(100%); }
+        @keyframes gradientShift {
+          0% { background-position: 0% 0%; }
+          100% { background-position: 200% 0%; }
         }
 
         @keyframes fadeInUp {
           from {
             opacity: 0;
-            transform: translateY(40px);
+            transform: translateY(30px);
           }
           to {
             opacity: 1;
@@ -119,27 +131,28 @@ export default function ReferenceForm() {
         }
 
         .header {
-          margin-bottom: 40px;
-          border-left: 4px solid #10b981;
-          padding-left: 20px;
+          margin-bottom: 36px;
         }
 
         .title {
-          font-size: 32px;
+          font-size: 36px;
           font-weight: 800;
-          color: #0a0f0d;
-          margin-bottom: 10px;
-          letter-spacing: -0.5px;
+          background: linear-gradient(135deg, #3b82f6 0%, #10b981 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          margin-bottom: 8px;
+          letter-spacing: -1px;
         }
 
         .subtitle {
-          font-size: 15px;
-          color: #6b7280;
+          font-size: 16px;
+          color: #64748b;
           font-weight: 500;
         }
 
         .form-group {
-          margin-bottom: 28px;
+          margin-bottom: 26px;
         }
 
         .label {
@@ -147,28 +160,26 @@ export default function ReferenceForm() {
           align-items: center;
           font-size: 14px;
           font-weight: 700;
-          color: #1f2937;
+          color: #334155;
           margin-bottom: 10px;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
+          letter-spacing: 0.3px;
         }
 
         .input {
           width: 100%;
           padding: 16px 20px;
           font-size: 16px;
-          border: 2px solid #e5e7eb;
-          border-radius: 12px;
+          border: 2px solid #e2e8f0;
+          border-radius: 14px;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           outline: none;
-          background: #fafafa;
+          background: #f8fafc;
         }
 
         .input:focus {
-          border-color: #10b981;
+          border-color: #3b82f6;
           background: #ffffff;
-          box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
-          transform: translateY(-2px);
+          box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
         }
 
         .file-input-wrapper {
@@ -182,21 +193,22 @@ export default function ReferenceForm() {
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 24px 20px;
-          background: #f9fafb;
-          border: 3px dashed #d1d5db;
-          border-radius: 12px;
+          gap: 10px;
+          padding: 28px 20px;
+          background: linear-gradient(135deg, #f0f9ff 0%, #f0fdf4 100%);
+          border: 3px dashed #93c5fd;
+          border-radius: 14px;
           cursor: pointer;
           transition: all 0.3s ease;
           font-size: 15px;
-          color: #4b5563;
+          color: #475569;
           font-weight: 600;
         }
 
         .file-input-label:hover {
-          border-color: #10b981;
-          background: #ecfdf5;
-          transform: scale(1.02);
+          border-color: #3b82f6;
+          background: linear-gradient(135deg, #dbeafe 0%, #d1fae5 100%);
+          transform: translateY(-2px);
         }
 
         .file-input {
@@ -208,50 +220,53 @@ export default function ReferenceForm() {
         .file-name {
           margin-top: 12px;
           font-size: 14px;
-          color: #10b981;
+          color: #3b82f6;
           font-weight: 600;
-          padding: 8px 16px;
-          background: #ecfdf5;
-          border-radius: 8px;
+          padding: 10px 18px;
+          background: #eff6ff;
+          border-radius: 10px;
           display: inline-block;
+          border: 1px solid #bfdbfe;
         }
 
         .submit-btn {
           width: 100%;
-          padding: 18px 28px;
-          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+          padding: 18px 32px;
+          background: linear-gradient(135deg, #3b82f6 0%, #10b981 100%);
           color: white;
           border: none;
-          border-radius: 12px;
-          font-size: 16px;
+          border-radius: 14px;
+          font-size: 17px;
           font-weight: 700;
           cursor: pointer;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           position: relative;
           overflow: hidden;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-          box-shadow: 0 10px 25px rgba(16, 185, 129, 0.25);
+          letter-spacing: 0.5px;
+          box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
         }
 
-        .submit-btn::before {
+        .submit-btn::after {
           content: '';
           position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: rgba(255, 255, 255, 0.2);
-          transition: left 0.5s;
+          top: 50%;
+          left: 50%;
+          width: 0;
+          height: 0;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.3);
+          transform: translate(-50%, -50%);
+          transition: width 0.6s, height 0.6s;
         }
 
-        .submit-btn:hover:not(:disabled)::before {
-          left: 100%;
+        .submit-btn:hover:not(:disabled)::after {
+          width: 300px;
+          height: 300px;
         }
 
         .submit-btn:hover:not(:disabled) {
           transform: translateY(-3px);
-          box-shadow: 0 15px 35px rgba(16, 185, 129, 0.35);
+          box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
         }
 
         .submit-btn:active:not(:disabled) {
@@ -259,7 +274,7 @@ export default function ReferenceForm() {
         }
 
         .submit-btn:disabled {
-          opacity: 0.6;
+          opacity: 0.7;
           cursor: not-allowed;
         }
 
@@ -270,7 +285,7 @@ export default function ReferenceForm() {
           border: 3px solid rgba(255, 255, 255, 0.3);
           border-radius: 50%;
           border-top-color: white;
-          animation: spin 0.7s linear infinite;
+          animation: spin 0.8s linear infinite;
           margin-right: 10px;
         }
 
@@ -279,10 +294,10 @@ export default function ReferenceForm() {
         }
 
         .section-title {
-          font-size: 24px;
+          font-size: 26px;
           font-weight: 800;
-          color: #0a0f0d;
-          margin-bottom: 24px;
+          color: #1e293b;
+          margin-bottom: 28px;
           display: flex;
           align-items: center;
           gap: 12px;
@@ -294,18 +309,17 @@ export default function ReferenceForm() {
         }
 
         .reference-item {
-          background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
-          padding: 20px 24px;
-          border-radius: 12px;
-          margin-bottom: 14px;
+          background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+          padding: 22px 26px;
+          border-radius: 14px;
+          margin-bottom: 12px;
           display: flex;
           justify-content: space-between;
           align-items: center;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          animation: slideIn 0.5s ease-out;
-          border: 2px solid #f3f4f6;
+          animation: slideIn 0.4s ease-out;
+          border: 2px solid #e2e8f0;
           position: relative;
-          overflow: hidden;
         }
 
         .reference-item::before {
@@ -314,20 +328,21 @@ export default function ReferenceForm() {
           left: 0;
           top: 0;
           bottom: 0;
-          width: 4px;
-          background: #10b981;
-          transform: scaleY(0);
-          transition: transform 0.3s ease;
+          width: 5px;
+          background: linear-gradient(180deg, #3b82f6, #10b981);
+          border-radius: 14px 0 0 14px;
+          opacity: 0;
+          transition: opacity 0.3s ease;
         }
 
         .reference-item:hover::before {
-          transform: scaleY(1);
+          opacity: 1;
         }
 
         @keyframes slideIn {
           from {
             opacity: 0;
-            transform: translateX(-30px);
+            transform: translateX(-20px);
           }
           to {
             opacity: 1;
@@ -337,45 +352,42 @@ export default function ReferenceForm() {
 
         .reference-item:hover {
           background: #ffffff;
-          border-color: #10b981;
-          transform: translateX(8px);
-          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+          border-color: #3b82f6;
+          transform: translateX(6px);
+          box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
         }
 
         .reference-number {
           font-weight: 700;
-          color: #1f2937;
+          color: #1e293b;
           font-size: 16px;
-          letter-spacing: 0.3px;
         }
 
         .download-btn {
-          padding: 10px 20px;
-          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+          padding: 10px 22px;
+          background: linear-gradient(135deg, #3b82f6 0%, #10b981 100%);
           color: white;
           border: none;
-          border-radius: 8px;
+          border-radius: 10px;
           font-size: 14px;
           font-weight: 700;
           cursor: pointer;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
         }
 
         .download-btn:hover {
-          transform: scale(1.08);
-          box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+          transform: scale(1.05);
+          box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
         }
 
         .download-btn:active {
-          transform: scale(1.02);
+          transform: scale(0.98);
         }
 
         .empty-state {
           text-align: center;
-          padding: 60px 20px;
-          color: #9ca3af;
+          padding: 50px 20px;
+          color: #94a3b8;
         }
 
         .empty-state-text {
@@ -384,13 +396,13 @@ export default function ReferenceForm() {
         }
 
         .skeleton-loader {
-          background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+          background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
           background-size: 200% 100%;
-          animation: loading 1.4s infinite;
-          border-radius: 12px;
-          height: 70px;
-          margin-bottom: 14px;
-          border: 2px solid #f9fafb;
+          animation: loading 1.5s infinite;
+          border-radius: 14px;
+          height: 72px;
+          margin-bottom: 12px;
+          border: 2px solid #f8fafc;
         }
 
         @keyframes loading {
@@ -401,30 +413,123 @@ export default function ReferenceForm() {
         .note-badge {
           display: inline-flex;
           align-items: center;
-          background: #ecfdf5;
-          color: #065f46;
-          padding: 6px 14px;
-          border-radius: 20px;
+          background: linear-gradient(135deg, #dbeafe 0%, #d1fae5 100%);
+          color: #1e40af;
+          padding: 5px 12px;
+          border-radius: 16px;
           font-size: 11px;
           font-weight: 700;
-          margin-left: 10px;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          border: 1px solid #d1fae5;
+          margin-left: 8px;
+          letter-spacing: 0.3px;
+          border: 1px solid #93c5fd;
         }
 
-        .header-badge {
-          background: #0a0f0d;
-          color: #10b981;
-          border: 1px solid #10b981;
+        .notification {
+          position: fixed;
+          top: 24px;
+          right: 24px;
+          padding: 18px 24px;
+          border-radius: 14px;
+          font-weight: 600;
+          font-size: 15px;
+          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+          animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          z-index: 1000;
+          max-width: 400px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          border: 2px solid;
+        }
+
+        @keyframes slideInRight {
+          from {
+            opacity: 0;
+            transform: translateX(400px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        .notification.success {
+          background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+          color: #065f46;
+          border-color: #6ee7b7;
+        }
+
+        .notification.error {
+          background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+          color: #991b1b;
+          border-color: #fca5a5;
+        }
+
+        .notification.info {
+          background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+          color: #1e40af;
+          border-color: #93c5fd;
+        }
+
+        .notification-icon {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 900;
+          font-size: 16px;
+        }
+
+        .notification.success .notification-icon {
+          background: #10b981;
+          color: white;
+        }
+
+        .notification.error .notification-icon {
+          background: #ef4444;
+          color: white;
+        }
+
+        .notification.info .notification-icon {
+          background: #3b82f6;
+          color: white;
+        }
+
+        .progress-bar {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          height: 4px;
+          background: currentColor;
+          opacity: 0.4;
+          animation: shrink 4s linear;
+        }
+
+        @keyframes shrink {
+          from { width: 100%; }
+          to { width: 0%; }
         }
       `}</style>
 
       <div className="container">
+        {notification && (
+          <div className={`notification ${notification.type}`}>
+            <div className="notification-icon">
+              {notification.type === 'success' && '✓'}
+              {notification.type === 'error' && '✕'}
+              {notification.type === 'info' && 'i'}
+            </div>
+            <span>{notification.message}</span>
+            <div className="progress-bar"></div>
+          </div>
+        )}
+
         <div className="card">
           <div className="header">
             <h1 className="title">Reference Submission</h1>
-            <p className="subtitle">Submit your reference documents securely</p>
+            <p className="subtitle">Submit your reference documents securely and efficiently</p>
           </div>
 
           <div onSubmit={handleSubmit}>
@@ -476,7 +581,7 @@ export default function ReferenceForm() {
         <div className="card">
           <h2 className="section-title">
             Submitted References
-            <span className="note-badge header-badge">Assign Samples</span>
+            <span className="note-badge">Assign Samples</span>
           </h2>
 
           {fetchingReferences ? (

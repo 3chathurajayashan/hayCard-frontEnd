@@ -3,22 +3,15 @@ import axios from "axios";
 
 const BACKEND_URL = "https://hay-card-back-end.vercel.app/api/sample-assign";
 
-
-export default function SampleAssign() {
+export default function SampleAssignPage() {
   const [referenceNumber, setReferenceNumber] = useState("");
   const [documentFile, setDocumentFile] = useState(null);
   const [samples, setSamples] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   const fetchSamples = async () => {
-    try {
-      const res = await axios.get(BACKEND_URL);
-      setSamples(res.data);
-    } catch (err) {
-      console.error(err);
-      setError("Failed to fetch samples");
-    }
+    const res = await axios.get(BACKEND_URL);
+    setSamples(res.data);
   };
 
   useEffect(() => {
@@ -27,71 +20,76 @@ export default function SampleAssign() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!referenceNumber || !documentFile) {
-      setError("Reference Number and Document are required");
-      return;
-    }
+    if (!referenceNumber || !documentFile) return alert("All fields required");
 
     setLoading(true);
-    setError("");
 
-    try {
-      const formData = new FormData();
-      formData.append("referenceNumber", referenceNumber);
-      formData.append("document", documentFile);
+    // Convert file to base64
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const documentBase64 = reader.result;
 
-      const res = await axios.post(BACKEND_URL, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      try {
+        const res = await axios.post(BACKEND_URL, {
+          referenceNumber,
+          documentBase64,
+        });
 
-      setSamples((prev) => [res.data, ...prev]);
-      setReferenceNumber("");
-      setDocumentFile(null);
-    } catch (err) {
-      console.error(err);
-      setError("Upload failed. Try again.");
-    } finally {
-      setLoading(false);
-    }
+        setSamples((prev) => [res.data, ...prev]);
+        setReferenceNumber("");
+        setDocumentFile(null);
+      } catch (err) {
+        console.error(err);
+        alert("Upload failed");
+      } finally {
+        setLoading(false);
+      }
+    };
+    reader.readAsDataURL(documentFile);
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Sample Assignment</h1>
+    <div className="max-w-2xl mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-4">Sample Assign Upload</h1>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4 border p-4 rounded shadow">
+      <form onSubmit={handleSubmit} className="space-y-4 border p-4 rounded shadow">
         <input
           type="text"
-          placeholder="Reference Number"
           value={referenceNumber}
           onChange={(e) => setReferenceNumber(e.target.value)}
-          className="border p-2 rounded"
+          placeholder="Enter Reference Number"
+          className="border p-2 rounded w-full"
         />
         <input
           type="file"
           onChange={(e) => setDocumentFile(e.target.files[0])}
-          className="border p-2 rounded"
+          className="border p-2 rounded w-full"
         />
         <button
           type="submit"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
           disabled={loading}
-          className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition"
         >
-          {loading ? "Uploading..." : "Upload"}
+          {loading ? "Uploading..." : "Submit"}
         </button>
-        {error && <p className="text-red-500">{error}</p>}
       </form>
 
       <div className="mt-6">
         <h2 className="text-xl font-semibold mb-2">Uploaded Samples</h2>
         {samples.length === 0 ? (
-          <p>No samples uploaded yet.</p>
+          <p>No samples yet.</p>
         ) : (
           <ul className="space-y-2">
             {samples.map((s) => (
-              <li key={s._id} className="flex justify-between items-center border p-2 rounded">
+              <li key={s._id} className="flex justify-between border p-2 rounded">
                 <span>{s.referenceNumber}</span>
-                <a href={s.documentUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline" download>
+                <a
+                  href={s.documentUrl}
+                  download
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline"
+                >
                   Download
                 </a>
               </li>

@@ -60,7 +60,7 @@ export default function SampleOut() {
         {loading ? (
           <div>
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="loader">Loading...</div>
+              <div key={i} className="loader">Loadings...</div>
             ))}
           </div>
         ) : (
